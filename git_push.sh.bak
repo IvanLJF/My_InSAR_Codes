@@ -6,5 +6,5 @@
 
 git add .
 git commit -a -m date
-git push https://github.com/rslitao/My_InSAR_Codes
+git push https://code.google.com/p/idlgit master
 
