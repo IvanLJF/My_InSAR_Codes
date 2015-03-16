@@ -1,0 +1,840 @@
+#!/bin/sh
+###########################################################
+# Purpose:
+# 	Do IPTA for the given area.
+# Calling Sequence:
+# 	./IPTA_TJ_TSX.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	IPTA results that can be checked by using some professional tools.
+# Commendations:
+# 	None
+# Modification History:
+# 	24/02/2012: Written by T.L @ InSAR Team in SWJTU & CUHK.
+######################################
+### Set some parameters
+######################################
+origpath="/mnt/backup/MyData/TSX_TJ_091113"                 #原始SLC所在路径
+dem="/mnt/backup/MyData/DEM/TJ_UTM_DEM"                     #原始DEM所在路径
+path="/mnt/software/ForExperiment/TSX_PS_Tianjin/piece"     #裁剪之后的SLC所在路径
+master="20091113"
+masterpwr=$path/$master.rslc.pwr
+mslc_par=$path/$master.rslc.par
+# set the cropping parameters
+roff="1120"      #roff: offset to starting range sample
+nr="500"       #nr: number of range samples
+loff="12845"    #loff: offset number of lines to start
+nl="500"       #nl: number of lines to copy (enter 0: to end of file)
+itab_type=0     #0: single master;  1: all pairs
+dem_par=$dem.par
+####################################################################
+# 1. 准备SLC数据
+####################################################################
+if false
+then
+	mkdir -p $path
+	rm -f SLC_org im_list SLC_tab
+	# find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+	# SLC_copy_all SLC_org $path $roff $nr $loff $nl
+	find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+	find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+	find $path -name "*.pwr" -exec echo {} >>im_list \;
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+	ave_image im_list $width ave.pwr  #ave.pwr
+	mv $masterpwr.par .
+	mv $masterpwr .
+	rm -f $path/*.pwr $path/*.pwr.par
+	mv $master.rslc.pwr.par $path/
+	mv $master.rslc.pwr $path/
+	raspwr ave.pwr $width - - - - - - - ave.ras  #ave.ras	
+
+####################################################################
+# 2. 准备高程数据
+####################################################################
+
+	rm dem_seg dem_seg.par
+	gc_map $masterpwr.par - $dem_par $dem dem_seg.par dem_seg lookup 1 1 sim_sar  # Use disdem_par to look over dem_seg.
+	# 注意保证DEM的正确性。特别是投影类型。
+	# disdem_par dem_seg dem_seg.par - - - - -
+	width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+	nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+	col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+	row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+	#rasshd dem_seg $width_dem $col_post $row_post - - - - - - - dem_seg.ras
+	geocode lookup sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 1 0
+	raspwr sim_sar.rdc $width_mli 1 0 1 1 1. .35 1 sim_sar.rdc.ras
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+	create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+	rm -f create_diffpar
+	offset_pwrm sim_sar.rdc ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+	offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+	offset_pwrm sim_sar.rdc ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 24 24 -
+	gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table
+	geocode_back ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+	raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+	#geocode lookup_fine dem_seg $width_dem $master.hgt $width - 0 0
+	rm $master.hgt
+	geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+	rashgt $master.hgt ave.pwr $width - - - - - 160. - - - $master.hgt.ras #hgt & pwr
+
+####################################################################
+# 3. 计算时空基线，并生成itab文件
+#####################################################################
+	base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+	# xmgrace base_plot.agr #画基线图
+fi
+
+
+
+
+width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+if true
+then
+######################################################################
+# 4. 生成点位列表文件
+######################################################################
+	if true # Select points according to cc&msr
+	then
+		#sp_stat $path/$master.rslc - $master.cc $master.msr $master.pt $width 0.0 0.4 1.0 4 4 - - - - - - $type - #对单一影像进行统计分析
+		mkdir sp_dir
+		mk_sp_all SLC_tab sp_dir 4 4 0.5 0.4 4 #对全部影像进行统计分析
+
+		#rm -f ave.sp_cc ave.sp_msr
+		#ls sp_dir/*.sp_cc >cc_list
+		#ave_image cc_list $width cc_ave
+		#ls sp_dir/*.sp_msr >msr_list
+		#ave_image msr_list $width msr_ave
+		single_class_mapping 2 sp_dir/ave.sp_cc 0.35 1.0 sp_dir/ave.sp_msr 2 100. classification.ras $width 1 0 1 1
+		image2pt classification.ras $width pt1 - - 6
+		ras_pt pt1 - ave.ras pt1.ras - - 255 255 0 3
+	fi
+
+	if true #Select points according to backscattering power.
+	then
+		pwr_stat SLC_tab $mslc_par msr pt2 2 1 - - - - 1 1
+		ras_pt pt2 - ave.ras pt2.ras 1 1 255 255 0 3
+		#xv pt.ras #disras pt.ras
+	fi
+
+	if true # Select points using both the 2 ways above.
+	then 
+		#dis2ras pt1.ras pt2.ras
+		echo "pt1" >pt_tab
+		echo "pt2" >>pt_tab
+		merge_pt pt_tab pt 1 0 0
+		ras_pt pt - ave.ras pt.ras 1 1 255 0 0 3
+		#disras pt.ras
+	fi
+
+######################################################################
+# 5. Create pSLC_par and pSLC data stacks
+#	Estimate the baseline parameters from orbit state vectors
+######################################################################
+	SLC2pt SLC_tab pt - pSLC_par pSLC -
+	base_orbit_pt pSLC_par itab - pbase
+	# base_par_pt - pbase - 0
+fi
+
+
+
+
+######################################################################
+# 6. Extract height values for each target point
+######################################################################
+npt pt >numberp
+np=$(awk '$1 == "total_number_of_points:" {print $2}' numberp)
+rm -f numberp
+if false
+then
+
+	rm -f pdem
+	# 如有问题，检查参数，某些参数用-来代替会出现问题
+	data2pt $master.hgt $masterpwr.par pt $mslc_par pdem 1 2
+	# pdisdt_pwr24 pt - $mslc_par pdem 1 $masterpwr.par ave.pwr 256. 1
+	
+#####################################################################
+# 8. Compute differential phase values for each target point 
+#    from each InSAR pair
+######################################################################
+	rm -f pint
+	intf_pt pt - itab - pSLC pint $type pSLC_par
+	# pdismph_pwr24 pt - $mslc_par pint 25 $masterpwr.par ave.pwr 1 #显示第25幅影像的干涉图
+	rm -f psim_unw0
+	phase_sim_pt pt - pSLC_par - itab - pbase pdem psim_unw0 - 0 0 #############注意，相位模拟可能存在问题
+	sub_phase_pt pt - pint - psim_unw0 pdiff0 1 0
+	prasmph_pwr24 pt - $mslc_par pdiff0 - $masterpwr.par ave.pwr 1 # Produce the 3rd different interferogram of the pt. Named as pdiff.ras.
+	dis_ipta pt - pSLC_par - itab pbase 0 pdiff0 1 pdiff0.22.ras 30 -0.01 0.01 2 # #########版本不同，命令不同，注意参数的设置
+	mkdir -p ras/pdiff
+	mv pdiff*ras ras/pdiff
+	#bpf_pt pt - $mslc_par pdiff pdiff1 - 0 $mslc_par 0.0 0.05# Filterring, not suggested.
+fi
+
+
+
+######################################################################
+# 9. Determine height corrections, deformation rates and residual phases 
+#    by the LS-based model regression
+#    Note: the reference-point number should be carefully chosen.
+#	The point number of the reference point can be indicated. To minimize spactial distances it is usually adequate to select a reference point near the center of the area of interest. On the other hand it is often preferred to select a point known to be stable or known to be a reference point of a leveling network, as reference. To identify the point number of a point at (near) the desired coordinate the programs dis_ipta or prox_pt can be used.
+######################################################################
+if false
+then
+	refpsno=2244 # The reference point number.
+	rm -f pdf pres1 pddef punw1 psigma1 pmask1 pdh1
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 60 -0.01 0.01 1000 1.5 2 2 0 - - # sigma=1.5
+#usage: multi_def_pt <pt> <pmask_in> <pSLC_par> <ppos> <itab> <pbase> <bflag> <pdiff> <pdiff_type> <np_ref> <pres> <pdh> <pdef> <punw> <psigma> <pmask_out> [dh_max] [def_min] [def_max] [rpatch] [sigma_max] [sigma_max2] [model] [noise_min] [bmax] [dtmax]
+#usage: def_mod_pt <pt> <pmask_in> <pSLC_par> <ppos> <itab> <pbase> <bflag> <pdiff> <pdiff_type> <np_ref> <pres> <pdh> <pdef> <punw> <psigma> <pmask_out> [dh_max] [def_min] [def_max] [sigma_max] [model] [pdh_err] [pdef_err] [ppc_err] [bmax] [dtmax]
+	#def_mod_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 60 -0.01 0.01 1.2 2 pdh_err pddef_err ppc_err #####1899
+	#def_mod_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 60 -0.1 0.1 1.2 2 pdh_err pddef_err ppc_err #####1901
+	#def_mod_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 600 -0.01 0.01 1.2 2 pdh_err pddef_err ppc_err ##### 耗时太长，中途退出
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 20 -0.006 0.006 300 1.35 0.9 2 #1166点，集中在一块
+	# multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 20 -0.006 0.006 600 1.35 0.9 2 #2883点，集中在一块
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 20 -0.006 0.006 1000 1.35 0.9 2 #6904点，集中在一块
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 20 -0.006 0.006 1000 1.5 0.9 2 #19503。。。
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff 1 $refpsno pres pdh pddef punw1 psigma pmask 20 -0.006 0.006 1000 2.0 0.9 2 #39309。。。
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0 1 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 20 -0.006 0.006 600 2.0 2.0 2	#318069
+	multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0 1 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 30 -0.01 0.01 100 1.2 1.0 2 0 500	#318069
+	ras_pt pt pmask1 ave.ras ave_mask_pt.ras - - - - - 5
+	# bpf_pt pt pmask2 $mslc_par pdef pdef1 - 2 $mslc_par 0.0 0.05# Filtering, not suggested.
+	# bpf_pt pt pmask2 $mslc_par pdh pdh1 - 2 $mslc_par 0.0 0.05# Filtering, not suggested.
+
+######################################################################
+# 10. Start iterativation. If you do not meed the precise results.
+#     Just set FALSE to jump this step.
+#     Attention: There may be some stop points during this step.
+######################################################################
+	prasmph_pwr24 pt - $mslc_par pdiff0 3 $masterpwr.par ave.pwr 1
+	prasdt_pwr24 pt pmask1 $mslc_par pdh1 - $masterpwr.par ave.pwr 30.0 1
+	prasdt_pwr24 pt pmask1 $mslc_par pddef1 1 $masterpwr.par ave.pwr 0.01 1
+	prasdt_pwr24 pt pmask1 $mslc_par psigma1 1 $masterpwr.par ave.pwr 1.5 1
+	prasdt_pwr24 pt pmask1 $mslc_par pres1 - $masterpwr.par ave.pwr 12.6 1  #pres1中，有些干涉对只有参考点有值。这是由于multi_def_pt中的基线限制造成的。
+	
+	cp itab itab.selection1
+	xv -quit
+	echo '*********************************************************************'
+	echo '*                   This is the first stop point                    *'
+	echo '*   Please modify the itab.selection1 file according to residuals   *'
+	echo '*********************************************************************'
+	echo ""
+	echo "Press anykey to quit."
+	read temp
+	gedit itab.selection1
+	exit
+fi
+###改变itab，去除残差不正确的影像对，再次迭代。自此步骤之后，itab中mask为0的影像对，其值为0，影响到punw1,pres2,pdh2......，务必注意。
+
+
+refpsno=2244
+if false
+then
+	mkdir residual
+	mv pres1.* residual/	
+	#def_mod_pt pt - pSLC_par - itab.selection1 pbase 0 punw1 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 85. 0.03 3.0 1.2 - - - # sigma=4
+	#def_mod_pt pt - pSLC_par - itab.selection1 pbase 0 punw1 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 85. -0.03 0.03 1.2 - - - # 1946
+	def_mod_pt pt pmask1 pSLC_par - itab.selection1 pbase 0 punw1 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 25 -0.03 0.03 3.0 - - - #192492
+	#ras_pt pt pmask2 ave.ras ave_mask_pt.ras - - - - - 5
+
+	rm -fr residual
+	#prasdt_pwr24 pt pmask1 $mslc_par pdh2 1 $masterpwr.par ave.pwr 30.0 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef2 1 $masterpwr.par ave.pwr 0.01 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef2 1 $masterpwr.par ave.pwr 0.003 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef2 1 $masterpwr.par ave.pwr 0.005 1
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma2 1 $masterpwr.par ave.pwr 1.5 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pres2 - $masterpwr.par ave.pwr 12.6 1
+	
+
+
+# 最初始的结果已经计算完毕。pdh2可以用来修正pdem，pddef2提供了形变场信息，pres2包含各干涉图的相位残差。
+ # Update pdem using pdh
+
+	lin_comb_pt pt pmask2 pdem 1 pdh2 1 phgt1 1 0. 1. 1. 2 0
+	
+	ras_data_pt pt - phgt1 1 - ave.ras phgt1.ras 2 1 1 5.0 3
+	
+	# Refine the result using phgt1&pddef2
+	cp pddef2 pdef1
+	phase_sim_pt pt pmask2 pSLC_par - itab - pbase phgt1 psim_unw0 pdef1 0 0
+	sub_phase_pt pt pmask2 pint - psim_unw0 pdiff0 1 0 #消除了长基线带来的失相关
+	#prasmph_pwr24 pt pmask2 $mslc_par pdiff0 - $masterpwr.par ave.pwr 1 # Produce the 3rd different interferogram of the pt. Named as pdiff.ras.
+
+## 使用精化的高程，再次迭代
+
+	rm -f pres1 pdh1 pddef1 punw1 psigma1 pmask1
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0 1 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 100 -1 1 800 50 6 2 1 #sigma=1.3
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0 1 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 3 -0.003 0.003 100 1.3 0.9 1 #389718
+	multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0 1 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 3 -0.003 0.003 100 1.3 0.9 2 1
+# 上面已经去除了大部分高程误差和残差，因此高程误差和sigma的值均设置的比较小。
+
+# punw1居然是10e-38数量级？
+	#ras_pt pt pmask1 ave.ras ave_mask_pt.ras - - - - - 5
+
+	#prasdt_pwr24 pt pmask1 $mslc_par pdh1 1 $masterpwr.par ave.pwr 10.0 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef1 1 $masterpwr.par ave.pwr 0.01 1
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma1 1 $masterpwr.par ave.pwr 1.5 1
+	prasdt_pwr24 pt pmask1 $mslc_par pres1 - $masterpwr.par ave.pwr 12.6 1 #包含解缠误差的点已急剧减少
+	mkdir residual
+	mv pres2*.ras residual/
+	
+	
+	cp itab itab.selection1
+	echo '*********************************************************************'
+	echo '*                   This is the second stop point                   *'
+	echo '*        Do the iteration once again in this step if you like       *'
+	echo '*                    BUT it is NOT very neccesary                   *'
+	echo '*********************************************************************'
+	echo ""
+	echo 'Please check the residuals. And find out record NO. with bad residual phase.'
+	echo 'Do use a pencil to write down the record NO.'
+	echo "Press anykey to continue:"
+	read temp
+	rm -f residual/*
+	mv pres*.ras residual/
+	exit
+fi
+
+
+
+######################################################################
+# 11. 相位解缠，某些图层依然可能解缠失败，其原因多为轨道残差和大气的影响。
+######################################################################
+if false
+then
+	rps=$(awk '$1 == "range_pixel_spacing:" {print $2}' $mslc_par)
+	azps=$(awk '$1 == "azimuth_pixel_spacing:" {print $2}' $mslc_par)
+	unw_to_cpx_pt pt pmask1 pres1 - pres1.cpx
+	mcf_pt pt pmask1 pres1.cpx - - - pres1.cpx.unw $rps $azps $refpsno 0
+	prasdt_pwr24 pt pmask1 $mslc_par pres1.cpx.unw - $masterpwr.par ave.pwr 12.6 1 # Disp unwrapping result for the 5th interferogram.
+
+######################################################################
+# 12. Calculate the phase regression model.
+#	psim_unw2	:	Simulated phase of interferogram. 
+#				Which contains no deformation info.
+#	punw1    	:	Unwrapped phase on points in time-series.
+#	ptmp1    	:	Spatio-time unwrapping result 
+#				without deformation info.
+#	pres1.cpx.unw :	Residual phase(unwrapped).
+#	ptmp2		:	All spatio-time phase components without deformation.
+#	pdiff0_unw	:	Unwrapped phase which contains two components:
+#				Flattenning
+#				DEM
+######################################################################
+
+	#lin_comb_pt pt pmask1 phgt1 - pdh1 - phgt2 - -0. 1. 1. 2 0
+	#mv phgt2 phgt1
+
+
+
+#############################问题所在 #############################
+	#模拟空间维的解缠相位。共包括四个部分：
+	#1）模拟形变场+高程误差
+	#2）
+# psim_unw2中，一部分相位为0，需要用lin_comb_pt添加此部分数据。
+	#phase_sim_pt pt - pSLC_par - itab - pbase phgt psim_unw - 0 0
+	#phase_sim_pt pt pmask2 pSLC_par - itab - pbase phgt1 psim_unw0 pdef1 0 0
+	#phase_sim_pt pt pmask1 pSLC_par - itab - pbase phgt1 psim_unw2 pddef1 2 0
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase pdh1 psim_unw2 pddef1 2 0
+#############################问题所在 #############################
+	prt_pt pt pmask1 punw1 $refpsno 1 2 - 1 56 # Print point info. #打印点位信息，可以用来做图。
+	#注意lin_comb_pt的版本
+	rm ptmp1 ptmp2
+	lin_comb_pt pt pmask1 psim_unw2 - punw1 - ptmp1 - 0. 1. 1. 2 1 $refpsno # 只在参考点上相加？？？ptmp1:把psim_unw2上参考点的相位加到punw1上。
+	#prt_pt pt - psim_unw2 $refpsno 1 2 $refpsno-psim_unw2.txt 1
+	#prt_pt pt - punw1 $refpsno 1 2 $refpsno-punw1.txt 1
+	#prt_pt pt - ptmp1 $refpsno 1 2 $refpsno-ptmp1.txt 1
+	#gedit $refpsno-psim_unw2.txt $refpsno-punw1.txt $refpsno-ptmp1.txt
+
+	lin_comb_pt pt pmask1 ptmp1 - pres1.cpx.unw - ptmp2 - 0. 1. 1. 2 1 # 将不含高程误差的残差加到ptmp1中。
+	#prt_pt pt - ptmp1 $refpsno 1 2 $refpsno-ptmp1.txt 1
+	#prt_pt pt - ptmp2 $refpsno 1 2 $refpsno-ptmp2.txt 1
+	#prt_pt pt - pres1.cpx.unw $refpsno 1 2 $refpsno-pres1.cpx.unw.txt 1
+	#gedit $refpsno-ptmp1.txt $refpsno-pres1.cpx.unw.txt $refpsno-ptmp2.txt 
+	
+	masterind=$(awk "/$master.rslc.par/ {print NR}" SLC_tab)
+
+	lin_comb_pt pt pmask1 ptmp2 - pres1.cpx.unw $masterind pdiff0_unw - 0. 1. -1. 2 1 # pdiff0_unw:  ptmp2-残差
+	#注意，此处应根据个人情况修改。上面pres1.cpx.unw对应的序号，是主影像的序号。
+	pdis2dt pt pmask1 $mslc_par punw1 20 pdiff0_unw 20 $masterpwr.par 12.6 0
+	#pdis2dt pt pmask1 $mslc_par punw1 23 pdiff0_unw 23 $masterpwr.par 12.6 0
+
+# 查看两者的差异. punw1:时间维解缠。pdiff0_unw:空间维解缠。
+	rm ptmp
+	lin_comb_pt pt pmask1 punw1 - pdiff0_unw - ptmp - 0. 1. -1. 2 1
+	prasdt_pwr24 pt pmask1 $mslc_par ptmp - $masterpwr.par ave.pwr 12.6 1
+	cp pmask1 pmask1_tmp
+	thres_msk_pt pt pmask1_tmp ptmp 23 -0.1 0.1
+	rm -fr ptmp_ras
+	
+	echo '*********************************************************************'
+	echo '*                   This is the third stop point                    *'
+	echo '*	You need to modify those images with bad residual phase     *'
+	echo '*	Their indices should have already been written down         *'
+	echo '*	by yourself at the end of step10(Stop point 2)              *'
+	echo '*********************************************************************' 
+	echo 'Press anykey to continue:'
+	read temp
+	exit
+fi
+
+
+
+
+if false
+then
+# 将改正之后的干涉对添加到数据堆中。有问题有问题阿****************************************************************
+#注意，这一步有错误，刚更正完。20120627 1657
+# 此处需要改正的，是含有轨道误差的部分。不是第一次修改itab的时候发现的含有大气的影像对。
+	cp punw1 punw1a
+	lin_comb_pt pt pmask1 pdiff0_unw 11 pdiff0_unw 11 punw1a 11 0. 1 0 2 1
+	lin_comb_pt pt pmask1 pdiff0_unw 24 pdiff0_unw 24 punw1a 24 0. 1. 0. 2 1
+	lin_comb_pt pt pmask1 pdiff0_unw 36 pdiff0_unw 36 punw1a 36 0. 1. 0. 2 1
+	mkdir ptmp_ras
+	mv ptmp*.ras ptmp_ras/
+
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase phgt1 psim_unw0 pdef1 0 0
+	sub_phase_pt pt pmask1 punw1a - psim_unw0 pint_unw 0 1 # 获取足够精确的解缠结果。
+
+
+##############################################################
+# 12. 基线精化。选用稳定点，使用DEM提供的原始高程对所有干涉对进行基线精化。
+##############################################################
+################重要步骤，使用精确的解缠结果进行基线精化。
+	cp pmask1 pdef1_mask
+	thres_msk_pt pt pdef1_mask pdef1 1 -0.002 0.002
+	# 一定要选取形变较小的点，以减少形变的影响。（形变，大气，轨道在图像上的行为较为一致）
+	cp pbase pbase.orbit
+	base_ls_pt pt pdef1_mask pSLC_par - itab - pint_unw pdem pbase 0 1 1 1 1 1 >> base_ls_pt.out
+	#grep "b_perp (t=center) (m):" base_ls_pt.out
+	#grep "RMS altitude error (m):" base_ls_pt.out
+	cp pbase pbase.120830
+	# Update hight & deformation value according to 
+	# unwrapped phase and refined baseline
+	# 使用改进的基线进行干涉相位的模拟
+	cp phgt1 phgt0
+	cp pdef1 pdef0
+	cp pmask1 pmask0
+	lin_comb_pt pt pmask1 phgt0 1 pdh1 1 phgt1 1 -0. 1. 1. 2 0 # phgt1= phgt0+pdh1
+	lin_comb_pt pt pmask1 pdef0 1 pddef1 1 pdef1 1 -0. 1. 1. 2 0 # pdef1= pdef0+pddef1
+
+
+
+	# Compute diff-grams according to updated model.
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase phgt1 psim_unw0 pdef1 0 1
+	sub_phase_pt pt pmask1 pint_unw - psim_unw0 pdiff0_unw 0 0
+
+	#dis_ipta pt - pSLC_par - itab pbase 0 pdiff0_unw 0 pdiff.ras 30 -0.01 0.01 2
+
+	#####def_mod_pt pt - pSLC_par - itab.selection1 pbase 0 punw1 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 85. -0.03 0.03 2.0 - - - #192492
+	#def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff0_unw 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 85. -0.1 0.1 4 - - -  #sigma=2
+	rm -f pres1 pdh1 pddef1 punw1 psigma1 pmask1
+	#refpsno=126634 # 4071
+	#refpsno=252334 # 0
+	#refpsno=9231 #0
+	#refpsno=167332 #
+	#refpsno=301452 #
+	#def_mod_pt pt - pSLC_par - itab pbase 0 pdiff0_unw 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 85 -0.1 0.1 4 - - -  #sigma=2
+	#def_mod_pt pt - pSLC_par - itab pbase 0 pdiff0_unw 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 60 -0.1 0.1 4 - - -  #226
+	def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff0_unw 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 25. -0.03 0.03 2.0 2 - - -  #阈值设置为2.0，是因为其中依然含有大气的影响。
+	# 再有残差，说明大气没去干净。不过这个残差应该比较小了。
+	# 检查回归分析的结果，改正值应该比较小。如下所示，
+	#multi_def_pt pt - pSLC_par - itab pbase 0 pdiff0_unw 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 60 -0.06 0.06 600 2.0 2.0 4
+	prasdt_pwr24 pt pmask1 $mslc_par pdh1 1 $masterpwr.par ave.pwr 10.0 3 #看起来像平行条纹？？？
+	prasdt_pwr24 pt pmask1 $mslc_par pddef1 1 $masterpwr.par ave.pwr 0.002 3
+	prasdt_pwr24 pt pmask1 $mslc_par psigma1 1 $masterpwr.par ave.pwr 1.5 3
+	prasdt_pwr24 pt pmask1 $mslc_par pres1 - $masterpwr.par ave.pwr 12.6 1
+	echo '*********************************************************************'
+	echo '*                   This is the fourth stop point                   *'
+	echo '*	Pls write down the no. of images with atmospheric delay.    *'
+	echo '*       You have to modify itab.selection3 by changing the flags    *'
+	echo '*                  For example: 17, 37, 38, 45                      *'
+	echo '*********************************************************************' 
+	echo 'Press anykey to exit:'
+	read temp
+	rm -fr residual
+	mkdir residual
+	mv pres1.*.ras residual/
+	cp itab itab.selection3
+	gedit itab.selection3
+	exit
+fi
+
+
+if false
+then
+	# 去掉可能包含大气相位的干涉对，然后回归分析，改正值比较小。
+	# Update hight & deformation value according to 
+	# pdh1 and pddef1
+	cp phgt1 phgt0
+	cp pdef1 pdef0
+	cp pmask1 pmask0
+	lin_comb_pt pt pmask1 phgt0 1 pdh1 1 phgt1 1 -0. 1. 1. 2 0
+	lin_comb_pt pt pmask1 pdef0 1 pddef1 1 pdef1 1 -0 1. 1. 2 0
+
+
+	# 下面的步骤是为了验证：sim_pt+sub_phase_pt+def_mod_pt对结果的改正比较少。
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase phgt1 psim_unw1 pdef1 0 1
+	sub_phase_pt pt pmask1 pint_unw - psim_unw1 pdiff0_unw1 0 0
+	def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff0_unw1 0 $refpsno pres1 pdh1 pddef1 punw1 psigma1 pmask1 25. -0.03 0.03 2.0 2 pdh_err1 pdef_err1 ppc_err1 # Check the Total ps no.注意命令的参数
+	#prasdt_pwr24 pt pmask1 $mslc_par pdh1 1 $masterpwr.par ave.pwr 1.0 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef1 1 $masterpwr.par ave.pwr 0.0002 3
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma1 1 $masterpwr.par ave.pwr 1.5 1
+
+	# 去除块效应和强大气影响
+	phase_sim_pt pt pmask1 pSLC_par - itab.selection3 - pbase phgt1 psim_unw3 pdef1 0 1
+	sub_phase_pt pt pmask1 pint_unw - psim_unw3 pdiff0_unw3 0 0
+	def_mod_pt pt pmask0 pSLC_par - itab.selection3 pbase 1 pdiff0_unw3 0 $refpsno pres3 pdh3 pddef3 punw3 psigma3 pmask3 25. -0.03 0.03 2.0 2 pdh_err3 pdef_err3 ppc_err3
+	#prasdt_pwr24 pt pmask1 $mslc_par pdh3 1 $masterpwr.par ave.pwr 1.0 1
+	#prasdt_pwr24 pt pmask1 $mslc_par pddef3 1 $masterpwr.par ave.pwr 0.0005 3
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma3 1 $masterpwr.par ave.pwr 1.5 1
+	#对比改正前后的结果：
+	#pdis2dt pt pmask1 $mslc_par pdh1 1 pdh3 1 $masterpwr.par 1.0 1 #两者相差应该不大
+	#pdis2dt pt pmask1 $mslc_par pddef1 1 pddef3 1 $masterpwr.par 0.0005 1 #两者相差应该不大
+	#pdis2dt pt pmask1 $mslc_par psigma1 1 psigma3 1 $masterpwr.par 1.5 1 #有所减少
+	#pdis2dt pt pmask1 $mslc_par pres1 1 pres3 1 $masterpwr.par 6.3 1 #看起来一样，但是最大的差别应该有0.2弧度
+	#pdis2dt pt pmask1 $mslc_par pdh_err1 1 pdh_err3 1 $masterpwr.par 1. 1 #由于psigma减少，因此pdh_err以及pdef_err都会有所减少。
+	#pdis2dt pt pmask1 $mslc_par pdef_err1 1 pdef_err3 1 $masterpwr.par 0.001 1
+
+
+
+
+######################################################################
+# 13. Separate residual phase apart.
+#######################################################################
+	cp pmask1 pdef1_mask
+	#prasdt_pwr24 pt pmask1 $mslc_par pres1 1 $masterpwr.par ave.pwr 6.3 1
+	spf_pt pt pmask1 $mslc_par pres1 pres1_spf_10_1 - 2 10 1 - #空间低频滤波，滤波后为大气相位	
+	cp pres1_spf_10_1 patm1  #————————————————————————————————pres1_spf_10_1有问题
+	masterind=$(awk "/$master.rslc.par/ {print NR}" SLC_tab)
+	lin_comb_pt pt pmask1 patm1 - patm1 $masterind patm1x - 0. 1. -1. 2 1
+	sub_phase_pt pt pmask1 pdiff0_unw - patm1x pdiff1_unw 0 0 #去除大气相位
+	
+	spf_pt pt pmask1 $mslc_par pdiff1_unw pdiff1_unwa - 2 25 0 - $refpsno 0 #对控制点进行空间滤波，去除噪声相位
+	#def_mod_pt pt pmask1 pSLC_par - itab pbase 1 pdiff1_unwa 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2a pmask2 25. 0.03 2.0 2 pdh_err2a pdef_err2a ppc_err2a
+	################def_mod_pt pt pmask1 pSLC_par - itab.selection1 pbase 0 punw1 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 85 -0.03 0.03 2.0 - - - #192492
+	def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff1_unwa 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2a pmask2 25 -0.03 0.03 2.0 2 pdh_err2a pdef_err2a ppc_err2a
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma2a - $masterpwr.par ave.pwr 1.0 1 #去除了所有不良信息
+
+	def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff0_unw 0 $refpsno pres3 pdh3 pddef3 punw3 psigma3a pmask3 25 -0.03 0.03 2.0 2 pdh_err3a pdef_err3a ppc_err3a
+	prasdt_pwr24 pt pmask1 $mslc_par psigma3a - $masterpwr.par ave.pwr 1.0 1 #未去除大气，噪声
+
+	def_mod_pt pt pmask0 pSLC_par - itab pbase 1 pdiff1_unw 0 $refpsno pres4 pdh4 pddef4 punw4 psigma4a pmask4 25 -0.03 0.03 2.0 2 pdh_err4a pdef_err4a ppc_err4a
+	prasdt_pwr24 pt pmask1 $mslc_par psigma4a - $masterpwr.par ave.pwr 1.0 1 #去除了大气，未去除噪声
+	
+	prasdt_pwr24 pt pmask1 $mslc_par pdef_err2a - $masterpwr.par ave.pwr 1.0 1
+
+	#prasdt_pwr24 pt pmask1 $mslc_par pdh_err2a 1 $masterpwr.par ave.pwr 0.001 1
+	#prasdt_pwr24 pt pmask1 $mslc_par psigma2a 1 $masterpwr.par ave.pwr 1.5 1
+	lin_comb_pt pt pmask1  phgt1 1 pdh2 1 phgt2 1 -0. 1. 1. 2 0
+	lin_comb_pt pt pmask1  pdef1 1 pddef2 1 pdef2 1 -0. 1. 1. 2 0
+	prt_pt pt pmask1 pddef2 0 100 2 - 1 -
+
+	rm ptmp1
+	#phase_sim_pt pt pmask1 pSLC_par - itab - pbase - ptmp1 pdef2 1 0 #模拟平地，错误。
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase - ptmp1 pdef2 1 0  #模拟形变 ptmp1:形变相位
+	lin_comb_pt  pt pmask1 ptmp1 - pres2 - pdef_phase1 - 0. 1. 1. 2 0
+	dispmap_pt pt pmask1 pSLC_par itab pdef_phase1 phgt2 pdisp1 0
+	prasdt_pwr24 pt pmask1 $mslc_par pdisp1 15 $masterpwr.par ave.pwr 0.05 1
+	vu_disp pt pmask1 pSLC_par itab pdisp1 pdef2 phgt2 psigma2a pdh_err2a pdef_err2a - pdisp1.ras
+fi
+
+
+
+	#lin_comb_pt pt pmask1 pres1 - pres1_spf_10_1 - pres1_spf_10_1r 1 -0. 1. -1. 2 0
+	#prasdt_pwr24 pt pmask1 $mslc_par pres1_spf_10_1 17 $masterpwr.par ave.pwr 6.3 1
+	#pdis2dt pt pmask1 $mslc_par pres1_spf_50_0r 17 pres1_spf_50_2r 17 $masterpwr.par 3.0 1
+
+
+
+
+######################################################################
+# 14. 检查相位解缠的时空一致性。
+#######################################################################
+if false
+then
+
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase phgt2 psim_unw0 - 0 1
+	sub_phase_pt pt pmask1 pint - psim_unw0 pdiff0 1 0
+	sub_phase_pt pt pmask1 pdiff0 - patm1x pdiff1 1 0
+	spf_pt pt pmask1 $mslc_par pdiff1 pdiff1a - 0 25 0 - $refpsno 1
+
+	tpf_pt pt pmask1 pSLC_par itab pdiff1a pdiff1a.1 0 1000 1 7
+	tpf_pt pt pmask1 pSLC_par itab pdiff1a.1 pdiff1a.2 0 1000 1 7
+	tpf_pt pt pmask1 pSLC_par itab pdiff1a.2 pdiff1a.tpf 0 1000 1 7
+
+	#def_mod_pt pt - pSLC_par - itab pbase 1 pdiff1_unwa 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2a pmask2 25 0.03 2.0 2 2 pdh_err2a pdef_err2a ppc_err2a
+
+	def_mod_pt pt pmask1 pSLC_par - itab pbase 1 pdiff1a.tpf 1 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 5. -0.03 0.03 2.0 2 pdh_err2 pdef_err2 ppc_err2 #根据滤波结果进行回归分析 #134115个点
+	rm ptmp1
+#调整至此。20120619
+
+
+
+
+
+
+
+
+
+
+
+
+
+	# 显示结果
+	phase_sim_pt pt pmask1 pSLC_par - itab - pbase - ptmp1 pddef2 1 0
+	lin_comb_pt pt pmask1 ptmp1 - pres2 - pdef_phase1 - 0.00001 1. 1. 2 0
+	#dispmap_pt pt pmask1 pSLC_par itab pdef_phase1 phgt2 pdisp1 0
+	#prasdt_pwr24 pt pmask1 $mslc_par pdisp1 1 $masterpwr.par ave.pwr 0.05 1
+	#vu_disp pt pmask1 pSLC_par itab pdisp1 pddef2 phgt2 psigma2 pdh_err2 pdef_err2 - pdisp1.ras
+
+	cp pmask1 pmask1_thresh
+	# Set a high threshhold for psigma(psigma2>0.6 rad)拒绝低相干的点
+	#thres_msk_pt pt pmask1_thresh psigma2 1 0.0 0.6
+	thres_msk_pt pt pmask1_thresh psigma2 1 0.0 0.60
+	# Update the re-masked result更新掩膜后的结果
+	#prasdt_pwr24 pt pmask1_thresh $mslc_par pdisp1 1 $masterpwr.par ave.pwr 0.05 1
+	#vu_disp pt pmask1_thresh pSLC_par itab pdisp1 pddef2 phgt2 psigma2 pdh_err2 pdef_err2 - pdisp1.ras
+	# Unwrap pdiffla using punw2 as a model.进行相位解缠punw2作为解缠模型。即认为punw2的精度在pi以内，使用pdiff1a进行精度校正。
+	unw_model_pt pt pmask1_thresh pdiff1a - punw2 pdiff1a.unw $refpsno
+	#回归分析，识别偏离时间域滤波的点。
+	def_mod_pt pt pmask1_thresh pSLC_par - itab pbase 1 pdiff1a.unw 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 5. -0.03 0.03 2.0 2 pdh_err2 pdef_err2 ppc_err2
+	#def_mod_pt pt pmask1_thresh pSLC_par - itab pbase 1 pdiff1a.unw 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 25. -0.3 0.3 2.0 2 pdh_err2 pdef_err2 ppc_err2
+
+	#时间域滤波
+	tpf_pt pt pmask1_thresh pSLC_par itab pres2 pres2.1 2 1000 1 7
+	tpf_pt pt pmask1_thresh pSLC_par itab pres2.1 pres2.2 2 1000 1 7
+	tpf_pt pt pmask1_thresh pSLC_par itab pres2.2 pres2.tpf 2 1000 1 7
+	lin_comb_pt pt pmask2 pres2 - pres2.tpf - pres2.noise - 0.0 1. -1. 2 0 
+	cct_pt pt pmask1_thresh $mslc_par pres2.noise pcct 2 8 #时间域相关性分析
+
+	# 显示残差、时域滤波的残差、噪声
+	dis_data pt pmask1 pSLC_par itab 3 pres2 pres2.tpf pres2.noise 0 pdisp1.ras -3. 3.
+	# 显示时域相干图
+	#pdisdt_pwr24 pt pmask1_thresh $mslc_par pcct 1 $masterpwr.par ave.pwr 1.0 1
+	# Choose point with high coherence and low noise(thres_msk_pt).选择高相干低噪声的点
+	cp pmask1_thresh pmask1_thresh2
+	thres_msk_pt pt pmask1_thresh2 pcct 1 0.7 1.0 #高相干掩膜
+
+	# 显示
+	rm -f ptmp1
+	phase_sim_pt pt pmask1_thresh2 pSLC_par - itab - pbase - ptmp1 pddef2 1 0 #相位模拟，已去平，包含形变残差
+	lin_comb_pt pt pmask1_thresh2 ptmp1 - pres2 - pdef_phase1 - 0.00001 1. 1. 2 0 #pres2:来源于pdiff1的线性回归残差。pdiff1认为不包含高程和大气。    pdef_phase1:形变+形变误差+形变残差
+	dispmap_pt pt pmask1_thresh2 pSLC_par itab pdef_phase1 phgt2 pdisp1 0 #将解缠的相位转换成形变。
+	#prasdt_pwr24 pt pmask1_thresh2 $mslc_par pdisp1 1 $masterpwr.par ave.pwr 0.05 0
+	#vu_disp pt pmask1_thresh2 pSLC_par itab pdisp1 pddef2 phgt2 psigma2 pdh_err2 pdef_err2 - pdisp1.ras
+
+
+	# 识别并拒绝时间域低质量点
+	#cp itab itab.start
+	#gedit itab.start
+	#read temp
+	#exit
+	# Modify itab.start.使用前12幅影像进行后续处理。将13-56掩膜值均设为0.
+	def_mod_pt pt pmask1_thresh2 pSLC_par - itab.start pbase 1 pdiff1a.unw 0 $refpsno pres2.start pdh2.start pddef2.start punw2.start psigma2.start pmask2.start 5. -0.01 0.01 2.0 2
+
+
+	# Display the results#显示
+	#pdisdt_pwr24 pt pmask1 $mslc_par pddef2.start  1 $masterpwr.par ave.pwr 0.01 1
+	#pdisdt_pwr24 pt pmask1 $mslc_par psigma2.start 1 $masterpwr.par ave.pwr 1.5 1
+	# Set threshold
+	cp pmask1_thresh2 pmask1_thresh2start
+	thres_msk_pt pt pmask1_thresh2start psigma2.start 1 0.0 1.1 #相位标准差掩膜
+	#prasdt_pwr24 pt pmask1_thresh2start $mslc_par pdisp1 1 $masterpwr.par ave.pwr 0.05 1
+	#vu_disp pt pmask1_thresh2start pSLC_par itab pdisp1 pddef2 phgt2 psigma2.start pdh_err2 pdef_err2 - pdisp1.ras
+#识别完毕
+
+
+
+	# 巩固结果
+	# 1) Re-calculate the unwrapped interferometric phase(pint_unw2)
+	rm -f ptmp1
+	unw_model_pt pt pmask2 pdiff1 - pdiff1a.unw pdiff1.unw $refpsno #重新解缠
+	phase_sim_pt pt pmask2 pSLC_par - itab - pbase phgt2 psim_unw0 - 0 1
+	sub_phase_pt pt pmask2 pdiff1.unw - patm1x ptmp1 0 1
+	sub_phase_pt pt pmask2 ptmp1 - psim_unw0 pint_unw2 0 1
+	#检查pint_unw2是否正确
+
+
+
+	#rm -f ptem1 ptemp2
+	#phase_sim_pt pt pmask2 pSLC_par - itab - pbase phgt2 psim_unw0 - 0 1
+	#sub_phase_pt pt pmask2 pdiff1a.unw - patm1x ptmp1 0 1
+	#sub_phase_pt pt pmask2 ptmp1 - psim_unw0 ptmp2 0 1
+	#unw_model_pt pt pmask2 pint - ptmp2 pint_unw2 $refpsno
+####此处pint的数量级为10e1，pint_unw2为10e2，而实际pint_unw2的数量及应该与ptmp2保持一致。
+# 结合之前的unw_model_pt来看，此命令似乎并没有什么问题。
+# 导致下面第二个def_mod_pt出问题的，可能是从这一行到第二个def_mod_pt所在行之间的某条命令有误。
+#
+#解决方法：去除上面几行命令。直接采用sub_phase_pt pt pmask2 ptmp1 - psim_unw0 pint_unw2 0 1 的结果进行下面的运算
+#
+#
+#
+
+	
+	# 2) Re-do regression
+	def_mod_pt pt pmask1_thresh2start pSLC_par - itab pbase 1 pdiff1a.unw 0 $refpsno pres2 pdh2 pddef2 punw2 psigma2 pmask2 5. -0.03 0.03 2.0 2
+	# 3) Update the model
+	lin_comb_pt pt pmask2 phgt2 - pdh2 - phgt3 - -0. 1. 1. 2 0
+
+#——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+	cp pddef2 pdef3
+	#prasdt_pwr24 pt pmask2 $mslc_par pres2 - $masterpwr.par ave.pwr 3.1 1
+	# Some images show spatial correlated phase, so we do spatial filter again.
+	spf_pt pt pmask2 $mslc_par pres2 pres2_spf_10_1 - 2 10 1 -
+	#prasdt_pwr24 pt pmask2 $mslc_par pres2_spf_10_1 - $masterpwr.par ave.pwr 3.1 1
+	lin_comb_pt pt pmask2 patm1 - pres2_spf_10_1 - patm2 1 -0. 1. 1. 2 0 #——————————————————————————————————————————————————————————patm1-10有问题
+	masterind=$(awk "/$master.rslc.par/ {print NR}" SLC_tab)
+	lin_comb_pt pt pmask2 patm2 - patm2 $masterind patm2x 1 -0. 1. -1. 2 0  #主影像的序列号为
+	# 4) Re-do DInSAR using the updated model.
+	phase_sim_pt pt pmask2 pSLC_par - itab - pbase phgt3 psim_unw2 pdef3 0 1
+	sub_phase_pt pt pmask2 pint_unw2 - psim_unw2 pdiff2.unw 0 0
+	sub_phase_pt pt pmask2 pdiff2.unw - patm2x pdiff3.unw 0 0
+	spf_pt pt pmask2 $mslc_par pdiff3.unw pdiff3a.unw - 2 250 0 - $refpsno 1
+	def_mod_pt pt pmask2 pSLC_par - itab pbase 1 pdiff3a.unw 0 $refpsno pres3 pdh3 pddef3 punw3 psigma3 pmask3 5. -0.01 0.01 1.2 2 pdh_err3 pdef_err3  #此处，相位标准差默认值为1.2，但是标准差居然达到了10e+4——这是怎么造成的呢？
+#############################################标准差变成了好几千
+
+
+
+
+
+
+
+
+
+
+#——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+	#pdisdt_pwr24 pt pmask3 $mslc_par psigma3 1 $masterpwr.par ave.pwr 1.5 1
+	#pdisdt_pwr24 pt pmask3 $mslc_par pdh3 1 $masterpwr.par ave.pwr 0.1 1
+	#pdisdt_pwr24 pt pmask3 $mslc_par pddef3 1 $masterpwr.par ave.pwr 0.001 1
+	#pdisdt_pwr24 pt pmask2 $mslc_par pint_unw2 1 $masterpwr.par ave.pwr 3. 1
+	# 5) 升级
+	rm ptmp1
+	lin_comb_pt pt pmask3 phgt3 1 pdh3 1 phgt4 1 -0. 1. 1. 2 0
+	lin_comb_pt pt pmask3 pdef3 1 pddef3 1 pdef4 1 -0. 1. 1. 2 0
+
+	# 可视化
+	phase_sim_pt pt pmask3 pSLC_par - itab - pbase - ptmp1 pdef4 1 0
+	lin_comb_pt  pt pmask3 ptmp1 - pres3 - pdef_phase1 - 0.00001 1. 1. 2 0
+	dispmap_pt pt pmask3 pSLC_par itab pdef_phase1 phgt4 pdisp1 0
+	prasdt_pwr24 pt pmask3 $mslc_par pdisp1 1 $masterpwr.par ave.pwr 0.05 0
+	vu_disp pt pmask3 pSLC_par itab pdisp1 pdef4 phgt4 psigma3 pdh_err3 pdef_err3 - pdisp1.ras
+	# 非线性形变提取
+	tpf_pt pt pmask3 pSLC_par itab pres3 pres3.1 2 1000 1 7
+	tpf_pt pt pmask3 pSLC_par itab pres3.1 pres3.2 2 1000 1 7
+	tpf_pt pt pmask3 pSLC_par itab pres3.2 pres3.tpf 2 1000 1 7
+	# 非线性形变可视化
+	phase_sim_pt pt pmask3 pSLC_par - itab - pbase - ptmp1 pdef4 1 0
+	lin_comb_pt pt pmask3 ptmp1 - pres3.tpf - pdef_phase2 - 0.00001 1. 1. 2 0
+	dispmap_pt pt pmask3 pSLC_par itab pdef_phase2 phgt4 pdisp2 0
+	#dis_data pt pmask3 pSLC_par itab 2 pdisp1 pdisp2 0 pdisp1.ras -0.02 0.02 
+fi
+
+#
+# 15 结果的扩展
+#
+if true
+then
+	# 1) Expand the atmospheric phase.大气
+	cp pmask3 pmask3_ex
+	expand_data_pt pt pmask3 $mslc_par patm2 pt - patm2_ex - 2 512 1 256
+	prasdt_pwr24 pt - $mslc_par patm2_ex - $masterpwr.par ave.pwr 6.3 1
+	lin_comb_pt pt - patm2_ex - patm2_ex 12 patm2x_ex - 0.0 1.0 -1.0 2 1 #主影像的序号为12
+	# 2) Expand the deformation phase. 形变
+	expand_data_pt pt pmask3 $mslc_par pdef4 pt - pdef4_ex - 2 512 1 256
+	prasdt_pwr24 pt - $mslc_par pdef4_ex - $masterpwr.par ave.pwr 0.03 1
+	# 3) Expand the hight phase. 高程……为啥用这么诡异的方式出高程的扩展结果？
+	lin_comb_pt pt - phgt4 1 pdem 1 ptmp1 1 0.0 0.0 1.0 2 0
+	lin_comb_pt pt - phgt4 1 pdem 1 ptmp2 1 0.0 1.0 1.0 2 1
+	lin_comb_pt pt - ptmp2 1 ptmp1 1 phgt4_ex 1 0.0 1.0 -1.0 2 1
+	pdis2dt pt - $mslc_par phgt4 1 phgt4_ex 1 $masterpwr.par 256. 2
+	rm ptmp1 ptmp2
+	#计算扩展的点列表的干涉结果
+	phase_sim_pt pt - pSLC_par - itab - pbase phgt4_ex psim_unw0 pdef4_ex 0 1
+	sub_phase_pt pt - pint - psim_unw0 pdiff0_ex 1 0
+	sub_phase_pt pt - pdiff0_ex - patm2x_ex pdiff1_ex 1 0
+	prasmph_pwr24 pt - $mslc_par pdiff1_ex - $masterpwr.par ave.pwr 1
+	# 回归分析。将处理完毕的点当作参考点。
+	expand_pt pt pmask3 pt pmask3_ex pSLC_par itab pbase 1 pdiff1_ex pdiff1_ex 1 pres1_ex pdh1_ex pddef1_ex psigma1_ex 1.0 15. -0.01 0.01 2 -1 -1 25
+	# Disp the results
+	pdisdt_pwr24 pt pmask3_ex $mslc_par pdh1_ex 1 $masterpwr.par ave.pwr 30.0 2
+	pdisdt_pwr24 pt pmask3_ex $mslc_par pddef1_ex 1 $masterpwr.par ave.pwr 0.01 2
+	pdisdt_pwr24 pt pmask3_ex $mslc_par psigma1_ex 1 $masterpwr.par ave.pwr 1.5 0
+	prasdt_pwr24 pt pmask3_ex $mslc_par pres1_ex - $masterpwr.par ave.pwr 6.3 1
+	# Update the point list , the results and the model.
+	lin_comb_pt pt pmask3_ex phgt4_ex 1 pdh1_ex 1 phgt1_ex 1 -0. 1. 1. 2 1
+	lin_comb_pt pt pmask3_ex pdef4_ex 1 pddef1_ex 1 pdef1_ex 1 -0. 1. 1. 2 1
+	pdisdt_pwr24 pt pmask3_ex $mslc_par pdef1_ex 1 $masterpwr.par ave.pwr .005 1
+	prasdt_pwr24 pt pmask3_ex $mslc_par pdef1_ex 1 $masterpwr.par ave.pwr .005 1
+	prasdt_pwr24 pt pmask3 $mslc_par pdef1_ex 1 $masterpwr.par ave.pwr .005 1
+
+#
+# 16 Geocoding
+#
+
+	# Display the geocoded pwr image.
+	# dispwr ave.utm.rmli $width_dem
+	# ras_dB ave.utm.rmli $width_dem 1 0 1 1 -22. 3.5 0. 1
+	# Change RDC coordinate to UTM
+	pt2geo pt pmask3 $mslc_par - phgt4 dem_seg.par $master.diff_par 1 1 pt_map pmap pmapll #注意多视参数
+	# Attention: Here the dem.par is actually the original dem or dem segment?
+	pdisdt_pwr24_map pt_map pmask3 dem_seg.par pdef4 1 ave.utm.rmli 0.005 1
+	# Display the geocoded points.
+	ras_pt pt_map pmask3 ave.utm.rmli.ras pt.utm.ras 1 1 255 0 0 2
+	disras_dem_par pt.utm.ras dem_seg.par
+	# Display the deformation history
+	
+	vu_disp pt_map pmask3 pSLC_par itab pdisp1 pdef4 phgt4 psigma3 pdh_err3 pdef_err3 pmap pt.utm.ras
+	# Generate ASCII file.
+	disp_prt pt_map pmask3 - pSLC_par itab pmap phgt4 pdef4 psigma3 pdh_err3 pdef_err3 pdisp1 $refpsno items.txt disp_tab.txt
+	#more items.txt
+	#more disp_tab.txt
+	gzip disp_tab.txt
+	mkdir result
+	mv -t result/ disp_tab.txt.gz items.txt
+
+#
+# 17 Final Results
+#
+	# Result files:
+	#	1) items.txt
+	#	2) disp_tab.txt.gz
+
+	# Files need to be displayed using vu_disp.
+       #                     pt_map                    pmask3 
+       #                     pSLC_par                itab 
+       #                     pdisp1                      pdef4 
+       #                     phgt4                        psigma3 
+       #                     pdh_err3                   pdef_err3 
+       #                     pmap pdef4.ras
+	#vu_disp pt_map pmask3 pSLC_par itab pdisp1 pdef4 phgt4 psigma3 pdh_err3 pdef_err3 pmap pdef4.ras
+	echo '*********************************************************************'
+	echo '*                   This is all for IPTA                            *'
+	echo '*	                    Got any problems?                             *'
+	echo '*       Please feel free to ask me if you have any questions.       *'
+	echo '*                  T. Li @ InSAR Team in SWJTU & CUHK               *'
+	echo '*                  E-mail: rslitao@gmail.com                        *'
+	echo '*              Done written on 20/03/2012 in CUHK                   *'
+	echo '*********************************************************************' 
+fi

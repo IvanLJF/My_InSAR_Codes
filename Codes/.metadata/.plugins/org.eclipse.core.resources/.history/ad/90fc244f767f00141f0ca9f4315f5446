@@ -1,0 +1,17 @@
+;-
+;- Script that:
+;-      Do common test
+;- Usage:
+;- Author:
+;-      T. Li @ InSAR Group in SWJTU
+PRO TEST
+  workpath='/mnt/data_tli/ForExperiment/GMT'
+  workpath=workpath+path_sep()
+  
+  hgtfile=workpath+'19960325-19960326.hgt.utm'
+  sz=TLI_IMAGE_SIZE(hgtfile)
+  
+  Print, sz
+  
+  STOP
+END

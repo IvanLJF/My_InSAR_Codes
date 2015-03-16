@@ -1,0 +1,36 @@
+#!/bin/sh
+
+echo '****************************************'
+echo '* Plotting Leveling Points and CRS... *' 
+echo '****************************************'
+
+output_file='leveling.ps'
+
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i BASEMAP_FRAME_RGB 255/255/255 \
+ANNOT_FONT_PRIMARY 4
+
+######################################################
+# plot geocoded results.
+psbasemap -R0/5000.0000/0/6150.0000 -JX3i/3.6900000i -Ba1000f500::WeSn -P -K -V  > $output_file
+psimage ave_repair_small_flip.ras -Gtblack -W3i/3.6900000i -O -K -V >>$output_file
+#psimage ave.ras_repair.ras -Gtblack -W3i/3.6900000i -O -K -V >>$output_file
+
+awk 'NR <= 7 {print 5000-$2, 6150-$3}' ALL_JHG >BMs_temp.txt
+psxy -Gred -J -K -R -St0.1i -O -V -W0.005i/black BMs_temp.txt >> $output_file
+awk 'NR >7 {print 5000-$2, 6150-$3}' ALL_JHG >CRs_temp.txt
+psxy -Ggreen -J -K -R -Ss0.1i -O -V -W0.005i/black CRs_temp.txt >> $output_file
+
+pstext -J -R -O -V -Gwhite -W ALL_JHG_anno_final >> $output_file
+#pstext << EOT -J -R -O -K -V -Gblack -Wwhite>> $output_file
+#4900 1460 7 0 3 RT .    Leveling Points
+#EOT
+#
+#psxy -Gred -J -R -St0.08i -O -V -W0.005i << END >> $output_file
+#3550 1375
+#END
+
+ps2raster -A -Tt -E800 $output_file
+rm -f BMs_temp.txt CRs_temp.txt
+convert leveling.tif -trim -bordercolor White leveling_crop.tif
+geeqie leveling_crop.tif

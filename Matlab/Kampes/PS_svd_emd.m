@@ -1,0 +1,155 @@
+function [num_PS, dT, atmeff, nlrdef]=PS_svd_emd(infile, unwall)
+% 注意到下述的处理过程是基于PS到PS构成的点图来实行的。第一：获取PS点解缠相位值的时间序列；
+% 第二：通过SVD（奇异值分解）把绝对相位值转换为图像数据；
+% 第三：通过EMD（经验模式分解）从非线性形变中分离大气的影响。
+%  function [num_PS, dT, JJ, atmeff, nlrdef]=PS_svd_emd(infile, unwall);
+%
+% Note the following processing is based on the schema of PS by PS.
+%        First, extract the time series of the unwrapped-phase values at a PS,
+%        Second, invert the absolute phase value corresponding to each
+%                   imaging date by means of singular value decomposition (SVD),
+%        Third, separate atmospheric effects from non-linear deformations by means
+%                   of Empirical Mode Decomposition (EMD).
+% Input:
+%        infile-----------------a input text file including filenames of num_intf differential interferograms, e.g.,
+%                                    num_intf rows cols num_PS       // num_intf differential interferograms with dimension of rows by cols, 
+%                                                                                         // total number of all PS -- num_PS  
+%                                    E:\PhoenixSAR\Dif_Int_MLI\        // directory of interferograms  
+%                                   19920710_19930521.diff.int2.ph
+%                                   19920710_19931008.diff.int2.ph
+%                                   ...............
+%                                   19991220_20001030.diff.int2.ph   
+%        unwall--------------unwrapped-phase data at PS points for all the residual interferograms
+%                                   (num_PS-by-num_intf)
+% Output:
+%        num_PS----------total number of PS points
+%        dT------------------time intervals of all interferograms
+%        atmeff-------------a num_PS-by-num_imgs matrix storing atmospheric effects
+%        nlrdef--------------a num_PS-by-num_imgs matrix storing non-linear deformations
+%              
+%  e.g.,  [num_PS, dT, atmeff, nlrdef]=PS_svd_emd('E:\PhoenixSAR\Dif_Int_MLI\117ints.all', unwall);
+%           [num_PS, dT, atmeff, nlrdef]=PS_svd_emd('E:\PhoenixSAR\Dif_Int_MLI\86ints.all', unwall);
+% 
+% Original Author:  Guoxiang LIU
+% Revision History:
+%                   May. 25, 2006: Created, Guoxiang LIU
+
+t0=cputime;
+
+% Imaging dates of fourty SAR images over Phoenix study area
+% msDates=[19920710    19920814    19920918    19921023    19930205    19930521    19930903    19931008    19931217  ...
+%                   19950514    19950827    19951105    19951106    19951210    19951211    19960218    19960219    19960428  ...
+%                   19960603    19960812    19960916    19961021    19961230    19970310    19970519    19971215    19980223  ...
+%                   19980330    19980504    19980608    19980713    19981130    19990315    19990524    19990628    19990802  ...
+%                   19991220    20000508    20000925    20001030]; 
+msDates=[19920710    19920814    19920918    19921023    19930205    19930521    19930903    19931008    19931217 ...
+                  19950514    19950827    19951105    19951106    19951210    19951211    19960218    19960219    19960428 ...
+                  19960603    19960812    19960916    19961021    19961230    19970310    19970519    19971215    19980223 ...
+                  19980330    19980504    19980608    19980713    19981130    19990315    19990524    19990628    19990802 ...
+                  19991220    20000508    20001030];
+    
+num_imgs=length(msDates);      % get total number of SAR images
+% The total number of ERS SAR images over Phoenix is 45. But there are other five SAR images
+% which are not used and thus not included in the above list. They are: 19960114  19960115  19961125  19990104  20000717
+ 
+%  To calibrate the unwrapped-phase map, we use the non-linear trend (radians)
+%  estimated by EMD at the reference pixel with coordinates (1,1)
+% trend=[0 1.6428    1.8802    2.3299    2.7200    2.8075    2.6713    2.4706    2.3645    2.7238    4.4146 ...
+%                6.9343    8.6453    8.3741    8.1479    9.0496   10.2382    8.9554    4.1176    2.0992   5.3735 ...
+%               7.2548    6.0904    5.0243    4.6971    4.8703    5.2819    5.6545    6.0038    6.4244    6.9614 ...
+%               7.4875    7.9262    8.2260    8.3357    8.2427    8.0792    7.9717    8.0039    8.1321];
+%cf=0.8*[-4.3550   -5.2386   -5.3104   -4.3584   -2.7791   -1.1200    0.0904    0.3913   -0.6227   -3.0054   -5.9902   -8.6702 ...
+%      -10.2592  -10.2378   -9.0400   -7.2995   -5.4871   -3.9971 -3.0944   -2.5624   -2.1103   -1.6371   -1.1064   -0.5024 ...
+%         0.1059    0.6278    0.9726    1.0915    1.1041    1.1413    1.2107    1.2893    1.3357    1.2344    0.8941    0.3944 ...
+%        -0.1420   -0.5910   -0.8279   -0.7625];  % for 117 interferograms
+cf=[-1.0741   -1.1287   -0.3963    0.7379    1.7531    2.2160    2.0443     1.2434   -0.1814   -2.0470   -3.4852   -3.7482  ... 
+       -3.0149   -2.0809   -1.6726   -1.7864  -2.1056   -2.2785   -2.0037   -1.1810    0.1997    1.8972    3.3666    4.3914  ...
+        4.9403    5.3025    5.7562    6.2146    6.5591    6.9106    7.4333    8.2261     9.2104    9.7532    9.5146    8.6087  ...
+        7.3548    6.5309    6.7942];   % for 86 interferograms
+    
+% Get total number of PS points
+[R,C]=size(unwall);
+num_PS=R; clear C;
+
+% open text file including filenames of num_intf differential interferograms   
+fid = fopen(infile, 'rt');
+if (fid<0) error(ferror(fid)); end;
+% read some basic information about image dimension and PS
+num_intf=fscanf(fid, '%i', 1);    % num_tinf=total number of differential interferograms
+temp=fscanf(fid, '%i', 3);          % skipping ...
+temp=fscanf(fid, '\n%s', 1);      % skipping ...
+
+% Allocate memory for several matrices
+absPhi=zeros(num_PS, num_imgs);                    % a matrix storing inversed phase values at imaging dates for all valid pixles
+dT=zeros(1, num_intf);                                          % time intervals in years for all interferograms
+B=spalloc(num_intf, num_imgs-1, 2*num_intf);    % design matrix for SVD, it should be a sparse matrix with ones and most of zeros
+
+for m=1:num_intf         % loop on all interferogram
+    filenm=fscanf(fid, '\n%s', 1);
+    master=filenm(1:8);              % get master name
+    slave=filenm(10:17);             % get slave name
+    dT(m)=(datenum(slave, 'yyyymmdd')-datenum(master, 'yyyymmdd'))/365;    
+                                                                           % time interval in years between master and slave image
+    mN=find(msDates==str2num(master));       % No. of master image
+    sN=find(msDates==str2num(slave));           % No. of slave image
+    % get the elements of the design matrix for SVD
+    % The time series can be reconstructed by solving for the incremental range
+    % change between SAR data acquisitions. (see pp.4 & 9, Schmidt and Burgmam, 2003, JGR)
+    for j=mN:sN-1
+        B(m, j)=1;
+    end
+%     fx=cf(sN)-cf(mN);                                    % get the calibration factor (minuend) of unwrapped phases
+%     unwall(:,m)=unwall(:,m)-unwall(1,m);           % calibrate the unwrapped phase dataend
+end
+fclose(fid);
+
+% calibrating unwrapped phase data
+% see above
+
+% Invert the absolute phase values by SVD on pixel-by-pixel basis
+% when there are several subsets of interferograms.
+[U,S,V] = svd(full(B));    % Do SVD on the design matrix B
+for i=1:num_intf
+    for j=1:num_imgs-1
+        if (i==j & S(i,j)>0.001)
+            S(i,j)=1/S(i,j);
+        end
+    end
+end
+T=V*S'*U';
+for i=1:num_PS
+    absPhi(i,2:num_imgs)=T*unwall(i,:)';
+    absPhi(i,:)=cumsum(absPhi(i,:))-cf;     % remove the trend caused by the reference point
+    absPhi(i,:)=absPhi(i,:)-mean(absPhi(i,:));
+    absPhi(i,1)=0;
+end
+
+% Invert the absolute phase values by LS when there are only one set of
+% interferograms
+% N=B'*B;                % Normal matrix
+% for i=1:num_PS
+%      w=B'*unw(i,:)';   % coefficient matrix
+%      absPhi(i,:)=(single(N\w))';
+%      figure; plot(absPhi(i,:));
+%      close all;
+% end
+
+% Separate atmospheric effects from non-linear deformations by EMD
+atmeff=zeros(num_PS, num_imgs);           % a matrix storing atmospheric effects
+nlrdef=zeros(num_PS, num_imgs);            % a matrix storing non-linear deformations
+options.display = 0;
+options.fix = 12;
+options.maxmodes = 3;
+for i=2:num_PS
+    [imf,ort,nbits] = emd(absPhi(i,:), options);
+    % get atmospheric components
+    atmeff(i,:)=imf(1,:)+imf(2,:)+imf(3,:);
+    % get nonlinear deformation components
+    nlrdef(i,:)=imf(4); %+imf(3,:)+imf(:,4)+imf(:,5));
+end
+
+% save as atmeff and nlrdef into files
+
+disp(' ');
+disp(['% CPU time used for the whole processing == ', num2str(cputime-t0)]);
+disp(' ');

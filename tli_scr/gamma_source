@@ -1,0 +1,12 @@
+DIFF_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/DIFF_v6.6/bin
+DIFF_scr=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/DIFF_v6.6/scripts
+disp_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/DISP_v1.4/bin
+ipta_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/IPTA_v1.2/bin
+ipta_scr=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/IPTA_v1.2/scripts
+isp_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/ISP_v9.8/bin
+isp_scr=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/ISP_v9.8/scripts
+lat_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/LAT_v2.4/bin
+msp_bin=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/MSP_v11.5/bin
+msp_scr=/mnt/software/myfiles/Software/usr_local/GAMMA_SOFTWARE-20080401/MSP_v11.5/scripts
+export PATH="$PATH:$DIFF_bin:$DIFF_scr:$disp_bin:$ipta_bin:$ipta_scr:$isp_bin:$isp_scr:$lat_bin:$msp_bin:$msp_scr"
+

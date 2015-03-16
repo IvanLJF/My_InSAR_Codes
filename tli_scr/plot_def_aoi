@@ -1,0 +1,30 @@
+#!/bin/sh
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i BASEMAP_FRAME_RGB +black
+
+ptsize=0.006i
+cpt=tli_def
+
+makecpt -C$cpt -T-71.2500/0.0000000/0.100000 -I -V -Z > g.cpt
+
+outputfile='stamps_exc_aoi.ps'
+psbasemap -R347/1346/4110/4469 -JX3i/1.08i -Ba200f100::WeSn -P -K -V  > $outputfile
+psimage ave_aoi.ras -Gtblack -W3i/1.08i -O -K -V >>$outputfile
+# psxy stamps_exc_info_aoi.txt -R -J -B -Cg.cpt -V -Sc0.005i -O >> $outputfile
+psxy vdh_stamps.tmp.txt -R -J -B -Cg.cpt -V -Sc$ptsize -O >> $outputfile
+ps2raster -A -Tt -E800 $outputfile
+imgbasename=`basename $outputfile '.ps'`
+convert $imgbasename.tif -trim -bordercolor White $imgbasename.jpg
+# geeqie $imgbasename.jpg
+
+
+
+outputfile='mti_exc_aoi.ps'
+psbasemap -R347/1346/4110/4469 -JX3i/1.08i -Ba200f100::WeSn -P -K -V  > $outputfile
+psimage ave_aoi.ras -Gtblack -W3i/1.08i -O -K -V >>$outputfile
+psxy lel10vdh_merge.tmp.txt -R -J -B -Cg.cpt -V -Sc$ptsize -O >> $outputfile
+ps2raster -A -Tt -E800 $outputfile
+imgbasename=`basename $outputfile '.ps'`
+convert $imgbasename.tif -trim -bordercolor White $imgbasename.jpg
+geeqie $imgbasename.jpg
+

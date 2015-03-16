@@ -1,0 +1,28 @@
+#! /bin/sh
+outfile=ts_ras.ps
+psbasemap -Ba10::WeSn -JX26.7c/13c -K -R0/9/0/5 >$outfile
+
+for i in {01..09}
+do
+	for j in {01..05}
+	do
+		finde=$(echo $i*$j | bc)
+		if [ "$finde" -lt 10 ] 
+		then
+			finde=0$finde
+		fi
+		fname="pt_ts.$finde.ras"
+
+
+		width_s=$(echo 3*$i-3 | bc -l )
+		width_e=$(echo 3*$i | bc -l )
+		height_s=$(echo 2.6*$j-2.6 | bc -l )
+		height_e=$(echo 3*$j |bc -l )
+		
+		psimage $fname -C$width_s/$height_s/BL -W2.7c/2.1c -O -K >>$outfile
+	done
+done
+pstext << EOT -JX -O -R >> $outfile
+#404  3330.4 9	0.0	4	LM	USC1
+453 422 12 0 3 LM A
+EOT

@@ -1,0 +1,56 @@
+#! /bin/sh
+
+# Make some results just for PPT show.
+# Author:
+# 	Li Tao in SWJTU
+# 	At 15:00 in 27 Dec
+
+# Create offset file.
+DIR=`pwd`
+echo "***************************"
+echo "Starting offset calculation"
+echo "***************************"
+PIECE=$DIR/PIECE1000*1000
+master=20090327
+slave=20090429
+intf=$master-$slave
+m_image=$PIECE/$master.rslc
+s_image=$PIECE/$slave.rslc
+master_par=$m_image.par
+slave_par=$s_image.par
+off=$master-$slave.off
+off_par=$off.par
+log=$DIR/log
+width=$(awk '$1 == "range_samples:" {print $2}' $master_par)
+data_type=1
+
+if [ "$(awk '$1 == "image_format:" {print $2}' $master_par)" = "FCOMPLEX" ]
+then data_type=0
+fi
+echo $data_type
+
+echo -ne "$DIR\n 0 0\n 32 32\n 64 64\n 7.0\n\n\n" > create_offset
+create_offset $master_par $slave_par $off_par 1 < create_offset
+rm -f creat_offset
+offset_pwr $m_image $s_image $master_par $slave_par $off_par $off snr - - $off.text - - > $log
+offset_fit $off snr $off_par coffs coffsets - 3 > $log
+
+# Interferogram
+SLC_intf $m_image $s_image $master_par $slave_par $off_par $intf.int 1 1 - - - - - -
+rasmph $intf.int $width - - - - - - - $intf.int.bmp 0
+
+# Generic PS
+pwr_stat SLC_tab $master_par msr plist - - - - - - $data_type 1 
+ras_pt plist - ave.bmp ave_pt.bmp 1.0 1.0 0 255 0 5 0 0
+
+# Generic PS using Sparse
+ras_pt sparse_plist - ave.bmp ave_sparse_pt.bmp 1.0 1.0 0 255 0 5 0 0
+
+# Generic Flattening phase(Failed)
+base_init $master_par $slave_par $off_par $intf.int baseline - - - - -
+ph_slope_base zeros.rslc $master_par $off_par baseline flattening.slc 1 1
+rasSLC flattening.slc 1000 - - - - - - - 1 - flattening.bmp
+
+# Generic Flattening int
+ph_slope_base $intf.int $master_par $off_par baseline $intf.flt 1 0
+rasmph_pwr $intf.flt PIECE1000*1000/20090327.pwr $width 1 1 0 1 1 1. 0.35 1 $intf.fltandpwr.bmp

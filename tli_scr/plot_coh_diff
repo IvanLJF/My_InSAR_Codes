@@ -1,0 +1,184 @@
+#!/bin/sh
+
+
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+#	gmtset: 设置画图属性。1 inch=2.54厘米
+#	ANNOT_FONT_SIZE: 标注坐标经纬度的字符大小（像素）
+#	ANNOT_OFFSET: 标注坐标经纬的偏移量（距图框距离）
+#	ANNOT_OFFSET_PRIMARY: 
+#	FRAME_WIDTH: 黑白相间型图框图框框宽
+#	MAP_SCALE_HEIGHT: 地图比例尺高度。
+output_file="diff_coe.ps"
+input_file_all="plot_gmt_coe_dif"
+makecpt -Crainbow -T-0.2/0.35/0.001  -V -Z > g.cpt
+#	makecpt -Cgray -T0/255/10 -Z > mag_henan.cpt
+#	makecpt: 创建色度条。
+#	-C: 指定色度条名称（默认rainbow）
+#	-T: 色度条的起始、终止、步长。或者是包含z值的文件。
+#	-V: verbose冗长的
+#	-Z: 创建连续的色度条
+psbasemap -R102/3352/1536/3867 -JX4i/2.88i -Ba400f50::WeSn -P -K -V  >$output_file
+#	psbasemap: 创建.ps文件的底图。
+#	-R: 指定最小/最大坐标。如果用户使用度分秒为单位，那么对应的格式为 dd:mm[:ss]，如果是时间为单位，格式为[yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]]。如果使用LL和UR经纬度，应在-R后添加-r。-Rg和-Rd可以简写为-R。
+#	-J: 地图投影类型。-Jx|X<x-scale|width>[/<y-scale|height>](线性，对数，指数拉伸)。单位是cm/units（或者1：xxx。）也可以给出关键字选择拉伸方式。d、l、p、t、T。
+#	-B: 指定底图的图层信息。<tickinfo>由字符串组成，其格式为[a|f|g]<stride>[+-<phase>][<unit>]。a表示注释以及标注主间隔。f表示次间隔。其后添加W、E、S、N、Z用于标注指定轴，默认WESNZ全都标注。小写的wesnz表示只绘制对应轴，而不标注。
+#	-P: 直页绘制(默认关闭)。
+#	-K: 允许在此基础上添加绘图(默认关闭)。
+psimage ave_la_flip_rm_blace.ras -W4i/2.88i -O -V -K >>$output_file
+#	psimage: 在底图上绘制图像（SUN raster file, .ras）。
+#	-W: 设置拉伸比例。如果height=0则保留原来比例，如果width<0则使用.ps文件的宽度，并对原始影像进行拉伸插值。
+#	-O: 叠加绘图（默认关闭）。
+#	-V: Run in verbose mode.
+#	-K: 同上。
+psxy $input_file_all -R -J -B  -Cg.cpt -V -Sc0.01i -K -O >>$output_file
+#	psxy: 在地图上绘制线、多边形以及图例。
+#	-C: g.cpt:自己创建的调色板。
+#	-V: Run in verbose mode.
+#	-S: 选择图例的类型和尺寸（厘米为单位）。c：圆圈。
+psxy rec_1.dat -R -J -W1p,190/190/190 --MEASURE_UNIT=point -M -O -K >>$output_file
+#	-W: 设置pen的属性。<pen>属性以逗号为分隔符，包含宽度[cipm]，颜色，纹理[cipm]。If no unit is appended, then dots-per-inch is assumed [current dpi = 300].
+#psxy rec_2.dat -R -J -W1p,190/190/190  --MEASURE_UNIT=point -M -O -K >>$output_file
+# plot reference point
+ref="0"
+if [$ref == "1" ]; then
+psxy -R -J -O -K  -L  -Wfaint -Gred -St0.2 << END >>$output_file
+
+783 3433.6
+
+END
+#	-R: 指定范围
+#	-J: 投影类型
+#	-O: Oerlay
+#	-K: Continiously
+#	-L: 强制多边形闭合。
+#	-W: Pen的属性。faint：细的。
+#	-G: 指定填充的颜色或纹理。red填充红色。
+#	-S: 选择图例的类型和尺寸（厘米为单位）。t:三角形。
+psxy -R -J -O -K  -L  -Wfaint -Gred -Sc0.15 << END >>$output_file
+
+#783	3433.6
+404        3330.4
+1097     2120.4
+124      3831
+1696 3324.8
+1101 2896.4
+1080 3866.6
+#1419 3170.8 #bkms
+#1290 3005.6 #DYHS
+#1359 2423.4 #LBC1
+#1202 2787.6 #PMHS
+
+END
+
+pstext << EOT -R -J -Gblack -D0.05i/0i -O -K >> $output_file
+#1419 3170.8 9	0.0	4	LM	BKMS
+#1290 3005.6 9	0.0	4	LM	DYHS
+#1359 2423.4 9	0.0	4	LM	LBC1
+#1202 2787.6 9	0.0	4	LM	PMHS
+404  3330.4 9 0.0 4 LM USC1
+1296 3324.8 9 0.0 4 LM WHC1
+1097 2120.4 9 0.0 4 LM      LBCH
+124  3731   9 0.0 4 LM      LEEP
+1101 2896.4 9 0.0 4 LM      HOLP
+1080 3766.6 9 0.0 4 LM      CIT1
+783  3433.6 9 0.0 4 LM      ELSC
+
+EOT
+#	pstext: 为图像添加字符串。
+#	-R： 指定范围
+#	-J： 投影方式
+#	-G： 指定填充颜色或者纹理。
+#	-D： 在投影方式中字符串的起点。
+#	-O： 覆盖。
+#	-K： 允许继续绘制。
+fi
+#plot selected area
+psbasemap -R312/612/2085/2285 -JX2i/1.3333333i -Ba100f50::wesN -P -K -O -V -X2.0i -Y2.2i >>$output_file
+#	psbasemap: 设置.ps文件的底图。
+#	-R： 设置图幅范围。
+#	-J： 设置投影。
+#		X： 拉伸变换。
+#	-B： 底图图层信息。
+#	-P： 直页绘制。
+#	-K： 允许继续绘制。
+#	-O： 叠加。
+#	-V： verbos mode。
+#	-X： 设置绘制的起点。前缀a表示绝对偏移。默认r是相对偏移。
+psimage ave_la_small_flip.ras -W2i/1.33333333i -O -V -K >>$output_file
+psxy $input_file_all -R -J -B  -Cg.cpt -V -Sc0.025i -K -O >>$output_file
+psscale -Cg.cpt -D-1.2i/1.1i/1.4i/0.08ih -E -I  -O -K -B0.1::/:coh:  >>$output_file
+#	psscale： 创建色度条。
+#	-C： 色度条文件。
+#	-D： 色度条中点的xpos/ypos/length/width. 关键字h表示水平绘制。
+#	-E： 色度条边缘添加三角箭头以及颜色。b代表背景色，f代表前景色。
+#	-I： 添加明度。
+#	-O： 覆盖。
+#	-K： 允许继续添加。
+#	-B： 设置注释的间隔以及名称。如果没有给出对应关键字，则从cpt文件中读取。
+###############
+
+input_file_all="plot_gmt_phi_diff"
+makecpt -Crainbow -T-6.3/6.3/0.001  -V -Z > g.cpt
+#	makecpt: 创建调色板。
+#	-C： 调入调色板名称。
+#	-T： 起始，终止，步长。
+#	-V： Run in verbose mode.
+#	-Z: 连续的调色板。
+#makecpt -Cgray -T0/255/10 -Z > mag_henan.cpt 
+
+psbasemap -R102/3352/1536/3867 -JX4i/2.88i -Ba400f50::WeSn -P -K -V  -O -K -X-2i -Y1.85i >>$output_file
+psimage ave_la_flip_rm_blace.ras -W4i/2.88i -O -V -K >>$output_file
+psxy $input_file_all -R -J -B  -Cg.cpt -V -Sc0.01i -K -O >>$output_file
+psxy rec_1.dat -R -J -W1p,190/190/190 --MEASURE_UNIT=point -M -O -K >>$output_file
+#psxy rec_2.dat -R -J -W1p,190/190/190  --MEASURE_UNIT=point -M -O -K >>$output_file
+# plot reference point
+ref="0"
+if [$ref == "1" ]; then
+psxy -R -J -O -K  -L  -Wfaint -Gred -St0.2 << END >>$output_file
+
+783 3433.6
+
+END
+psxy -R -J -O -K  -L  -Wfaint -Gred -Sc0.15 << END >>$output_file
+
+#783	3433.6
+404        3330.4
+1097     2120.4
+124      3831
+1696 3324.8
+1101 2896.4
+1080 3866.6
+#1419 3170.8 #bkms
+#1290 3005.6 #DYHS
+#1359 2423.4 #LBC1
+#1202 2787.6 #PMHS
+
+END
+
+pstext << EOT -R -J -Gblack -D0.05i/0i -O -K >> $output_file
+#1419 3170.8 9	0.0	4	LM	BKMS
+#1290 3005.6 9	0.0	4	LM	DYHS
+#1359 2423.4 9	0.0	4	LM	LBC1
+#1202 2787.6 9	0.0	4	LM	PMHS
+404  3330.4 9 0.0 4 LM USC1
+1296 3324.8 9 0.0 4 LM WHC1
+1097 2120.4 9 0.0 4 LM      LBCH
+124  3731   9 0.0 4 LM      LEEP
+1101 2896.4 9 0.0 4 LM      HOLP
+1080 3766.6 9 0.0 4 LM      CIT1
+783  3433.6 9 0.0 4 LM      ELSC
+
+EOT
+fi
+#plot selected area
+psbasemap -R312/612/2085/2285 -JX2i/1.3333333i -Ba100f50::wesN -P -K -O -V -X2.0i -Y2.2i >>$output_file
+psimage ave_la_small_flip.ras -W2i/1.33333333i -O -V -K >>$output_file
+psxy $input_file_all -R -J -B  -Cg.cpt -V -Sc0.025i -K -O >>$output_file
+psscale -Cg.cpt -D-1.2i/1.1i/1.4i/0.08ih -E -I  -O -B3::/:rad:  >>$output_file
+
+### plot profile
+#psbasemap -R-2.5/0.5/1600/3000 -JX1.2i/2.88i -Ba0.8f0.2/a200f50::wEsN -P -K -O -V -X2.1i -Y-2.2i  >>$output_file
+
+#psxy prolfile_diff_arc_yx -R -J -O  -L -Ggray -Wfaint -Sd0.03 >>$output_file
+

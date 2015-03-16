@@ -1,0 +1,42 @@
+#! /bin/sh
+
+workpath=`pwd`
+inputfile=$workpath/simph.txt
+itabfile=$workpath/itab
+slctabfile=$workpath/SLC_tab
+nintf=$(awk 'END{print NR}' $itabfile)
+
+plots=$workpath/plotpdata
+
+if [ -e $plots ]
+then
+	rm -fr $plots
+fi
+mkdir -p $plots
+cd $plots
+# 初始化
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+	LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i BASEMAP_FRAME_RGB 255/255/255
+makecpt -Crainbow -T-3.14/3.14/0.01 -I -V -Z > g.cpt
+for i in $( seq 1 1 $nintf )
+do
+j=`echo "$i+2" |bc`
+echo $i/$nintf': Processing...'
+	master_ind=$(sed -n "$i, 1p" $itabfile | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind, 1p" $slctabfile | awk '{print $1}')
+	master_date=`basename $master_SLC '.rslc'`
+	slave_ind=$(sed -n "$i,1p" $itabfile | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" $slctabfile | awk '{print $1}')
+	slave_date=`basename $slave_SLC '.rslc'`
+	outputfile=$master_date-$slave_date.ps
+	awk '{print $1, $2, $'$j'}' < $inputfile > temp.txt
+	# 创建调色板
+	psbasemap -R0/3000/0/3000 -JX4i/4i -Ba500f250::WeSn -P -K -V  > $outputfile
+	psxy temp.txt -R -J -B -Cg.cpt -V -Sc0.03i -O >> $outputfile
+	ps2raster -A $outputfile
+	imgname=`basename $outputfile '.ps'`.jpg
+	convert $imgname -trim -bordercolor White $imgname
+	rm -f $outputfile
+done
+rm -f g.cpt temp.txt
+cd $workpath

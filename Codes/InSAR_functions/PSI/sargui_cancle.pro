@@ -1,0 +1,4 @@
+PRO SARGUI_CANCLE,EVENT
+;-¡°È¡Ïû¡±°´Å¥
+  WIDGET_CONTROL, event.TOP, /DESTROY
+END

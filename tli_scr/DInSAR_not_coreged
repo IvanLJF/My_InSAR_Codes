@@ -1,0 +1,301 @@
+#!/bin/sh
+###########################################################
+# Script that:
+#       - Runs GAMMA DIFF-2-pass DInSAR with phase unwrapping and geocoding
+#       - Processing for Ascending PALSAR interferometric pair data       
+#       - Rui Zhang in ChengDu by 1/30/2010
+# Usage:
+#       -run the script
+#       ("./run_DInSAR_Allsteps")
+######################################
+### parameter files
+######################################
+MASTER="20070726"
+SLAVE="20070830"
+DEM="tibet_swap"
+M_P=${MASTER}
+S_P=${SLAVE}
+m_slc=../$M_P/$M_P.slc
+s_slc=../$S_P/$S_P.slc
+dem_file=../$DEM.dem
+par_m=../$M_P/$M_P.slc.par
+par_s=../$S_P/$S_P.slc.par
+par_dem=../$DEM.dem_par
+MS_off=$M_P-$S_P.off
+######################################
+###create the ISP processing/offset parameter file from MSP processing parameter and sensor files
+######################################
+#par_MSP ../$M_P/palsar.par ../$M_P/p$par_m $par_m
+#par_MSP ../$S_P/palsar.par ../$S_P/p$par_s $par_s
+######################################
+###Supports interactive creation of offset/processing parameter file for generation of interferograms
+###create_offset reads the SLC parameter files and queries the user for parameters(write into the .off file) required to calculate the offsets 
+###using either the cross correlation of intensity or fringe visibility algorithms
+### a. scence title: interferogram parameters
+### b. range,azimuth offsets of SLC-2 relative to SLC-1(SLC samples):0 0
+### c. enter number of offset measurements in range, azimuth: 32 32
+### e. search window sizes(range, azimuth, nominal: 64 64)
+### f. low correlation SNR threshold for intensity cross correlation 7.0
+### g. offset in range to first interfergram sample 0
+### h. width of SLCsection to processes (width of SLC-1)
+if false
+then
+
+
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_offset
+######################################
+create_offset $par_m $par_s $MS_off 1 1 1 <create_offset
+rm -f create_offset
+
+######################################
+###first guess of the offsets can be obtained based on orbital information
+###The position of the initial registration offset estimation can be indicated. As default the SLC-1 image center is used.
+######################################
+init_offset_orbit $par_m $par_s $MS_off
+######################################
+###improve the first guess, determines the initial offsets based on the cross-correlation function of the image intensities
+###In order to avoid ambiguity problems and achieve an accutare estimates init_offset first be run with multi-looking
+###followed by a second run at single look resolution
+######################################
+#init_offset $m_slc $s_slc $par_m $par_s $MS_off 6 16
+init_offset $m_slc $s_slc $par_m $par_s $MS_off 3 15
+init_offset $m_slc $s_slc $par_m $par_s $MS_off 1 1
+######################################
+###the first time offset_pwr and offset_fit, Estimation of offsets 
+###first time with larger windowsize
+###offset_pwr estimates the range and azimuth registration offset fields using correlation optimization of the detected SLC data
+######################################
+offset_pwr $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.offs $M_P-$S_P.off.snr 256 256 $M_P-$S_P.offsets 1 100 200 7.0 1
+
+######################################
+######determine the bilinear registration offset polynomial using a least squares error method
+###offset_fit computes range and azimuth registration offset polynomials from offsets estimated by one of the programs offset_pwr
+######################################
+offset_fit $M_P-$S_P.offs $M_P-$S_P.off.snr $MS_off $M_P-$S_P.coffs $M_P-$S_P.coffsets 9.0 6 0
+cp $M_P-$S_P.offsets offsets_pwr_1
+cp $M_P-$S_P.coffsets coffsets_pwr_1
+rm -f $M_P-$S_P.offs $M_P-$S_P.off.snr $M_P-$S_P.coffs $M_P-$S_P.coffsets $M_P-$S_P.offsets 
+
+######################################
+#######the 2nd-time offset_pwr and offset_fit(with smaller windowsize)
+######################################
+offset_pwr $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.offs $M_P-$S_P.off.snr 128 128 $M_P-$S_P.offsets 1 200 400 10.0 1
+offset_fit $M_P-$S_P.offs $M_P-$S_P.off.snr $MS_off $M_P-$S_P.coffs $M_P-$S_P.coffsets 9.0 6 0
+cp $M_P-$S_P.offsets offsets_pwr_2
+cp $M_P-$S_P.coffsets coffsets_pwr_2
+rm -f $M_P-$S_P.offs $M_P-$S_P.off.snr $M_P-$S_P.coffs $M_P-$S_P.coffsets $M_P-$S_P.offsets
+
+######################################
+###Estimates range and azimuth offset fields of a pair of SLC in support of image co-registration and offset tracking
+######################################
+offset_pwr_tracking $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.offs $M_P-$S_P.off.snr 32 32 $M_P-$S_P.offsets 2 9.0 40 40 - - - - 1
+offset_fit $M_P-$S_P.offs $M_P-$S_P.off.snr $MS_off $M_P-$S_P.coffs $M_P-$S_P.coffsets 9.0 6 0
+
+######################################
+###co-registration of the tow SLC images
+###interf_SLC reads the single look complex SAR images SLC-1 and SLC-2, the corresponding SLC parameter files, the ISP offset parameter file
+###interf_SLC use the range and azimuth offset polynomials(bi-linear in range and azimuth)to co-register SLC-2 to the geometry of SLC-1.
+###Multi-look intensities of the co-registered images SLC-1 and SLC-2 are written to the files SLC-1.pwr and SLC-2.pwr.
+######################################
+# 多视
+interf_SLC $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.int 1 5
+######################################
+
+######################################
+##SLC_interp $s_slc $par_m $par_s $MS_off $S_P.rslc $S_P.rslc.par
+######################################
+###Generation of interferogram with multi-look factors 6*16
+######################################
+##SLC_intf $m_slc $S_P.rslc $par_m $S_P.rslc.par $MS_off $M_P-$S_P.int 6 16 - - 1 1
+######################################
+###Generation of multi-look SARintensity image of reference SLC
+######################################
+##multi_look $m_slc $par_m  $M_P-$S_P.pwr1 $M_P.pwr1.par 6 16
+##multi_look $S_P.rslc $S_P.rslc.par $M_P-$S_P.pwr2 $S_P.pwr2.par 6 16
+######################################
+###set variables
+######################################
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+#rasmph $M_P-$S_P.int $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.int.bmp
+rasmph_pwr $M_P-$S_P.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.intandpwr.bmp
+
+raspwr $M_P-$S_P.pwr1 $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.pwr1.bmp
+raspwr $M_P-$S_P.pwr2 $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.pwr2.bmp
+
+base_init $par_m $par_s $MS_off $M_P-$S_P.int $M_P-$S_P.base 0 1024 1024
+base_perp $M_P-$S_P.base $par_m $MS_off > $M_P-$S_P.base.perp
+######################################
+######################################
+### Curved Earth phase trend removal("flattening")
+###ph_slop_base Subtract/add interferogram flat-Earth phase trend as estimated from initial baseline
+######################################
+ph_slope_base $M_P-$S_P.int $par_m $MS_off $M_P-$S_P.base $M_P-$S_P.flt 1 0
+#rasmph $M_P-$S_P.flt $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.flt.bmp
+rasmph_pwr $M_P-$S_P.flt $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltandpwr.bmp
+######################################
+###filter flattened interferogram
+######################################
+adf $M_P-$S_P.flt $M_P-$S_P.flt.sm1 $M_P-$S_P.sm.cc1 $width 0.3 64
+adf $M_P-$S_P.flt.sm1 $M_P-$S_P.flt.sm $M_P-$S_P.sm.cc $width 0.3 32
+
+#rasmph $M_P-$S_P.flt.sm $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.flt.sm.bmp
+rasmph_pwr $M_P-$S_P.flt.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltsmpwr.bmp
+
+######################################
+###coherence estimation from normalized interferogram and co-registered intensity images
+######################################
+cc_wave $M_P-$S_P.flt $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.cc $width 5.0 5.0 2 - - - -
+
+#rascc $M_P-$S_P.cc - $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.cc.bmp
+rascc $M_P-$S_P.cc $M_P-$S_P.pwr1 $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.ccandpwr.bmp
+
+######################################
+###gc_map:complex valued geocoding lookup table derivation based on DEM in MAP coordinates and SAR imaging geometry
+###the geocoding lookup table has the dimension of the DEM segment in map projection and 
+###contains corresponding SAR coodinates as floating point complex valued numbers with the real part corresponding to the real-valued column and 
+###the imaginary part corresponding to the real-valued row number
+######################################
+
+
+gc_map $par_m - $par_dem $dem_file dem_seg.par dem_seg lookup - - sim_sar
+raspwr sim_sar $width_map
+
+
+
+gc_map $par_m $MS_off $par_dem $dem_file dem_seg.par dem_seg lookup 5 5 sim_sar - - - - - - 8 1
+gc_map $path/$master.rslc.pwr.par - $dem_par $dem dem_seg.par dem_seg lookup - - sim_sar  # Use disdem_par to look over dem_seg.
+
+
+
+
+
+
+
+
+
+
+
+
+
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+###rasshd:generate raster image of DEM as shaded relief DEM
+######################################
+width_map=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+col_post=$(awk '$1 == "post_lat:" {print $2}' dem_seg.par)
+row_post=$(awk '$1 == "post_lon:" {print $2}' dem_seg.par)
+rasshd dem_seg $width_map $col_post $row_post 1 0 1 1 45. 135. 1 dem_seg.bmp 
+######################################
+######################################
+###geocode the simulated SAR intensity image to radar coordinate
+###when gc_map computes the lookup table it can also compute a simulated SAR image in the map coordinate system
+###geocode:Forward transformation with a geocoding look-up table
+###For each image point defined in coordinate system A, the lookup table contains the corresponding coordinates in system B
+###The program geocode is used to resample the data in coordinate system A into the coordinates of system B
+######################################
+geocode lookup sim_sar $width_map sim_sar_rdc $width $line 1 0
+fi
+
+
+
+
+
+
+
+####  raspwr sim_sar_rdc $width 1 - 1 1 1. .35 1 sim_sar_rdc.bmp
+######################################
+######################################
+###create a parameter file including the differential interferogram parameters
+###create_diff_par: reads two parameter files(.off,.slc.par,.mli.par,.dem_par)and creates a DIFF parameter file used for 
+###image registration,geocoding, and 2- and 3-pass differential interferometry
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_P-$S_P.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+######################################
+###compute offset of simulated SAR image to slc(mli) image
+###init_offsetm: initial registration offset estimation for multilook intensity images
+###offset_pwrm:estimates the range and azimuth registration offset fields using cross correlation optimization of the input intensity images
+###offset_fitm: computes range and azimuth registration offset polynomials from offsets estimated by one of the program offset_pwrm or offset_pwr_tracking 
+######################################
+init_offsetm $M_P-$S_P.pwr1 sim_sar_rdc $M_P-$S_P.diff.par 1 1 - - 0 0 6.5
+offset_pwrm $M_P-$S_P.pwr1 sim_sar_rdc $M_P-$S_P.diff.par offs snr 512 512 offsets 2 100 100 7.0
+offset_fitm offs snr $M_P-$S_P.diff.par coffs coffsets 9.0 6
+offset_pwrm $M_P-$S_P.pwr1 sim_sar_rdc $M_P-$S_P.diff.par offs snr 256 256 offsets 2 200 200 7.0
+offset_fitm offs snr $M_P-$S_P.diff.par coffs coffsets 10.0 6
+######################################
+###gc_map_fine applies the fine registration function to the input lookup table to create the refined output lookup table 
+###This is done by addition of the fine registration offsets to the lookup vectors
+######################################
+gc_map_fine lookup $width_map $M_P-$S_P.diff.par lookup_fine 0
+geocode lookup_fine dem_seg $width_map $M_P-$S_P.rdc_hgt $width $line 1 0
+######################################
+rashgt $M_P-$S_P.rdc_hgt $M_P-$S_P.pwr1 $width 1 1 0 1 1 20.0 1. .35 1 $M_P-$S_P.rdc_hgt_pwr.bmp
+######################################
+######################################
+### Form Differential Interferogram
+#### First method (flag is important)
+######################################
+###simulation of unwrapped topographic phase
+phase_sim $par_m $MS_off $M_P-$S_P.base $M_P-$S_P.rdc_hgt $M_P-$S_P.sim_unw 0 0 - -
+######################################
+###Subtractiing the simulated unwrapped phase from the complex interferogram
+######################################
+sub_phase $M_P-$S_P.int $M_P-$S_P.sim_unw $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+######################################
+### Form Differential Interferogram
+#### Second method 
+######################################
+###simulation of unwrapped topographic phase
+#phase_sim $par_m $MS_off $M_P-$S_P.base $M_P-$S_P.rdc_hgt $M_P-$S_P.sim_unw 1 0 - -
+######################################
+###Subtractiing the simulated unwrapped phase from the complex interferogram
+######################################
+#sub_phase $M_P-$S_P.flt $M_P-$S_P.sim_unw $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+rasmph_pwr $M_P-$S_P.diff.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.int.pwr.bmp
+
+######################################
+# Filter Differential Interferogram
+######################################
+adf $M_P-$S_P.diff.int $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.sm.cc1 $width 0.3 128
+adf $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.sm.cc2 $width 0.3 64
+adf $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.cc $width 0.3
+rasmph_pwr $M_P-$S_P.diff.int.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.sm.pwr.bmp
+#############################################
+# Unwrap Differential Flattened Interferogram
+#############################################
+corr_flag $M_P-$S_P.diff.sm.cc $M_P-$S_P.diff.sm.flag $width 0.4
+neutron $M_P-$S_P.pwr1 $M_P-$S_P.diff.sm.flag $width - - -
+residue $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $width
+tree_cc $M_P-$S_P.diff.sm.flag $width 64
+#grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width
+grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width - - - - range_num azimuth_num 
+rasrmg  $M_P-$S_P.diff.int.sm.unw $M_P-$S_P.pwr1 $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $M_P-$S_P.diff.int.sm.unw.bmp
+#############################################
+###geocode the radar coordinates to imulated SAR intensity image
+######################################
+geocode_back $M_P-$S_P.diff.sm.cc $width lookup_fine $M_P-$S_P.diff.utm.cc $width_map $nlines_map 1 0
+geocode_back $M_P-$S_P.diff.int.sm $width lookup_fine $M_P-$S_P.diff.utm.sm $width_map $nlines_map 1 1
+geocode_back $M_P-$S_P.diff.int.sm.unw $width lookup_fine $M_P-$S_P.diff.utm.unw $width_map $nlines_map 1 0
+geocode_back $M_P-$S_P.pwr1 $width lookup_fine $M_P-$S_P.utm.pwr $width_map $nlines_map 1 0
+
+rascc $M_P-$S_P.diff.utm.cc - $width_map 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.diff.utm.cc.bmp
+rascc $M_P-$S_P.diff.utm.cc $M_P-$S_P.utm.pwr $width_map 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.diff.utm.ccandpwr.bmp
+rasmph $M_P-$S_P.diff.utm.sm $width_map 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.utm.sm.bmp
+rasmph_pwr $M_P-$S_P.diff.utm.sm $M_P-$S_P.utm.pwr $width_map 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.utm.smandpwr.bmp
+rasrmg $M_P-$S_P.diff.int.sm.unw $M_P-$S_P.pwr1 $width 1 1 0 1 1 .2 1. .35 .0 1 $M_P-$S_P.diff.unwandpwr.bmp $M_P-$S_P.diff.sm.cc 1 .2
+rasrmg $M_P-$S_P.diff.int.sm.unw -  $width 1 1 0 1 1 .18 1. .35 .0 1 $M_P-$S_P.diff.int.unw.bmp $M_P-$S_P.diff.sm.cc 1 .2
+######################################
+# Create Displacement Map
+#################################
+dispmap $M_P-$S_P.diff.int.sm.unw $M_P-$S_P.rdc_hgt $par_m $MS_off $M_P-$S_P.disp 0 0 0
+#rashgt $M_P-$S_P.rdc_hgt $M_P-$S_P.pwr1 $width 1 1 0 1 1 0.028 1 0.35 1 $M_P-$S_P.rdc_hgt.bmp
+#geocode_back $M_P-$S_P.pwr1 $width lookup_fine $M_P-$S_P.utm.pwr1 $width_map $nlines_map
+geocode_back $M_P-$S_P.disp $width lookup_fine $M_P-$S_P.utm.disp $width_map $nlines_map
+#rashgt $M_P-$S_P.utm.disp $M_P-$S_P.utm.pwr $width_map 1 1 0 1 1 0.028 1 0.35 1 $M_P-$S_P.utm.disp.bmp
+#disras $M_P-$S_P.utm.disp.bmp

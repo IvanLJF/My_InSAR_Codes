@@ -1,0 +1,94 @@
+#!/bin/sh
+# The script is used to process data using StaMPS
+#
+# Exclusively written for TSX SLC data.
+# 
+# Written by T.LI @ SWJTU, 20140317
+
+
+# Define some parames.
+data_path='/mnt/data_tli/Data/Original_data/TSX_Tianjin'  # Original data path.
+master_date='20091113'                                    # Master date.
+
+echo '#######################################'
+echo '######## Reading and cropping##########'
+echo '#######################################'
+link_slcs $data_path
+cd SLC/$master_date
+
+echo 'Please specify the look number.'
+gedit ../looks.txt
+echo 'Press anykey to continue...'
+read temp
+echo 'Reading the whole tsx image... Please wait...'
+rm -f image.slc_*l.ras
+step_read_whole_TSX
+xv image.slc_*l.ras
+echo 'Please specify the range to crop data'
+
+cp $MY_SCR/master_crop.in .
+gedit master_crop.in
+echo 'Press anykey to continue...'
+read temp
+
+rm -f image.slc_*l.ras
+step_master_read
+xv image.slc_*l.ras
+cd ../    # This is the SLC path.
+make_read
+echo 'Please check your cropped slave images.'
+read temp
+
+echo '######################################'
+echo '########## Create IFGS ###############'
+echo '######################################'
+cd ../     # CD StaMPS dir.
+mkdir DEM
+cd DEM
+echo 'Please construct your dem using construct_dem_tli.sh'
+echo 'And put your own dem in the following directory:'
+echo '   ' `pwd`
+
+
+
+
+cd ../INSAR_$master_date
+echo 'Please change the params in timing.dorisin accordingly.'
+gedit timing.dorisin
+echo 'Press anykey to continue...'
+read temp
+step_master_timing
+xv master_sim_*l.ras
+
+make_orbits
+make_coarse
+make_coreg_simple
+make_dems
+make_resample
+make_ifgs
+cd *
+step_geo
+cd ../
+xv */*dem_*l.ras
+
+echo '#######################################'
+echo '#######     PS processing      ########'
+echo '#######################################'
+mt_prep 0.4 1 1 50 50
+
+cat > tli_stamps_matlab.m <<EOF
+% 
+% Matlab script for StaMPS
+% Written by T.LI @ SWJTU, 20140317
+%
+cd('`pwd`')
+stamps
+ps_plot('v')
+ps_output
+EOF
+
+chmod 777 tli_stamps_matlab.m
+
+matlab -nodesktop -nosplash -nojvm -r "run ./tli_stamps_matlab.m;quit;"
+
+

@@ -1,0 +1,89 @@
+#! /bin/sh
+######################################################
+###  tli_geocode_unw                               ###
+###    using:
+###      - unwrapped image   
+###      - par file containing orbital data and 
+###        geometric data.
+###
+######################################################
+###  Written by:
+###    T.LI @ Sasmac, 20141016
+######################################################
+echo ""
+echo "tli_geocode_unw. v 1.0, 20141016"
+echo ""
+echo "  Required data:" 
+echo "    - unwrapped image"
+echo "    - par file"
+echo ""
+
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_geocode_unw <unw> <par>"
+  echo ""
+  echo "Input params:"
+  echo "  "
+  echo "  unw  : unwrapped image."
+  echo "  par  : par file of the master slc image."
+  exit
+fi
+
+### Assignments
+
+# Input file
+if [ ! -f $1 ]; then
+  echo "Error! Master file not exist: $1"
+  echo ""
+  exit
+else
+  unwfile=$1
+fi
+if [ ! -f $2 ]; then
+  echo "Error! Master file not exist: $2"
+  echo ""
+  exit
+else
+  parfile=$2
+fi 
+
+fname=`expr substr $unwfile 1 17` # Get the master date and slave date.
+                                  # Fname is formatted as YYYYMMDD-YYYYMMDD
+temp=`expr substr $fname 9 1`
+if [ $temp != '-' ]; then
+  echo 'Error! tli_geocode_unw: Please rename the following file as YYYYMMDD-YYYYMMDD.suffix'
+  echo $unwfile
+  echo ''
+  exit
+fi
+
+offfile=$fname.off 
+basefile=$fname.base 
+master_date=`expr substr $fname 1 8`
+mlifile=$master_date.pwr
+
+col_post=0.00000833333
+
+# output file
+hgtfile=$fname.hgt 
+hgt_grdfile=$fname.grd 
+rhgtfile=$fname.rhgt
+rhgt_grdfile=$master_date.grd 
+add_phase_ramp=0  # Do not add back the phase ramp (0).
+
+# Assignments
+width=`awk '$1 == "range_samples:" {print $2}' $parfile`
+
+# Height map.
+hgt_map $unwfile $parfile $offfile $basefile $hgtfile $hgt_grdfile $add_phase_ramp
+
+echo 'Press anykey to continue...'
+read temp
+
+rashgt $hgtfile $mlifile $width - - - - - 100 - - - $hgtfile.ras
+
+# Reample the height map to orthonormal coordinates.
+res_map $hgtfile $grdfile $mlifile $parfile $offfile $rhgtfile $rhgt_grdfile 
+
+rashgt $rhgtfile $rhgt_grdfile $width - - - 1 1 - - - - $rhgtfile.ras # Display the orthonormal image.
+rasshd $rhgtfile $width $col_post $row_post - - - - - - - $hgtfile'_shd.ras' # The shaded relief result.

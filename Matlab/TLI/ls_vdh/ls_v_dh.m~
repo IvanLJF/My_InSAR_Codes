@@ -1,0 +1,67 @@
+% Solve v and dh using a least square estimation.
+clear;
+clc;
+if 1
+    workpath='/mnt/software/myfiles/Software/experiment/TSX_PS_Tianjin/HPA';
+    dvddhfile=[workpath, filesep,'dvddh_update'];
+    plistfile=[workpath, filesep, 'dvddh_update.plist'];
+    vdhfile=[workpath, filesep, 'vdh_matlab'];
+end
+if 0
+    workpath='/mnt/software/myfiles/Software/experiment/TSX_PS_Tianjin/HPA';
+    dvddhfile=[workpath, filesep,'dvddh'];
+    plistfile=[workpath, filesep, 'plist'];
+    vdhfile=[workpath, filesep, 'vdh_all_matlab'];
+end
+if 0
+    workpath='/mnt/software/myfiles/Software/experiment/TSX_PS_Tianjin_121023/HPA';
+    dvddhfile=[workpath, filesep,'dvddh'];
+    plistfile=[workpath, filesep, 'plist'];
+    vdhfile=[workpath, filesep, 'vdh_all_matlab'];
+end
+
+dvddh=tli_fread(dvddhfile, 6, 'double','l', 0);
+plist=tli_fread(plistfile, 2, 'float', 'l', 0);
+[nlines, narcs]=size(dvddh);
+npt=tli_pnumber(plistfile);
+
+% Define the line header info of dvddh.
+start_ind=dvddh(1, :)+1;  % All the indices from IDL start at 0, not 1.
+start_val=zeros(1,narcs)-1;
+end_ind=dvddh(2, :)+1;% All the indices from IDL start at 0, not 1.
+end_val=zeros(1,narcs)+1;
+dv=transpose(dvddh(3, :));
+ddh=transpose(dvddh(4, :));
+coh=dvddh(5, :);
+sigma=dvddh(6, :);
+
+% Create the sparse matrix.
+lines=1:1:narcs;
+i=[lines, lines];
+j=[start_ind, end_ind];
+s=[start_val, end_val];
+coefs=sparse(i,j,s,narcs, npt);
+
+% LS estimation
+%tol=0.0001;  %RMSE
+%maxit=100; %Maximum iteration
+%v=lsqr(coefs, dv, tol, maxit);
+%dh=lsqr(coefs, ddh,tol, maxit);
+v=coefs\dv;
+dh=coefs\ddh;
+
+if 0
+    % weighted LS estimation
+    p=sparse(1:narcs, 1:narcs, coh);
+    %coefs_trans_p=transpose(coefs)*p;
+    temp=(transpose(coefs)*p*coefs)\(transpose(coefs)*p);
+    v=temp*dv;
+    dh=temp*ddh;
+end
+
+% Write vdh file.
+result=[0:1:npt-1; plist(1,:); plist(2,:); transpose(v);transpose(dh)];
+result=double(result);
+tli_write(vdhfile, result);
+
+disp('Main pro finished.')

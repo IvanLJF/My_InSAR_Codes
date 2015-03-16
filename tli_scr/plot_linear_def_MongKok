@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# 初始化
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+output_file="pdef.ps"
+# 创建调色板
+makecpt -Crainbow -T-0.4/0.4/0.01 -I -V -Z > g.cpt
+psbasemap -U"Deformation Velocity near MongKok" -R0/1620/0/1260 -JX5.29i/4.11i -Ba500f200::WeSn -P -K -V  > $output_file
+psimage ../ave.ras -W5.29i/4.11i -O -V -K >> $output_file
+psxy v.txt -R -J -B -Cg.cpt -V -Sc0.013i -K -O >> $output_file
+
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B0.2::/:mm/\y: >> $output_file
+ps2raster -A $output_file

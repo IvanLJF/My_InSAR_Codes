@@ -1,0 +1,165 @@
+#!/bin/sh
+lel1vdhfile='vdh.txt'
+lel1psfile='lel1pdef.ps'
+
+sz=0.01i # Size of the points
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+makecpt -Crainbow -T-31/18/1 -I -V -Z > g.cpt
+
+######################################################
+# plot lel1 result.
+awk '{print $2,6150-$3,$4}' $lel1vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel1psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel1psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel1psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel1psfile
+ps2raster -A -V $lel1psfile
+
+
+###############################################
+lel2vdhfile='lel2vdh.txt'
+lel2mergevdhfile='lel2vdh_merge.txt'
+lel2psfile='lel2pdef.ps'
+lel2mergepsfile='lel2vdh_merge.ps'
+# plot lel2 results.
+awk '{print $2,6150-$3,$4}' $lel2vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel2psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel2psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel2psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel2psfile
+ps2raster -A -V $lel2psfile
+
+awk '{print $2,6150-$3,$4}' $lel2mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel2mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel2mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel2mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel2mergepsfile
+ps2raster -A -V $lel2mergepsfile
+
+
+###############################################
+lel3vdhfile='lel3vdh.txt'
+lel3mergevdhfile='lel3vdh_merge.txt'
+lel3psfile='lel3pdef.ps'
+lel3mergepsfile='lel3vdh_merge.ps'
+# plot lel3 results.
+awk '{print $2,6150-$3,$4}' $lel3vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel3psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel3psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel3psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel3psfile
+ps2raster -A -V $lel3psfile
+
+awk '{print $2,6150-$3,$4}' $lel3mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel3mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel3mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel3mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel3mergepsfile
+ps2raster -A -V $lel3mergepsfile
+
+
+###############################################
+lel4vdhfile='lel4vdh.txt'
+lel4mergevdhfile='lel4vdh_merge.txt'
+lel4psfile='lel4pdef.ps'
+lel4mergepsfile='lel4vdh_merge.ps'
+# plot lel4 results.
+awk '{print $2,6150-$3,$4}' $lel4vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel4psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel4psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel4psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel4psfile
+ps2raster -A -V $lel4psfile
+
+awk '{print $2,6150-$3,$4}' $lel4mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel4mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel4mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel4mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel4mergepsfile
+ps2raster -A -V $lel4mergepsfile
+
+
+###############################################
+lel5vdhfile='lel5vdh.txt'
+lel5mergevdhfile='lel5vdh_merge.txt'
+lel5psfile='lel5pdef.ps'
+lel5mergepsfile='lel5vdh_merge.ps'
+# plot lel5 results.
+awk '{print $2,6150-$3,$4}' $lel5vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel5psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel5psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel5psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel5psfile
+ps2raster -A -V $lel5psfile
+
+awk '{print $2,6150-$3,$4}' $lel5mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel5mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel5mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel5mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel5mergepsfile
+ps2raster -A -V $lel5mergepsfile
+
+
+###############################################
+lel6vdhfile='lel6vdh.txt'
+lel6mergevdhfile='lel6vdh_merge.txt'
+lel6psfile='lel6pdef.ps'
+lel6mergepsfile='lel6vdh_merge.ps'
+# plot lel6 results.
+awk '{print $2,6150-$3,$4}' $lel6vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel6psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel6psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel6psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel6psfile
+ps2raster -A -V $lel6psfile
+
+awk '{print $2,6150-$3,$4}' $lel6mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel6mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel6mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel6mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel6mergepsfile
+ps2raster -A -V $lel6mergepsfile
+
+
+###############################################
+lel7vdhfile='lel7vdh.txt'
+lel7mergevdhfile='lel7vdh_merge.txt'
+lel7psfile='lel7pdef.ps'
+lel7mergepsfile='lel7vdh_merge.ps'
+# plot lel7 results.
+awk '{print $2,6150-$3,$4}' $lel7vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel7psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel7psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel7psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel7psfile
+ps2raster -A -V $lel7psfile
+
+awk '{print $2,6150-$3,$4}' $lel7mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel7mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel7mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel7mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel7mergepsfile
+ps2raster -A -V $lel7mergepsfile
+
+
+###############################################
+lel8vdhfile='lel8vdh.txt'
+lel8mergevdhfile='lel8vdh_merge.txt'
+lel8psfile='lel8pdef.ps'
+lel8mergepsfile='lel8vdh_merge.ps'
+# plot lel8 results.
+awk '{print $2,6150-$3,$4}' $lel8vdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel8psfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel8psfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel8psfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel8psfile
+ps2raster -A -V $lel8psfile
+
+awk '{print $2,6150-$3,$4}' $lel8mergevdhfile >v.txt
+psbasemap -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $lel8mergepsfile
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $lel8mergepsfile
+psxy v.txt -R -J -B -Cg.cpt -V -Sc$sz -K -O >> $lel8mergepsfile
+psscale -Cg.cpt -D5.5i/1.4i/1.9i/0.15i -E -I -O -B5::/:mm/\y: -V >> $lel8mergepsfile
+ps2raster -A -V $lel8mergepsfile
+

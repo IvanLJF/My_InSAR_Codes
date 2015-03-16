@@ -1,0 +1,55 @@
+;
+; Convert the file format using given constrains.
+;
+; Parameters:
+;
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac, 201410111.
+;
+PRO TLI_FORMAT_CONVERT, inputfile, samples, input_format, outputfile=outputfile, output_format=output_format, $
+                        input_swap_endian=input_swap_endian, ouput_swap_endian=output_swap_endian
+  
+  COMPILE_OPT idl2
+  
+  IF NOT KEYWORD_SET(outputfile) THEN outputfile=inputfile+'.convert'
+  IF NOT KEYWORD_SET(output_format) THEN output_format=output_format
+  
+  ; Using file-tiling technique to process the files block-by-block
+  pos=0D
+  blk_lines=100D
+  
+  OPENR, inputlun, inputfile,/GET_LUN
+  
+  nblks=CEIL(lines/blk_lines)
+  
+  FOR i=0, nblks-1 DO BEGIN
+    Print, 'Format converting: '+STRCOMPRESS(i,/REMOVE_ALL)+'/'+STRCOMPRESS(nblks-1,/REMOVE_ALL)
+    
+    
+    
+    
+  ENDFOR
+  
+  ; Read the inputfile
+  samples=DOUBLE(samples)
+  input=TLI_READDATA(inputfile, samples=samples, format=input_format, swap_endian=input_swap_endian)
+  
+  ; Format conversion
+  output_format=STRLOWCASE(output_format)
+  Case output_format OF
+    'double': BEGIN
+      output=DOUBLE(input)
+    END
+    
+    ELSE: BEGIN
+      Message, 'TLI_FORMAT_CONVERT: output format not supported: '+output_format
+    END
+  ENDCASE
+  
+  ; Write data.
+  TLI_WRITE, outputfile, output, swap_endian=output_swap_endian
+  
+  Print, 'Task finished successfully:'+TLI_TIME(/str)
+END

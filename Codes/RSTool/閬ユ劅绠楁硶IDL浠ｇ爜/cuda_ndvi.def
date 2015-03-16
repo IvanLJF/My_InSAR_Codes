@@ -1,0 +1,3 @@
+LIBRARY          cuda_ndvi
+DESCRIPTION      'cuda_ndvi'
+EXPORTS          IDL_Load      @1

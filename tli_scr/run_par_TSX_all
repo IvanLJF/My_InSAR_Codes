@@ -1,0 +1,9 @@
+#!/bin/sh
+for var in $(find ../StripMap-HK-Original -name "*.cos")
+do
+	p=$(echo ${var:0:134})
+	name=$(echo ${var:24:8})
+	echo $name
+	par_TX_SLC $p/*.xml $var $name.slc.par $name.slc
+done
+#par_TX_SLC 

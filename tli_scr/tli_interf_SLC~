@@ -1,0 +1,231 @@
+#! /bin/sh
+###################################################################
+###   tli_interf_SLC: Script for interferogram generation       ###
+###         using:                                              ###
+###         - Two Original SLCs (Master and Slave)
+###         
+##################################################################
+###   History
+###     20140915: Written by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** tli_interf_SLC Generate interferogram using input SLC images. v1.0 20140915."
+echo " "
+echo "    Required data:"
+echo "       - Master image."
+echo "       - Slave image."
+
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_interf_SLC <master_image> <slave_image> [dem] [ml_r] [ml_azi] [unw_method] [geocode_method] [int_mode] [clear]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "master_image     : Full path of master image."
+  echo "slave_image      : Full path of slave image."
+  echo "dem              : Full path of DEM file. (enter '-' for default: ignored)."
+  echo "ml_r             : Multi-look factor in range direction. (enter '-' for default: 1)"
+  echo "ml_azi           : Multi-look factor in azimuth direction. (enter '-' for default: 1)"
+  echo "unw_method       : Phase unwrapping method.(enter '-' for default: 3)"
+  echo "                   1: GAMMA Branch-cut "
+  echo "                   2: GAMMA MCF"
+  echo "                   3: SNAPHU init mode."
+  echo "geocode_method   : Geocode method.(enter '-' for default: 1)"
+  echo "                   0: Simple geocode without using fine-coreg (fast but not accurate)"
+  echo "                   1: Geocode using fine-coreg (Slowly but accurate)"
+  echo "                   2: Using existed lookup table"
+  echo "int_mode         : Interfer mode. (enter '-' for default: GAMMA 2012)"
+  echo "                   0: Tandem-X"
+  echo "                   2: Else"
+  echo "clear            : Clear all the intermedia files."
+  echo ""
+  exit
+fi
+
+# Assignment
+master_image=$1
+slave_image=$2
+
+if [ ! -f $master_image ]; then
+  echo "Error! Master file not exist: $master_image"
+  echo ""
+  exit
+fi
+if [ ! -e $slave_image ]; then
+  echo "Error! Slave file not exist: $slave_image"
+  echo ""
+  exit
+fi
+
+dem='-'
+if [ $# -ge 3 ];then
+  dem=$3
+fi 
+
+ml_r=1
+if [ $# -ge 4 ]; then
+  if [ $4 != '-' ]; then
+    ml_r=$4
+  fi 
+fi 
+
+ml_azi=1
+if [ $# -ge 5 ]; then
+  if [ $5 != '-' ]; then
+    ml_azi=$5
+  fi 
+fi 
+
+unw_method='-'
+if [ $# -ge 6 ]; then
+  unw_method=$6
+fi 
+
+geocode_method=1
+if [ $# -ge 7 ]; then
+  if [ $7 != '-' ]; then
+    geocode_method=$7
+  fi 
+fi 
+
+if [ $# -ge 8 ]; then
+    int_mode=$8
+fi 
+
+# Judge the input file type.
+fname=`basename $master_image`
+suffix=${fname##*.}
+fname=${fname%.*}
+
+if [ $suffix = 'rslc' ]; then
+  coreg_flag=0
+elif [ $suffix = 'slc' ]; then
+  coreg_flag=1
+else
+  echo "Suffix not supported: $suffix"
+  exit
+fi
+
+show_pwr=1  # 0: Plot images without using pwr.
+
+master_date=`basename $master_image .$suffix`
+slave_date=`basename $slave_image .$suffix`
+M_S=$master_date-$slave_date
+width=`awk '$1=="range_samples:" {print $2}' $master_image.par`
+lines=`awk '$1=="azimuth_lines:" {print $2}' $master_image.par`
+master_par=$master_image.par
+slave_par=$slave_image.par
+MS_off=$M_S.off
+
+
+if false; then
+# Coregistration and create interferogram.
+
+if [ $coreg_flag -eq 0 ]; then
+  # Create off par.
+  echo -ne "$M_S\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > temp
+  create_offset $master_par $slave_par $MS_off 1 1 1 <temp
+  rm -f temp
+  # Interf_SLC
+  
+  #interf_SLC $master_image $slave_image $master_par $slave_par $MS_off $master_date.pwr $slave_date.pwr $M_S.int $ml_r $ml_azi   # Errors might be encountered.
+  SLC_intf $master_image $slave_image $master_par $slave_par $MS_off $M_S.int $ml_r $ml_azi - - 1 1
+  ###########################################
+  ## This is especially for repeat-pass int.
+  ###########################################
+    
+  multi_look $slave_image $slave_image.par $slave_date.pwr $slave_date.pwr.par $ml_r $ml_azi - - - -
+  
+  width=`tli_params $slave_date.pwr.par range_samples`
+  
+  cc_wave $M_S.int - - $M_S.cc $width 5 5
+  
+  if [ $show_pwr -eq 0 ]; then
+    rasmph $M_S.int $width - - - - - - - - 0  
+  else
+    rasmph_pwr $M_S.int $slave_date.pwr $width - - - - - - - - - $M_S.cc
+  fi
+  
+  rascc $M_S.cc $slave_date.pwr $width
+  cp $master_image $master_image.par $slave_image $slave_image.par .
+else
+  tli_coreg_single_pair $master_image $slave_image $ml_r $ml_azi
+fi
+multi_look $master_date.rslc $master_date.rslc.par $master_date.pwr $master_date.pwr.par $ml_r $ml_azi 
+
+# Flattenning.
+base_init $master_par $slave_par $MS_off $M_S.int $M_S.base 2 1024 1024  # Change 0 to 2, tli@20141215
+  ###########################################
+  ## baseest_fft is designed especially for repeat-pass int.
+  ###########################################
+
+base_perp $M_S.base $master_par $MS_off > $M_S.base.perp.txt
+
+if true; then
+  phase_sim $master_par $MS_off $M_S.base - $M_S.sim_unw.unflt 0 0 - - $int_mode  # Supported only by GAMMA 2012 and higher version.  
+  echo -ne "$M_S\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+  create_diff_par $MS_off - $M_S.diff.par 0 < create_diff_parin
+  rm -f create_diff_parin
+  sub_phase $M_S.int $M_S.sim_unw.unflt $M_S.diff.par $M_S.int.flt 1 0
+else
+  ph_slope_base $M_S.int $master_par $MS_off $M_S.base $M_S.int.flt
+fi  
+width=`tli_params $master_date.pwr.par 'range_samples'`
+if [ $show_pwr -eq 0 ]; then
+  rasmph $M_S.int.flt $width - - - - - - - - 0
+else
+  rasmph_pwr $M_S.int.flt $slave_date.pwr $width - - - - - - - -  
+fi 
+
+#########################################
+# Refine baseline
+base_init $master_par $slave_par $MS_off $M_S.int.flt $M_S.base.res 4
+base_add $M_S.base $M_S.base.res $M_S.base1 1
+#base_add $M_S.base1 $M_S.base.res $M_S.base 1
+mv $M_S.base1 $M_S.base
+phase_sim $master_par $MS_off $M_S.base - $M_S.sim_unw.unflt 0 0 - - $int_mode  # Supported only by GAMMA 2012 and higher version.  
+  echo -ne "$M_S\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+  create_diff_par $MS_off - $M_S.diff.par 0 < create_diff_parin
+  rm -f create_diff_parin
+  sub_phase $M_S.int $M_S.sim_unw.unflt $M_S.diff.par $M_S.int.flt 1 0
+
+
+
+# Phase unwrapping
+if false; then  # Using the method provided by GAMMA
+  UNWRAP $M_S.int.flt $M_S.cc $slave_date.pwr $M_S.unw $M_S.unw.flag $width $lines
+else # Using my own method. Filtering is applied for many times in this method.
+  if [ $suffix = 'rslc' ]; then
+    tli_unwrap $master_image $slave_image $M_S.int.flt $unw_method
+  elif [ $suffix = 'slc' ]; then
+    cp $master_image $master_date.rslc
+    cp $master_image.par $master_date.rslc.par
+    tli_unwrap $master_date.rslc $slave_date.rslc $M_S.int.flt $unw_method
+  fi
+fi
+
+# Geocoding and generate DSM.
+tli_geocode_unw $M_S.flt.filt.unw $master_date.rslc.par 0 $dem $geocode_method
+
+# Plot DSM and provide quality assessments.
+workpath=`pwd`
+int_demfile=$workpath/$M_S.hgt.utm 
+ref_demfile=$workpath/dem_seg
+err_demfile=$int_demfile.err 
+idl << EOF
+TLI_REPORT_INT_DEM_ERROR, "$int_demfile", "$ref_demfile", parfile=parfile, errfile=errfile, reportfile=reportfile, histfile=histfile
+EOF
+
+
+fi
+workpath=`pwd`
+int_demfile=$workpath/$M_S.hgt.utm 
+ref_demfile=$workpath/dem_seg
+err_demfile=$int_demfile.error
+idl << EOF
+TLI_PLOT_INT_DEM,"$int_demfile", dem_segparfile=dem_segparfile, outputfile=outputfile
+TLI_PLOT_INT_DEM,"$ref_demfile", dem_segparfile=dem_segparfile, outputfile=outputfile
+TLI_PLOT_INT_DEM,"$err_demfile", dem_segparfile=dem_segparfile, outputfile=outputfile
+EOF
+
+echo "Task finished successfully." 

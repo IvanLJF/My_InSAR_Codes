@@ -1,0 +1,18 @@
+;
+; Make the image fit the window
+;
+; Parameters:
+;
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac, 20150105
+;
+PRO TLI_SMC_ZOOM
+  
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  
+  
+  
+END

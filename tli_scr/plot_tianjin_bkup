@@ -1,0 +1,61 @@
+#! /bin/sh
+
+# 绘制研究区域
+
+outputfile='Tianjin.ps'
+
+# xyz2grd ETOPO2.raw.bin -Getopo2.grd -I2m -Rd -ZTLhxyw
+
+makecpt -Cglobe -T-8000/8000/100 -Z > colors.cpt
+grdimage etopo2.grd -Ba10g5 -R73/135/4/54 -P -Yc -Xc -JM15c -Ccolors.cpt -K > $outputfile
+pscoast -Di -Na -R -JM15c -O -K >> $outputfile
+#psscale -Ba1000f100::/:"m": -Ccolors.cpt -D7.5c/-2c/15c/.35ch -O -K >> $outputfile
+
+# show Tianjin
+#psxy -R -JM15c -O -K  -L  -Wfaint -Gred -St0.39 << END >>$outputfile
+#117.2 39.13
+#END
+pstext << EOT -JM15c -O -K -R >> $outputfile
+115 41.5 12 0 3 LM Tianjin
+EOT
+# Plot a rectangle
+# A rectangle covering tianjin
+cat > tianjin.d << END
+116.516 38.566
+116.516 40.25
+118.323 40.25
+118.32. 38.566
+END
+psxy tianjin.d -JM15c -L -O -K -R -W1.55p/255/0/0 >>$outputfile
+if true
+then
+# plot 2 lines
+psxy -A -JM15c -K -O -R -W1.75p/red << END >> $outputfile
+116.516 38.566
+73 40.1
+END
+psxy -A -JM15c -K -O -R -W1.75p/red << END >> $outputfile
+118.323 40.25
+89 54
+END
+
+
+# show detailed Tianjin
+# psbasemap -Ba1f0.5::wsen -Jm1i -K -O -R116/119/38/41 -X1c -Y1c >>$outputfile
+grdimage etopo2.grd -Ba1g0.5::ES -R116.5/118/38.5/40 -P -Y9.73 -X0 -Jm1i -Ccolors.cpt -K -O >> $outputfile
+# A rectangle covering image
+cat > tsx.d << END
+116.869 38.895
+116.869 39.405
+117.069 39.405
+117.069 38.895
+END
+
+psxy tsx.d -Jm1i -L -O -R -W1.55p/0/255/255 >>$outputfile
+fi
+
+rm -f tianjin.d tsx.d
+
+
+
+

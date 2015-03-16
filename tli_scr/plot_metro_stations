@@ -1,0 +1,24 @@
+#! /bin/sh
+
+# 绘制研究区域
+
+outputfile='Shanghai_stations.ps'
+#raspwr ave.pwr 8543 - - - - - - - ave.utm.rmli.ras
+gmtset ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+       LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i GRID_PEN_PRIMARY 0.5p BASEMAP_FRAME_RGB 255/255/255
+
+makecpt -Cglobe -T-100/100/1 -Z > colors.cpt
+
+psbasemap -R0/4688.0000/0/7208.0000 -JX3i/4.6126280i -Ba937f468::WeSn -P -K -V  > $outputfile
+psimage ave_large.ras -Gtblack -W3i/4.6126280i -K -O -V >>$outputfile
+
+# Plot the stations.
+psxy -Gred -J -K -R -Ss0.1i -O -V -W0.005i/black ml1_coor.txt >> $outputfile
+psxy -Ggreen -J -K -R -Ss0.1i -O -V -W0.005i/black ml3_coor.txt >> $outputfile
+
+pstext -J -R -O -V -Gwhite -W ml_anno_lel8_final >> $outputfile
+
+ps2raster -A -Tt -E800 $outputfile
+convert Shanghai_stations.tif -trim -bordercolor White Shanghai_stations.tif
+geeqie Shanghai_stations.tif
+

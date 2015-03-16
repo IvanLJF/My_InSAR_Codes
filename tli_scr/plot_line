@@ -1,0 +1,20 @@
+#! /bin/sh
+
+#gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+#LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+
+# Analize modes' cosistency with original data
+mcosfile='model-cosis.ps'
+#psxy *orig.txt -P -UBL/0/-1.1 -R-1.6/1.2/-3.14/3.14 -JX4i/1.5i -Ba0.5f0.1g0.5/a1f0.1g1WSne -W2.75/255/0/0 -K -V > $mcosfile
+psxy *orig.txt -Ba0.5f0.1g0.3/a0.3f0.1g0.3WSne -Gred -JX5i/3.05i -K -P -R-1.6/1.2/-1/1 -St0.05i -UBL/0/-1.1 -V -Wred > $mcosfile
+psxy *psd.txt -J -K -R -W0.01i/0/255/255 -O -V >>$mcosfile
+psxy *ls.txt -J -K -R -W0.01i/0/255/0 -O -V >>$mcosfile
+psxy *linear_regression.txt -J -R -W0.01i/255/0/255 -O -K -V >>$mcosfile
+# add a legend to the image.
+pslegend -J -R -O -Dx5.2i/1.88i/1.5i/0.63i/BL -Fthin >> $mcosfile << END
+N 1
+S 0.1i t 0.05i red 0.01i/255/0/0 0.3i Real Data
+S 0.1i - 0.2i - 0.02i/0/255/255 0.3i PSD Model
+S 0.1i - 0.2i - 0.02i/0/255/0 0.3i LS Model
+S 0.1i - 0.2i - 0.02i/255/0/255 0.3i Linear Model
+END

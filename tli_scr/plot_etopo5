@@ -1,0 +1,9 @@
+#! /bin/sh
+
+# 绘制ETOPO5数据
+# Plot ETOPO5 data using GMT. ETOPO5 data is found on the internet.
+xyz2grd ETOPO5.DAT -Getopo5.grd -I5m -Rg -ZTLxyhw
+makecpt -Cglobe -T-10000/10000/1000 -Z > colors.cpt
+grdimage etopo5.grd -Ba60g30 -Rg -Yc -Xc -JN0/25c -Ccolors.cpt -K > world.ps
+psscale -Ba2500f500::/:"m": -Ccolors.cpt -D12.5c/-2c/15c/.35ch -O >> world.ps
+

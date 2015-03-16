@@ -1,0 +1,145 @@
+#! /bin/sh
+###################################################################
+###   tli_unwrap: Script for phase unwrapping                   ###
+###         using:                                              ###
+###         - master image 
+###         - slave image
+###         - interferogram
+###         
+##################################################################
+###   History
+###     20140916: Written by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** tli_unwrap. v1.0 20140916."
+echo " "
+echo "    Required data:"
+echo "       - Master image."
+echo "       - Slave image."
+echo "       - Interferogram."
+echo ""
+
+if [ $# -lt 3 ]; then
+  echo ""
+  echo "Usage: tli_unwrap <master_image> <slave_image> <interferogram>"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "master_image     : Full path of master image."
+  echo "slave_image      : Full path of slave image."
+  echo "interferogram    : Full path of interferogram."
+  echo ""
+  exit
+fi
+
+# Assignment
+master_image=$1
+slave_image=$2
+int_image=$3
+log=`pwd`/log.txt
+echo "Phase unwrapping. Started at time `date`" >>$log
+
+fname=`basename $master_image`
+suffix=${fname##*.}
+if [ $suffix != 'rslc' ]; then
+  echo "Error! Please co-register the images using tli_coreg_single_pair first."
+  echo ""
+  exit
+fi
+
+master_date=`basename $master_image ".rslc"`
+slave_date=`basename $slave_image ".rslc"`
+M_S=$M_S
+master_par=$master_image.par
+slave_par=$slave_image.par
+M_S=$master_date-$slave_date
+MS_off=$M_S.off
+width=`awk '$1 == "range_samples:" {print $2}' $master_par`
+
+if true; then
+# Interferogram Filtering.
+echo "Filtering the image for the first time. Please wait..."
+adf $int_image $M_S.flt.filt $M_S.filt.cc $width 0.3 128         >>$log
+echo "Filtering the image for the second time. Please wait..."
+adf $M_S.flt.filt $M_S.flt.filttemp $M_S.filt.cc $width 0.3 64   >>$log
+echo "Filtering the image for the third time. Please wait..."
+adf $M_S.flt.filttemp $M_S.flt.filt $M_S.filt.cc $width 0.3 32   >>$log
+  if false; then   # Filter for another several times.
+    for i in {1..5}
+    do
+      echo "Filtering the image for another 5 times. Please wait..."
+      adf $M_S.flt.filt $M_S.flt.filttemp $M_S.filt.cc $width 0.3 32 >>$log
+      mv $M_S.flt.filttemp $M_S.flt.filt
+    done
+  fi
+#else
+ # cp $int_image $M_S.flt.filt 
+  #cc_wave $int_image - - $M_S.filt.cc $width - - 0 
+fi
+
+echo "Creating filtered raster images."
+rasmph_pwr $M_S.flt.filt $slave_date.pwr $width 1 1 0 1 1 1. 0.35 1 $M_S.flt.filt.ras >>$log
+rascc $M_S.filt.cc $slave_date.pwr $width - - - - - - - - - - $M_S.filt.cc.ras        >>$log
+
+#############################################
+# Unwrap Differential Flattened Interferogram
+#############################################
+rm -f $M_S.flt.filt.unw $M_S.flt.filt.flag
+
+method=1
+case "$method" in
+  1)
+    #GAMMA mst( branch cut)
+    echo "Phase unwrapping using GAMMA mst method."
+    corr_flag $M_S.filt.cc $M_S.flt.filt.flag $width 0.2         >>$log
+    rasbyte $M_S.flt.filt.flag $width - - - - - - $M_S.flt.filt.flag.ras              >>$log
+    neutron $slave_date.pwr $M_S.flt.filt.flag $width - - -      >>$log
+    residue $M_S.flt.filt $M_S.flt.filt.flag $width              >>$log
+    tree_cc $M_S.flt.filt.flag $width 32                         >>$log      # This is the most time-consuming step.    
+    #grasses $M_S.flt.filt $M_S.flt.filt.flag $M_S.flt.filt.unw $width
+    grasses $M_S.flt.filt $M_S.flt.filt.flag $M_S.flt.filt.unw $width - - - - - -     >>$log
+    ;;
+    
+  2)
+    # GAMMA mcf
+    echo "Phase unwrapping using GAMMA mcf method."
+    npat_r=1
+    npat_az=1
+    corr_flag $M_S.filt.cc $M_S.flt.filt.flag $width 0.4          >>$log
+    rasbyte $M_S.flt.filt.flag $width - - - - - - $M_S.flt.filt.flag.ras              >>$log
+    mcf $M_S.flt.filt $M_S.filt.cc $M_S.flt.filt.flag.ras $M_S.flt.filt.unw $width 1 - - - - $npat_r $npat_az - - - -  >>$log
+    ;;
+  
+  3) 
+    # Snaphu
+    echo "Phase unwrapping using SHAPHU method."
+    intfile=`pwd`/$M_S.flt.filt
+    unwfile=`pwd`/$M_S.flt.filt.unw
+    ccfile=`pwd`/$M_S.filt.cc
+
+    # Convert the format of wrapped phase and cc file to ALT_LINE_DATA(snaphu)
+    swap_bytes $intfile $intfile.swap 4                           >>$log
+    idl << EOF
+      tli_format_convert, "$ccfile", $width, 'float', output_format='alt_line_data',/input_swap_endian
+EOF
+
+    rm -f unwrapped.snaphu_ini
+    snaphu $intfile.swap $width -v -c $ccfile.convert -o unwrapped.snaphu_ini -i >>$log
+    # Convert the format of unwrapped data to ALT_LINE_DATA(unwrapped data is organized as [amplitude, phase])
+    idl << EOF
+      tli_format_convert, "`pwd`/unwrapped.snaphu_ini", $width, 'alt_line_data', output_format='float',/output_swap_endian
+EOF
+    
+    mv unwrapped.snaphu_ini.convert $unwfile
+    
+    rm -f $ccfile.convert unwrapped.snaphu_ini 
+    ;;
+  
+  *)
+    echo "ERROR! tli_unwrap, phase unwrapping method not supported." 
+    exit ;;
+esac
+
+rasrmg  $M_S.flt.filt.unw $slave_date.pwr $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $M_S.flt.filt.unw.ras  >>$log
+geeqie $M_S.flt.filt.unw.ras    >>$log
+grep error $log

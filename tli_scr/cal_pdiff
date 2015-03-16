@@ -1,0 +1,29 @@
+#! /bin/sh
+
+ptfile=plist
+master=20091113
+pdifffile=$ptfile.pdiff
+pdifffile_swap=$pdifffile.swap
+mslc_par=../piece/$master.rslc.par
+masterpwr=../piece/$master.rslc.pwr
+
+type=0
+format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+if [ "$format" == "SCOMPLEX" ]
+then
+	type=1
+fi
+
+rm -f pSLC pbase pdem pint psim_unw0 $pdifffile
+SLC2pt ../SLC_tab $ptfile - pSLC_par pSLC -
+base_orbit_pt pSLC_par ../itab - pbase
+npt $ptfile >numberp
+np=$(awk '$1 == "total_number_of_points:" {print $2}' numberp)
+rm -f numberp
+# 如有问题，检查参数，某些参数用-来代替会出现问题
+data2pt ../$master.hgt $masterpwr.par $ptfile $mslc_par pdem 1 2
+intf_pt $ptfile - ../itab - pSLC pint $type pSLC_par
+# pdismph_pwr24 pt - $mslc_par pint 25 $masterpwr.par ave.pwr 1 #显示第25幅影像的干涉图
+phase_sim_pt $ptfile - pSLC_par - ../itab - pbase pdem psim_unw0 - 0 0 #############注意，相位模拟可能存在问题
+sub_phase_pt $ptfile - pint - psim_unw0 $pdifffile 1 0
+swap_bytes $pdifffile $pdifffile_swap 4

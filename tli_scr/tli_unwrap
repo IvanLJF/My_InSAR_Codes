@@ -1,0 +1,232 @@
+#! /bin/sh
+###################################################################
+###   tli_unwrap: Script for phase unwrapping                   ###
+###         using:                                              ###
+###         - master image 
+###         - slave image
+###         - interferogram
+###         
+##################################################################
+###   History
+###     20140916: Written by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** tli_unwrap. v1.0 20140916."
+echo " "
+echo "    Required data:"
+echo "       - Master image."
+echo "       - Slave image."
+echo "       - Interferogram."
+echo ""
+
+if [ $# -lt 3 ]; then
+  echo ""
+  echo "Usage: tli_unwrap <master_image> <slave_image> <interferogram> [method] [filt_mask] "
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "master_image     : Full path of master image."
+  echo "slave_image      : Full path of slave image."
+  echo "interferogram    : Full path of interferogram."
+  echo "method           : Phase unwrapping method.(enter '-' for default: 3)"
+  echo "                   1: GAMMA Branch-cut "
+  echo "                   2: GAMMA MCF"
+  echo "                   3: SNAPHU init mode."
+  echo "filt_mask        : Filtering mask. (enter '-' for default: 1)"
+  echo "                   0: No filtering"
+  echo "                   1: Filtering for 1 time."
+  echo "                   2: Filtering for 3 times."
+  echo "                   3: Filtering for 8 times. Only used for testing over-filtering effects."
+  echo ""
+  exit
+fi
+
+# Assignment
+master_image=$1
+slave_image=$2
+int_image=$3
+
+method=3
+if [ $# -ge 4 ];then
+  if [ $4 != '-' ];then
+    method=$4
+  fi 
+fi 
+
+filt_mask=1
+if [ $# -ge 5 ]; then
+  if [ $5 != '-' ];then
+    filt_mask=$5
+  fi 
+fi 
+
+log=`pwd`/log.txt
+
+fname=`basename $master_image`
+suffix=${fname##*.}
+if [ $suffix != 'rslc' ]; then
+  echo "Error! Please co-register the images using tli_coreg_single_pair first."
+  echo ""
+  exit
+fi
+
+master_date=`basename $master_image ".rslc"`
+slave_date=`basename $slave_image ".rslc"`
+M_S=$M_S
+master_par=$master_image.par
+slave_par=$slave_image.par
+M_S=$master_date-$slave_date
+MS_off=$M_S.off
+width=`tli_params $slave_date.pwr.par range_samples`
+
+case "$filt_mask" in
+  0) 
+    echo 'Unwrapped image was not filtered at all.' >>log.txt
+    cp $int_image $M_S.flt.filt
+    cc_wave $int_image - - $M_S.filt.cc $width - - 0
+    cp $M_S.filt.cc $M_S.filt_presv.cc  
+  ;;
+  
+  1)
+    echo ''
+    echo 'The unwrapped image was filtered for 1 time' >>log.txt
+    adf $int_image $M_S.flt.filt $M_S.filt.cc $width 0.5 32 7 8 0 0 0.25
+    cp $M_S.filt.cc $M_S.filt_presv.cc 
+  ;;
+  
+  2) 
+    echo 'The unwrapped image was filtered for 3 times' >>log.txt
+    # Interferogram Filtering.
+    echo "Filtering the image for the first time. Please wait..."
+    adf $int_image $M_S.flt.filt $M_S.filt.cc $width 0.3 128 
+    mv $M_S.filt.cc $M_S.filt_presv.cc
+    echo "Filtering the image for the second time. Please wait..."
+    adf $M_S.flt.filt $M_S.flt.filttemp $M_S.filt.cc $width 0.3 64 
+    echo "Filtering the image for the third time. Please wait..."
+    adf $M_S.flt.filttemp $M_S.flt.filt $M_S.filt.cc $width 0.3 32 
+    ;;
+  3)
+    echo 'The unwrapped image was filtered for 8 times' >>log.txt  # Used to test the over-filterring effects.
+    # Interferogram Filtering.
+    echo "Filtering the image for the first time. Please wait..."
+    adf $int_image $M_S.flt.filt $M_S.filt.cc $width 0.3 128 
+    mv $M_S.filt.cc $M_S.filt_presv.cc
+    echo "Filtering the image for the second time. Please wait..."
+    adf $M_S.flt.filt $M_S.flt.filttemp $M_S.filt.cc $width 0.3 64 
+    echo "Filtering the image for the third time. Please wait..."
+    adf $M_S.flt.filttemp $M_S.flt.filt $M_S.filt.cc $width 0.3 32 
+    if false; then   # Filter for another several times.
+      for i in {1..5}
+      do
+        echo "Filtering the image for another 5 times. Please wait..."
+        adf $M_S.flt.filt $M_S.flt.filttemp $M_S.filt.cc $width 0.3 32 
+        mv $M_S.flt.filttemp $M_S.flt.filt
+      done
+    fi
+    ;;
+  *)
+    echo "tli_unwrap: ERROR! Filtering method is not supported."
+    ;;
+esac    
+
+
+echo "Creating filtered raster images."
+rasmph_pwr $M_S.flt.filt $slave_date.pwr $width 1 1 0 1 1 1. 0.35 1 $M_S.flt.filt.ras 
+rascc $M_S.filt.cc $slave_date.pwr $width - - - - - - - - - - $M_S.filt.cc.ras 
+
+#############################################
+# Unwrap Flattened Interferogram
+#############################################
+rm -f $M_S.flt.filt.unw $M_S.flt.filt.flag
+case "$method" in
+  1)
+    #GAMMA branch cut
+    echo "" >>log.txt
+    echo "pwd is `pwd`" >>log.txt
+    echo "Phase unwrapping using GAMMA Branch-cut method. " >>log.txt
+    echo "Started at time:`date`" >>log.txt
+    
+    corr_flag $M_S.filt.cc $M_S.flt.filt.flag $width 0.3
+    # rasbyte $M_S.flt.filt.flag $width - - - - - - $M_S.flt.filt.flag.ras              >>$log
+    neutron $master_date.pwr $M_S.flt.filt.flag $width - - -     
+
+    residue $M_S.flt.filt $M_S.flt.filt.flag $width         
+
+    tree_cc $M_S.flt.filt.flag $width 64                # This is the most time-consuming step. 
+ 
+    #grasses $M_S.flt.filt $M_S.flt.filt.flag $M_S.flt.filt.unw $width
+    # xinit=1200
+    # yinit=1500
+    grasses $M_S.flt.filt $M_S.flt.filt.flag $M_S.flt.filt.unw $width - - - - $xinit $yinit 
+    echo "Ended at time:`date`" >>log.txt
+    echo "" >>log.txt
+    ;;
+    
+  2)
+    # GAMMA mcf
+    echo "" >>log.txt
+    echo "pwd is `pwd`" >>log.txt
+    echo "Phase unwrapping using GAMMA mcf method." >>log.txt
+    echo "Started at time:`date`" >>log.txt
+    npat_r=2
+    npat_az=2
+    if true; then
+      rm -f $M_S.mask.ras $M_S.mask_thinned.ras
+      rascc_mask $M_S.filt.cc $slave_date.pwr $width 1 1 0 1 1 0.3 0.0 - - - - - $M_S.mask.ras 
+      
+      #rascc_mask_thinning $M_S.mask.ras $M_S.filt.cc $width $M_S.mask_thinned.ras 5 0.3 0.4 0.5 0.6 0.7
+      rascc_mask_thinning $M_S.mask.ras $M_S.filt.cc $width $M_S.mask_thinned.ras 3 0.3 0.4 0.5
+      mcf $M_S.flt.filt $M_S.filt.cc $M_S.mask_thinned.ras $M_S.flt.filt.unw_thinned $width 1 - - - - $npat_r $npat_az 512 - - - >>memory.txt
+      interp_ad $M_S.flt.filt.unw_thinned $M_S.unw_interp $width 32 8 16 2
+      unw_model $M_S.flt.filt $M_S.unw_interp $M_S.flt.filt.unw $width - - 0.0
+    fi
+    echo "Ended at time:`date`" >>log.txt
+    echo "" >>log.txt
+    ;;
+  
+  3) 
+    # Snaphu
+    echo "" >>log.txt
+    echo "pwd is `pwd`" >>log.txt
+    echo "Phase unwrapping using SHAPHU method." >>log.txt
+    echo "Started at time:`date`" >>log.txt
+    intfile=`pwd`/$M_S.flt.filt
+    unwfile=`pwd`/$M_S.flt.filt.unw
+    ccfile=`pwd`/$M_S.filt.cc
+
+    # Convert the format of wrapped phase and cc file to ALT_LINE_DATA(snaphu)
+    swap_bytes $intfile $intfile.swap 4                      
+    idl << EOF
+      tli_format_convert, "$ccfile", $width, 'float', output_format='alt_line_data',/input_swap_endian
+EOF
+
+    rm -f unwrapped.snaphu_ini
+    # snaphu $intfile.swap $width -v -c $ccfile.convert -o unwrapped.snaphu_ini -i
+    snaphu $intfile.swap $width -v -c $ccfile.convert -o unwrapped.snaphu_ini -s
+    # Convert the format of unwrapped data to ALT_LINE_DATA(unwrapped data is organized as [amplitude, phase])
+    idl << EOF
+      tli_format_convert, "`pwd`/unwrapped.snaphu_ini", $width, 'alt_line_data', output_format='float',/output_swap_endian
+EOF
+    
+    mv unwrapped.snaphu_ini.convert $unwfile
+    
+    rm -f $ccfile.convert unwrapped.snaphu_ini 
+    echo "Ended at time:`date`" >>log.txt
+    echo "" >>log.txt
+    ;;
+  
+  *)
+    echo "ERROR! tli_unwrap, phase unwrapping method not supported." 
+    exit ;;
+esac
+
+pwrfile=$slave_date.pwr  # or -
+#pwrfile=-
+#rasrmg  $M_S.flt.filt.unw $pwrfile $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $M_S.flt.filt.unw.ras 
+rasrmg  $M_S.flt.filt.unw $pwrfile $width
+temp=`grep error $log`
+if [ "$temp" != '' ];then
+  echo 'Error! Please see the log file.'
+  grep error $log
+  exit
+fi 

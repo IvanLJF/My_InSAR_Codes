@@ -1,0 +1,13 @@
+#! /bin/sh
+#  1. 把路径P1及其子目录下的所有rslc文件全部移动到P2路径下(在终端直接输入以下命令)：
+#		find /P1 -name "*.rslc" -exec mv {} /P2 \;
+# 2. 在当前文件夹中建立‘20090327’‘20090403’等类型的目录，并将文件夹中的.rslc和.par放到对应目录中(请运行脚本)。
+for variable in ls *.rslc
+do
+   if [ -e $variable ]
+   then 
+    folder=`expr substr $variable 1 8`
+    mkdir $folder
+    mv "$variable.par" "$variable" $folder/
+	fi
+done

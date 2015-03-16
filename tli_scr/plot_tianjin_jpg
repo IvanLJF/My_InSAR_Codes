@@ -1,0 +1,28 @@
+#! /bin/sh
+
+# 绘制研究区域
+
+inputfile='Fig.3.Tianjin.ras' #这个是输入文件
+outputfile='Tianjinjpg.ps' #这个是输出文件
+
+gmtset ANNOT_FONT_SIZE_PRIMARY 12p ANNOT_FONT_SIZE_SECONDARY 10p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+       LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i GRID_PEN_PRIMARY 0.5p
+psbasemap -R115.477/118.765/38.0277/41.1488 -JM5i -Ba0.5f0.5g0.5::WeSn -P -K -V  >$outputfile # 设计底图的经纬度范围
+psimage $inputfile -Gtblack -W5i/6.15i -O -K -V >>$outputfile #添加图片，图片名称为Fig.3.Tianjin.ras
+
+psbasemap -R115.477/118.765/38.0277/41.1488 -JM5i -Ba0.5f0.5g0.5::WeSn -P -Tf118.25/40.75/0.75i::f0.75i -V -Lf118.25/38.25/40/60+f255/255/255 -O >>$outputfile # 绘制对应的网格线。
+
+if false; then # if里面的代码被注释掉了，不用管。
+psbasemap -R115.477/118.765/38.0277/41.1488 -JM5i -Ba0.5f0.5g0.5::WeSn -P -K -V  >$outputfile
+psimage Fig.3.Tianjin.ras -Gtblack -W5i/6.15i -O -V >>$outputfile
+
+
+psbasemap -R115.477/118.765/38.0277/41.1488 -JM5i -Ba0.5f0.5g0.5::WeSn -P -Tm118.25/40.75/1i::+45/10/5 -V -Lf118.25/38.25/40/60 >$outputfile
+
+psbasemap -R115.477/118.765/38.0277/41.1488 -JM5i -Ba0.5f0.5g0.5::WeSn -P -Tm118.25/40.75/0.75i::+45/10/5+f255/255/255 -V -Lf118.25/38.25/40/60+f255/255/255 -O >>$outputfile
+fi
+
+ps2raster -A $outputfile #将Ras文件转换为jpg
+
+geeqie `basename $outputfile '.ps'`.jpg
+

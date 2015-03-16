@@ -1,0 +1,10 @@
+#! /bin/bash
+idl <<EOF
+print,'123456'
+TV, DIST(500)
+wait, 5
+EOF
+
+
+#idl -rt /mnt/software/myfiles/My_InSAR_Tools/InSAR/test.sav
+#exit

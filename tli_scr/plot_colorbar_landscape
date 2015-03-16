@@ -1,0 +1,13 @@
+#!/bin/sh
+gmtset ANNOT_FONT_SIZE 8p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 8p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i BASEMAP_FRAME_RGB +white
+output_file="h_colorbar.ps"
+cpt='tli_def'
+# 创建调色板
+makecpt -C$cpt -T-52.241060/0.0000000/0.100000 -I -V -Z > g.cpt
+psbasemap -R0/5000.0000/0/6150.0000 -JX3i/3.6900000i -Ba1000f500::WeSn -P -K -V  > $output_file
+gmtset BASEMAP_FRAME_RGB +black
+psscale -Cg.cpt -D3.2000002i/1.3000000i/3.2804199i/0.05ih -E -I -O -B4::/:mm/yr: >> $output_file
+ps2raster -A -Tt -E800 $output_file
+convert h_colorbar.tif -trim -bordercolor White h_colorbar.tif
+geeqie h_colorbar.tif

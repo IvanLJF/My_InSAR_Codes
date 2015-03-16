@@ -1,0 +1,6 @@
+#! /bin/sh
+
+# Start goagent
+
+cd /usr/local/google_appengine/goagent-goagent-b767d1f/local
+python proxy.py

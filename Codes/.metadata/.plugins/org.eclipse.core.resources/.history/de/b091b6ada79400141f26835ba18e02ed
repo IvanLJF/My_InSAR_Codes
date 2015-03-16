@@ -1,0 +1,14 @@
+;
+; Make the image fit the window
+;
+; Parameters:
+;
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac
+;
+PRO TLI_SMC_ZOOM
+  
+  
+END

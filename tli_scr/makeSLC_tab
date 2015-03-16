@@ -1,0 +1,9 @@
+#! /bin/sh
+# 将一个文件夹下的所有SLC写入SLC_tab
+
+for variable in ls *.slc
+do
+   if [ -e $variable ]
+	then echo "/mnt/backup/TerraSAR_TianJin/"$variable" /mnt/backup/TerraSAR_TianJin/"$variable".par">> SLC_tab
+	fi
+done

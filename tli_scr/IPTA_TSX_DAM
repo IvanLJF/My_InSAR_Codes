@@ -1,0 +1,193 @@
+#!/bin/sh
+###########################################################
+# Purpose:
+# 	Do IPTA for the given area.
+# Calling Sequence:
+# 	./IPTA_TJ_TSX.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	IPTA results that can be checked by using some professional tools.
+# Commendations:
+# 	None
+# Modification History:
+# 	24/02/2012: Written by T.L @ InSAR Team in SWJTU & CUHK.
+######################################
+### Set some parameters
+######################################
+origpath="/mnt/backup/TSX-HK/Coreg_SLC_GAMMA"                 #原始SLC所在路径
+dem="/mnt/backup/DEM/HKDEM/hkdem_hgt/hkdem.dem"                     #原始DEM所在路径
+path="/mnt/software/myfiles/Software/experiment/TSX_PS_HK_DAM/piece"     #裁剪之后的SLC所在路径
+master="20091114"
+masterpwr=$path/$master.rslc.pwr
+mslc_par=$path/$master.rslc.par
+# set the cropping parameters
+roff="17900"      #roff: offset to starting range sample
+nr="2000"       #nr: number of range samples
+loff="16040"    #loff: offset number of lines to start
+nl="1700"       #nl: number of lines to copy (enter 0: to end of file)
+itab_type=0     #0: single master;  1: all pairs
+dem_par=$dem.par
+####################################################################
+# 1. 准备SLC数据
+####################################################################
+if true
+then
+	mkdir -p $path
+	rm -f SLC_org im_list SLC_tab
+	find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+	SLC_copy_all SLC_org $path $roff $nr $loff $nl
+	find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+	find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+	find $path -name "*.pwr" -exec echo {} >>im_list \;
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+	ave_image im_list $width ave.pwr  #ave.pwr
+	mv $masterpwr.par .
+	mv $masterpwr .
+	rm -f $path/*.pwr $path/*.pwr.par
+	mv $master.rslc.pwr.par $path/
+	mv $master.rslc.pwr $path/
+	# raspwr ave.pwr $width - - - - - - - ave.ras  #ave.ras
+	raspwr ave.pwr $width 1 0 1 1 1 0.35 1 ave.ras 0 0
+fi
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+if true
+then
+####################################################################
+# 2. 准备高程数据
+####################################################################
+
+	rm -f dem_seg dem_seg.par lookup lookup_fine
+	gc_map $masterpwr.par - $dem_par $dem dem_seg.par dem_seg lookup 30 30 sim_sar  # Use disdem_par to check dem_seg.
+	# 注意保证DEM的正确性。特别是投影类型。
+	# disdem_par dem_seg dem_seg.par - - - - -
+	width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+	nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+	col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+	row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+	#rasshd dem_seg $width_dem $col_post $row_post - - - - - - - dem_seg.ras
+	geocode lookup sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+	raspwr sim_sar.rdc $width_mli 1 0 1 1 1. .35 1 sim_sar.rdc.ras
+	
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+	create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+	rm -f create_diffpar
+	offset_pwrm sim_sar.rdc ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+	offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+	offset_pwrm sim_sar.rdc ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 24 24 -
+	gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table
+	geocode_back ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+	raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+	#geocode lookup_fine dem_seg $width_dem $master.hgt $width - 0 0
+	rm $master.hgt
+	geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+	rashgt $master.hgt ave.pwr $width - - - - - 160. - - - $master.hgt.ras #hgt & pwr
+fi
+####################################################################
+# 3. 计算时空基线，并生成itab文件
+#####################################################################
+	base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+	# xmgrace base_plot.agr #画基线图
+
+
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+if true
+then
+######################################################################
+# 4. 生成点位列表文件
+######################################################################
+
+	#sp_stat $path/$master.rslc - $master.cc $master.msr $master.pt $width 0.0 0.4 1.0 4 4 - - - - - - $type - #对单一影像进行统计分析
+	rm -fr sp_dir
+	mkdir sp_dir
+	if false
+	then
+	# bad scripts.
+		mk_sp_all SLC_tab sp_dir 1 1 0.5 0.4 4 #对全部影像进行统计分析
+		#rm -f ave.sp_cc ave.sp_msr
+		#ls sp_dir/*.sp_cc >cc_list
+		#ave_image cc_list $width cc_ave
+		#ls sp_dir/*.sp_msr >msr_list
+		#ave_image msr_list $width msr_ave
+		single_class_mapping 2 sp_dir/ave.sp_cc 0 100 sp_dir/ave.sp_msr 2 100. classification.ras $width 1 0 1 1
+		image2pt classification.ras $width pt - - 6
+	fi
+	pwr_stat SLC_tab $mslc_par msr pt 2 1 - - - - 1 1
+	ras_pt pt - ave.ras pt.ras - - 255 255 0 3
+
+######################################################################
+# 5. Create pSLC_par and pSLC data stacks
+#	Estimate the baseline parameters from orbit state vectors
+######################################################################
+	SLC2pt SLC_tab pt - pSLC_par pSLC -
+	base_orbit_pt pSLC_par itab - pbase
+	# base_par_pt - pbase - 0
+fi
+
+
+
+######################################################################
+# 6. Extract height values for each target point
+######################################################################
+npt pt >numberp
+np=$(awk '$1 == "total_number_of_points:" {print $2}' numberp)
+rm -f numberp
+if true
+then
+
+	rm -f pdem
+	# 如有问题，检查参数，某些参数用-来代替会出现问题
+	data2pt $master.hgt $masterpwr.par pt $mslc_par pdem 1 2
+	# pdisdt_pwr24 pt - $mslc_par pdem 1 $masterpwr.par ave.pwr 256. 1
+	
+#####################################################################
+# 8. Compute differential phase values for each target point 
+#    from each InSAR pair
+######################################################################
+	rm -f pint
+	intf_pt pt - itab - pSLC pint $type pSLC_par
+	# pdismph_pwr24 pt - $mslc_par pint 25 $masterpwr.par ave.pwr 1 #显示第25幅影像的干涉图
+	rm -f psim_unw0
+	phase_sim_pt pt - pSLC_par - itab - pbase pdem psim_unw0 - 0 0 #############注意，相位模拟可能存在问题
+	rm -f pdiff0
+	sub_phase_pt pt - pint - psim_unw0 pdiff0 1 0
+	#prasmph_pwr24 pt - $mslc_par pdiff0 - $masterpwr.par ave.pwr 1 # Produce the 3rd different interferogram of the pt. Named as pdiff.ras.
+	#dis_ipta pt - pSLC_par - itab pbase 0 pdiff0 1 ave_pt.ras 30 -0.01 0.01 2 # #########版本不同，命令不同，注意参数的设置
+#	dis_ipta pt - pSLC_par - itab pbase 0 pdiff0 1 ras/pdiff/pdiff0.22.ras 30 -0.01 0.01 2
+#	dis_ipta pt - pSLC_par - itab pbase 0 pdiff0 1 pdiff0.13.ras 30 -0.01 0.01 2
+	#mkdir -p ras/pdiff
+	#mv pdiff*ras ras/pdiff
+	#bpf_pt pt - $mslc_par pdiff pdiff1 - 0 $mslc_par 0.0 0.05# Filterring, not suggested.
+fi
+

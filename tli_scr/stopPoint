@@ -1,0 +1,89 @@
+#!/bin/bash
+
+showusage=1
+prgname=`basename $0`
+
+if [ $showusage -eq "1" ]; then
+
+echo "*****  CSU MTInSAR Data Processing Package, Aux. Function       *****"
+echo "*****  Copyright 2014, Central South University, v1.0 Bing XU   *****"
+echo "*****  "
+echo ""
+echo "usage: $prgname [inputval]"
+echo "input parameters:"
+echo "  inputval     (input) input variable to show on screen, max num of var = 20. (optional)"
+
+fi
+
+if [ $# -ge "1" ]; then
+N=$#
+for (( time=1; time <= $N; time+=1 ))
+do
+case $time in
+"1")
+echo "Input parameter $time: $1 "
+;;
+"2")
+echo "Input parameter $time: $2 "
+;;
+"3")
+echo "Input parameter $time: $3 "
+;;
+"4")
+echo "Input parameter $time: $4 "
+;;
+"5")
+echo "Input parameter $time: $5 "
+;;
+"6")
+echo "Input parameter $time: $6 "
+;;
+"7")
+echo "Input parameter $time: $7 "
+;;
+"8")
+echo "Input parameter $time: $8 "
+;;
+"9")
+echo "Input parameter $time: $9 "
+;;
+"10")
+echo "Input parameter $time: ${10} "
+;;
+"11")
+echo "Input parameter $time: ${11} "
+;;
+"12")
+echo "Input parameter $time: ${12} "
+;;
+"13")
+echo "Input parameter $time: ${13} "
+;;
+"14")
+echo "Input parameter $time: ${14} "
+;;
+"15")
+echo "Input parameter $time: ${15} "
+;;
+"16")
+echo "Input parameter $time: ${16} "
+;;
+"17")
+echo "Input parameter $time: ${17} "
+;;
+"18")
+echo "Input parameter $time: ${18} "
+;;
+"19")
+echo "Input parameter $time: ${19} "
+;;
+"20")
+echo "Input parameter $time: ${20} "
+
+esac # end of case
+
+done # end of for
+fi # end of if 
+
+echo "Press any key to continue [Break Ctrl+C]..."
+read cmd

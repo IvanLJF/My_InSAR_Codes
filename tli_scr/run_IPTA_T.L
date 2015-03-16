@@ -1,0 +1,149 @@
+#!/bin/sh
+###########################################################
+# Script that:
+#       - Runs GAMMA IPTA Computation and Analysis for Jinghai, Tianjin
+#       - R Zhang
+# Usage:
+#       
+#       -run the script 
+######################################
+### Set some parameters
+######################################
+dem="/mnt/sda5/PALSAR_Beijing/JingHu_WGS.dem"
+path="/mnt/sda5/PALSAR_Beijing/piece"
+dem_par=$dem.par
+master="20080606"
+mslc_par=$path/$master.rslc.par
+# set the cropping parameters
+#roff: offset to starting range sample
+#nr: number of range samples
+#loff: offset number of lines to start
+#nl: number of lines to copy (enter 0: to end of file)
+roff="1000"
+nr="1735"
+loff="10605"
+nl="10230"
+# #######################################
+# ####################################################################
+# # 1. Extract the same patch from all the SLC images
+# ####################################################################
+# # Note: all the SLC images listed in SLC_tab have been co-registered
+# #       before executing the command line   
+# ####################################################################
+# SLC_copy_all SLC_tab_org $path $roff $nr $loff $nl
+# 
+# # ####################################################################
+# # #2. Calculate the temporal and spatial baselines for all InSAR pairs
+# # #   and form itab (a ASCII file on the information of the InSAR pairs)
+# # #####################################################################
+# base_calc SLC_tab $mslc_par base_plot.agr base.list itab 1
+# # # 
+# # # ######################################################################
+# # # # 3. Generate the list of the point targets based on the statistical
+# # # #    computation of temporal variation of radar backscatterering 
+# # # #    using all SLC images
+# # # ######################################################################
+# pwr_stat SLC_tab $mslc_par msr plist 1.5 1.0 - - - - 0 1
+
+# ras_pt plist - ave.bmp ave_pt.bmp 1.0 1.0 255 0 0 5 0 0
+# # # 
+# # # ######################################################################
+# # # # 4. Create pSLC_par and pSLC data stacks
+# # # ######################################################################
+# SLC2pt SLC_tab plist - pSLC_par pSLC -
+# ras_pt plist - pwr.bmp pwr_pt.bmp - - 255 0 0 5
+# # # 
+# # # ######################################################################
+# # # # 5. Estimate the baseline parameters from orbit state vectors
+# # # ######################################################################
+# base_orbit_pt pSLC_par itab - pbase
+# # 
+# # ######################################################################
+# # # 6. Extract height values for each target point
+# # ######################################################################
+# # #########################################################################
+# # #######此处处理出现问题
+# # #######具体问题提示为：
+# # #######no output file for simulated SAR image (simsar)
+# # #######no output file for parameter u
+# # #######no output file for parameter v
+# # #######no output file for parameter linc
+# gc_map $mslc_par - $dem_par $dem dem_seg.par dem_seg lookup 4 4 - - - - - - - 8 1
+# # # #######no output file for parameter psi
+# # # #######no output file for normalized pixel area
+# # # #######no output file for layover/shadow map
+# # # #########################################################################
+# # # ######################################
+ width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+ line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+ width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+# # ######################################
+geocode lookup dem_seg $width_dem dem.rdc $width $lines 0 0
+d2pt dem.rdc $width plist 1 1 phgt - 2
+
+# ras_data_pt plist - phgt 1 1 20080606.bmp phgt.bmp 2 1 1 5.0 3
+# # 
+# # #####################################################################
+# # # 7. Compute differential phase values for each target point 
+# # #    from each InSAR pair
+# # ######################################################################
+# # # (1) intf_pt: calculate the interferometric phases with the SLC point data stack
+# # # (2) phase_sim_pt: Simulate the interferometric phases (in unwrapped form) for flat-
+# # #     earth trend and topographic effects
+# # # (3) sub_phase_pt: Subtract flat-Earth phase trend and topographic effects
+# # # intf_pt plist - itab - pSLC pint 1
+intf_pt plist - itab - pSLC pint 0
+phase_sim_pt plist - pSLC_par - itab - pbase phgt psim_unw - 0 0
+sub_phase_pt plist - pint - psim_unw pdiff 1 0
+bpf_pt plist - $mslc_par pdiff pdiff1 - 0 $mslc_par 0.0 0.05
+# 
+# 
+# ras_data_pt plist - pdiff 1 - 20080606.bmp pdiff.bmp 0 1 1 6.2830 3
+
+# # 
+# # ######################################################################
+# # # 8. Derive the point-target quality and the point mask using 
+# # #    the LS model regression
+# # ######################################################################
+# # #qc_pt plist - pmask pSLC_par itab pbase 0 pdiff 1 1.1
+# # 
+# # ######################################################################
+# # # 9. Determine height corrections, deformation rates and residual phases 
+# # #    by the LS-based model regression
+# # #    Note: the reference-point number should be carefully chosen.
+# # ######################################################################
+# # ## The following computation will  use the phase reference point number of 181278.
+# # #multi_def_pt plist pmask pSLC_par - itab pbase 0 pdiff 1 181278 pres pdh pdef punw1 psigma pmask2 20. -0.005 0.005 100 1.2 0.5 2
+multi_def_pt plist - pSLC_par - itab pbase 0 pdiff1 1 26000 pres pdh pdef punw1 psigma pmask2 60. -0.1 0.1 1600 2.0 1.50 2
+ras_pt plist pmask2 ave.bmp ave_mask_pt.bmp - - - - - 5
+bpf_pt plist pmask2 $mslc_par pdef pdef1 - 2 $mslc_par 0.0 0.05
+bpf_pt plist pmask2 $mslc_par pdh pdh1 - 2 $mslc_par 0.0 0.05
+# # 
+# # ######################################################################
+# # # 10. Separate atmospheric effects from nonlinear deformation
+# # ######################################################################
+# # # (1) sptf_pt: spatial filtering of the residual phases (punw1) to suppress noises
+# # #              (from pres to pres_sp)
+# # # (2) tpf_pt: temporal filtering of the resulting spatially-filtered residual phases
+# # #             to identify the phase trends that may reflect non-linear deformation
+# # #             (from pres_sp to nldef)
+# # # (3) lin_comb_pt: calculating the difference between the spatially-filtered residual phases
+# # #                  and the non-linear deformation phases to derive the new phases
+# # #                  (pres_1=pres-nldef)
+# # # (4) spf_pt: spatial filtering of punw3 to derive the atmospheric phases
+# # #             (from pres_1 to atm)
+spf_pt plist pmask2 $mslc_par pres pres_sp - 2 25 1 12
+tpf_pt plist pmask2 pSLC_par itab pres_sp nldef 2 70 2 -1
+lin_comb_pt plist pmask2 pres - nldef - pres_1 - 0.0 1.0 -1.0 2 1
+spf_pt plist pmask2 $mslc_par pres_1 atm - 2 25 1 12
+# 
+# ######################################################################
+# # 11. Compute the unwrapped phase due to linear and non-linear deformation and
+# #       derive the LOS displacements (inlcuding linear and non-linear components) at PSs
+# ######################################################################
+lin_comb_pt plist pmask2 punw1 - atm - punw_LOS - 0.0 1.0 -1.0 2 1
+dispmap_pt plist pmask2 pSLC_par itab punw_LOS phgt pdisp 1
+# 
+
+
+

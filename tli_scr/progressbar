@@ -1,0 +1,9 @@
+#! /bin/sh
+b=''
+for i in {1..100..2}
+do
+  echo "Progress: [%-50s] %d%%\r" $b $i
+  sleep 0.1
+  b=$b+'#'
+done
+echo

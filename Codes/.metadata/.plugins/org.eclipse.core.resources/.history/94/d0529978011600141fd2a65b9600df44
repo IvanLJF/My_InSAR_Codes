@@ -1,0 +1,12 @@
+#Mon Jul 28 10:43:58 CST 2014
+IDL_DEVICE=X
+IDL_VALUES=true
+CHROMACODING_VALUES=true
+IDL_DATAFILE_USER_COMMENTS=1
+IDLDT_VALUES=true
+IDL_RBUF_PERSIST=1
+IDL_QUIET=0
+IDL_PATH=<IDL_DEFAULT>\:+/mnt/Software/My_InSAR_Tools/Codes/Simulaton\:+/mnt/Software/My_InSAR_Tools/Codes/SARGUI\:+/mnt/Software/My_InSAR_Tools/Codes/Rat_v0.21\:+/mnt/Software/My_InSAR_Tools/Codes/Qingli\:+/mnt/Software/My_InSAR_Tools/Codes/Phase_Grd_Sub_Rate\:+/mnt/Software/My_InSAR_Tools/Codes/PSSelection\:+/mnt/Software/My_InSAR_Tools/Codes/Offset_Tracking\:+/mnt/Software/My_InSAR_Tools/Codes/InSAR_functions\:+/mnt/Software/My_InSAR_Tools/Codes/IO\:+/mnt/Software/My_InSAR_Tools/Codes/HPA\:+/mnt/Software/My_InSAR_Tools/Codes/HK_airport\:+/mnt/Software/My_InSAR_Tools/Codes/Google_earth\:+/mnt/Software/My_InSAR_Tools/Codes/GMT\:+/mnt/Software/My_InSAR_Tools/Codes/Experimental_results\:+/mnt/Software/My_InSAR_Tools/Codes/Display\:+/mnt/Software/My_InSAR_Tools/Codes/DS\:+/mnt/Software/My_InSAR_Tools/Codes/Brother\:+/mnt/Software/My_InSAR_Tools/Codes/Basic_functions\:+/mnt/Software/My_InSAR_Tools/Codes/Default
+eclipse.preferences.version=1
+IDL_CPU_VECTOR_ENABLE=1
+IDL_PATH_CACHE_DISABLE=0

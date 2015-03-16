@@ -1,0 +1,36 @@
+#! /bin/sh 
+##################################################################
+###   tli_suffix: Extract suffix from the given file path      ###
+###         using:                                             ###
+###         - file path
+###         
+##################################################################
+###   Example:
+###     parfile='/mnt/data_tli/Data/SLCs/TSX_TJ_Coregto20091113/20091113-20090418/20090418/20090418.rslc'
+###     suffix=`tli_suffix $parfile`
+##################################################################
+###   History
+###     20141117: Written by T.LI @ Sasmac
+##################################################################
+echo " "
+echo "*** tli_suffix Extract suffix from the given file path . v1.0 20141117."
+echo " "
+echo "    Required data:"
+echo "       - file path ."
+
+if [ $# -lt 1 ]; then
+  echo ""
+  echo "Usage: tli_suffix <file_path> [pattern]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "file_path        : Full path of input file ."
+  echo "pattern          : Pattern to extract suffix. (enter '-' for default: '.')"
+  echo ""
+  exit
+fi
+
+fname=$1
+
+suffix=${fname##*.}
+prefix=${fname%.*}

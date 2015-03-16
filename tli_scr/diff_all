@@ -1,0 +1,245 @@
+<<<<<<< HEAD
+#!/bin/sh
+###########################################################
+# Purpose:
+# 	Create diff-interferograms for each pair of SLC.
+# Calling Sequence:
+# 	./diff_all.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	Diff images
+# Commendations:
+# 	None
+# Modification History:
+# 	29/04/2013: Written by T.L @ InSAR Team in SWJTU & CUHK.
+
+origpath="/mnt/backup/TSX-HK/Coreg_SLC_GAMMA"                 #原始SLC所在路径
+dem="/mnt/backup/DEM/HKDEM/hkdem_hgt/hkdem.dem"                     #原始DEM所在路径
+path="piece"     #裁剪之后的SLC所在路径
+master="20091114"
+masterpwr=$path/$master.rslc.pwr
+mslc_par=$path/$master.rslc.par
+# set the cropping parameters
+roff="7504"      #roff: offset to starting range sample
+nr="9600"       #nr: number of range samples
+loff="2640"    #loff: offset number of lines to start
+nl="8656"       #nl: number of lines to copy (enter 0: to end of file)
+itab_type=0     #0: single master;  1: all pairs
+dem_par=$dem.par
+width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+if false 
+then
+# Create tiled image.
+	mkdir -p $path
+	rm -f SLC_org im_list SLC_tab
+	find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+	SLC_copy_all SLC_org $path $roff $nr $loff $nl
+	find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+	find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+	find $path -name "*.pwr" -exec echo {} >>im_list \;
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+	ave_image im_list $width ave.pwr  #ave.pwr
+	mv $masterpwr.par .
+	mv $masterpwr .
+	rm -f $path/*.pwr $path/*.pwr.par
+	mv $master.rslc.pwr.par $path/
+	mv $master.rslc.pwr $path/
+	# raspwr ave.pwr $width - - - - - - - ave.ras  #ave.ras
+	raspwr ave.pwr $width 1 0 1 1 1 0.35 1 ave.ras 0 0
+fi
+if false 
+then
+# Create dem_seg
+
+	gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 50 50 sim_sar  # Use disdem_par to check dem_seg.
+
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+	create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+	rm -f create_diffpar
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+	offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 40 40 -  #解算偏移量参数
+
+	width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+
+	gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+
+	geocode_back ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+	raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+
+	nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+	col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+	row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+	geocode lookup_fine sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+	geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+	raspwr $master.hgt $width_mli 1 0 1 1 1. .35 1 $master.ght.ras
+fi
+
+# Diff
+base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+nlines=$(awk 'END{print NR}' itab)
+for i in $( seq 1 1 $nlines )
+do
+	master_ind=$(sed -n "$i,1p" itab | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" SLC_tab | awk '{print $1}')
+	master_date=${master_SLC:(-13):8}
+	slave_ind=$(sed -n "$i,1p" itab | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" SLC_tab | awk '{print $1}')
+	slave_date=${slave_SLC:(-13):8}
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_offset
+	mkdir $slave_date
+	cp diff_single_pair.sh $slave_date
+	cd $slave_date
+	./diff_single_pair.sh $master_date $slave_date
+	cd ../
+exit
+done
+
+
+=======
+#!/bin/sh
+###########################################################
+# Purpose:
+# 	Create diff-interferograms for each pair of SLC.
+# Calling Sequence:
+# 	./diff_all.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	Diff images
+# Commendations:
+# 	None
+# Modification History:
+# 	29/04/2013: Written by T.L @ InSAR Team in SWJTU & CUHK.
+
+origpath="/mnt/backup/TSX-HK/Coreg_SLC_GAMMA"                 #原始SLC所在路径
+dem="/mnt/backup/DEM/HKDEM/hkdem_hgt/hkdem.dem"                     #原始DEM所在路径
+path="piece"     #裁剪之后的SLC所在路径
+master="20091114"
+hgtfile=$master.hgt
+masterpwr=$path/$master.rslc.pwr
+mslc_par=$path/$master.rslc.par
+# set the cropping parameters
+roff="7504"      #roff: offset to starting range sample
+nr="9600"       #nr: number of range samples
+loff="2640"    #loff: offset number of lines to start
+nl="8656"       #nl: number of lines to copy (enter 0: to end of file)
+itab_type=0     #0: single master;  1: all pairs
+dem_par=$dem.par
+width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+if false 
+then
+# Create tiled image.
+	mkdir -p $path
+	rm -f SLC_org im_list SLC_tab
+	find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+	SLC_copy_all SLC_org $path $roff $nr $loff $nl
+	find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+	find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+	find $path -name "*.pwr" -exec echo {} >>im_list \;
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+	ave_image im_list $width ave.pwr  #ave.pwr
+	mv $masterpwr.par .
+	mv $masterpwr .
+	rm -f $path/*.pwr $path/*.pwr.par
+	mv $master.rslc.pwr.par $path/
+	mv $master.rslc.pwr $path/
+	# raspwr ave.pwr $width - - - - - - - ave.ras  #ave.ras
+	raspwr ave.pwr $width 1 0 1 1 1 0.35 1 ave.ras 0 0
+fi
+if false 
+then
+# Create dem_seg
+
+	gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 50 50 sim_sar  # Use disdem_par to check dem_seg.
+
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+	create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+	rm -f create_diffpar
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+	offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 40 40 -  #解算偏移量参数
+
+	width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+
+	gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+
+	geocode_back ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+	raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+
+	nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+	col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+	row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+	geocode lookup_fine sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+	geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+	raspwr $master.hgt $width_mli 1 0 1 1 1. .35 1 $master.ght.ras
+fi
+
+# Diff
+base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+nlines=$(awk 'END{print NR}' itab)
+for i in $( seq 1 1 $nlines )
+do
+	master_ind=$(sed -n "$i,1p" itab | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" SLC_tab | awk '{print $1}')
+	master_date=${master_SLC:(-13):8}
+	slave_ind=$(sed -n "$i,1p" itab | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" SLC_tab | awk '{print $1}')
+	slave_date=${slave_SLC:(-13):8}
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_offset
+	mkdir $master_date-$slave_date
+	cp diff_single_pair.sh $master_date-$slave_date
+	cd $master_date-$slave_date
+	./diff_single_pair.sh $master_date $slave_date ../../$hgtfile
+	cd ../
+done
+
+
+>>>>>>> 6f170446021e02c141b707fbe30c46582505c0fb

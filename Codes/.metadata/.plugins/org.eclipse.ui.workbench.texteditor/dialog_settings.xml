@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="930"/>
+		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
+		<item key="DIALOG_HEIGHT" value="445"/>
+		<item key="DIALOG_Y_ORIGIN" value="374"/>
+		<item key="DIALOG_WIDTH" value="302"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="DEM Width"/>
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="false"/>
+		<list key="findhistory">
+			<item value="DEM Width"/>
+			<item value="print flag"/>
+			<item value="pring flag"/>
+			<item value="workpath"/>
+			<item value="wait"/>
+			<item value="Gap "/>
+			<item value="offeset"/>
+			<item value="difffiles"/>
+		</list>
+		<list key="replacehistory">
+			<item value="inputfile"/>
+			<item value="/mnt/ihiusa"/>
+			<item value="ihiusa"/>
+		</list>
+	</section>
+</section>

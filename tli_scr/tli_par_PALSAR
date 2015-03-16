@@ -1,0 +1,151 @@
+#!/bin/bash
+##################################################################
+###   tli_par_ASAR: Focus ALOS PALSAR data.                    ###
+###         using:                                             ###
+###         - Original PALSAR data.
+##################################################################
+###   History
+###     20140909: Written by T.LI @ CUHK.
+##################################################################
+echo " "
+echo "*** tli_par_PALSAR Focus ALOS PALSAR data. v1.0 20140813"
+echo " "
+echo "    Required data:"
+echo "       - Original PALSAR data"
+
+if [ $# -lt 1 ]
+then
+  echo " "
+  echo "Usage: tli_par_PALSAR <raw_data> [outputfile] [PALSAR_antfile] [clear]"
+  echo ""
+  echo "input parameters:"
+  echo ""
+  echo "  raw_data        : PALSAR meta data named as PASL*.raw."
+  echo "  outputfile      : The focused file. (enter - for default: YYYYMMDD.slc)"
+  echo "  PALSAR_antfile  : The antenna file of PALSAR data. (enter - for default:/usr/local/GAMMA_SOFTWARE-20080401/MSP_v11.5/sensors/palsar_ant_20061024.dat)"
+  echo "  clear           : Clear the intermedia files or not. (enter - for default: 1)"
+  echo "                    0: Not clear."
+  echo "                    1: Clear."
+  echo " "
+  exit
+fi
+
+
+# Assignment
+raw_data=$1
+workpath=`dirname $raw_data`
+workpath=`basename $workpath`
+mkdir $workpath
+cd $workpath
+
+fname=`basename $raw_data '.raw'`
+fdir=`dirname $raw_data`
+
+fdate='20'`expr substr $fname 8 6`
+outputfile=$fdate.slc
+if [ $# -ge 2 ]; then
+  if [ $2 != '-' ]; then
+    outputfile=$2
+    fdate=`basename $outputfile '.slc'`
+    fdate_length=`expr length $fdate`
+    if [ $fdate_length != 8 ]; then
+       echo "Error! $0: output file name should be in format YYYYMMDD.slc: $outputfile"
+       exit
+    fi
+  fi
+fi
+
+pantfile=`find /usr/local/GAMMA_SOFTWARE-2012* -name palsar_ant_20061024.dat`
+if [ $# -ge 3 ]; then
+  if [ $3 != '-' ]; then
+    pantfile=$3
+  fi
+fi
+if [ ! -e $pantfile ]; then  # if file not exists.
+  echo "Error! Can not find the PALSAR antenna file:  $pantfile"
+fi
+
+clear=1
+if [ $# -ge 4 ]; then
+  if [ $4 != '-' ]; then
+    clear=$4
+  fi
+fi
+
+# Some pre-defined file names.
+pro_par_m=p$fdate.slc.par   #processing parameter file
+par_m=$fdate.slc.par
+m_raw=$fdate.raw
+m_fix=$fdate.fix            #correct lines missing
+m_azsp=$fdate.azsp          #estimate the Doppler centroid in the azimuth spectrum 
+m_dop=$fdate.dop            # determine the Dppler centroid across the swath
+m_rspec=$fdate.rspec        # range spectrum(used to estimate the SNR in the final image)
+m_rc=$fdate.rc              # range compression
+m_autof=$fdate.autof        # autofocus
+m_slc=$fdate.slc            # after azimuth compression
+m_mli_par=$fdate.mli.par
+m_mli=$fdate.mli
+ant_file=$PALSAR_antpat_MSP.dat
+
+# Initial par.
+PALSAR_proc $fdir/$fname.ldr palsar.par $pro_par_m $fdir/$fname.raw $m_raw
+
+# Correction for the antenna pattern
+PALSAR_antpat palsar.par $pro_par_m $pantfile PALSAR_antpat_MSP.dat
+
+# Determine the Doppler ambiguity(optional)
+######################################
+#usage: dop_ambig <SAR_par> <PROC_par> <signal_data> [algorithm] [loff] [output_plot]
+#
+#input parameters: 
+#  SAR_par      (input) MSP SAR sensor parameter file
+#  PROC_par     (input) MSP processing parameter file
+#  signal_data  (input) uncompressed raw SAR signal data (I/Q complex)
+#  algorithm    algorithm selection:
+#                 1: Multi-Look Cross Correlation (MLCC)
+#                 2: Multi-Look Beat Frequency (MLBF) (default)
+#  loff         number of lines offset (enter - for default: parameter file value)
+#  output_plot  (output) plot file: correlation phase for MLCC, azimuth spectrum for MLBF
+#
+#dop_method="2"
+#dop_ambig palsar.par $pro_par_m $m_raw $dop_method - dop_ambig_method2.dat
+######################################
+### Determine fractional Doppler centroid
+######################################
+#azsp_IQ palsar.par $pro_par_m $m_raw $m_azsp
+######################################
+### Estimate the Doppler centroid across the swath(optional)
+######################################
+#doppler palsar.par $pro_par_m $m_raw $m_dop
+######################################
+### Estimate the range power spectrum(optional)
+######################################
+#rspec_IQ palsar.par $pro_par_m $m_raw $m_rspec
+
+# range compression
+pre_rc palsar.par $pro_par_m $m_raw $m_rc - - - - - - - - 1 -
+
+# Autofocus (multiple application possible to improve estimate)
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0 
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0 
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0
+
+# Azimuth compression (of range compressed date *.rc) and Absolute Radiometric Calibration
+az_proc palsar.par $pro_par_m $m_rc $m_slc 16384 0 -49.8 0 2.12 
+par_MSP palsar.par $pro_par_m $par_m
+
+if [ $clear == 1 ]; then
+  rm -f $fdate.autof $fdate.mli $fdate.mli.par $fdate.raw $fdate.rc p$fdate.slc.par palsar.par PALSAR_antpat_MSP.dat range_spectra.dat autof1.mli autof2.mli
+else
+  # Generate multi-look (1 range x 5 azimuth looks) intensity image
+  multi_SLC $pro_par_m $m_mli_par $m_slc $m_mli 1 1 
+  width_m=$(awk '$1 == "range_pixels:" {print $2}' $m_mli_par)
+  width=$(awk '$1 == "range_samples:" {print $2}' $par_m)
+
+  rasSLC $m_slc $width 1 0 1 5 1. .35 1 0 0 $m_slc.ras
+  raspwr $m_mli $width_m 1 0 1 5 1. 0.35 1 $m_mli.ras
+fi
+
+cd ../
+echo "The images were successfully focused. Please check the following files:"
+echo "  $workpath/$outputfile "

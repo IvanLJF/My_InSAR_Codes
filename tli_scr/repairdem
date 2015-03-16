@@ -1,0 +1,36 @@
+#!/bin/sh
+if false
+then
+hgtfile='N22E112'
+replace_values $hgtfile.hgt 0 1 temp_dem 1201 0 4
+replace_values temp_dem -32768 0 temp_dem2 1201 0 4
+interp_ad temp_dem2 $hgtfile.dem 1201 16 40 81 2 4
+#disdem_par $hgtfile.dem $hgtfile.dem.par
+
+hgtfile='N23E112'
+replace_values $hgtfile.hgt 0 1 temp_dem 1201 0 4
+replace_values temp_dem -32768 0 temp_dem2 1201 0 4
+interp_ad temp_dem2 $hgtfile.dem 1201 16 40 81 2 4
+#disdem_par $hgtfile.dem $hgtfile.dem.par
+
+hgtfile='N22E113'
+replace_values $hgtfile.hgt 0 1 temp_dem 1201 0 4
+replace_values temp_dem -32768 0 temp_dem2 1201 0 4
+interp_ad temp_dem2 $hgtfile.dem 1201 16 40 81 2 4
+#disdem_par $hgtfile.dem $hgtfile.dem.par
+fi
+hgtfile='N22E113'
+replace_values $hgtfile.hgt 0 1 temp_dem 1201 0 4
+replace_values temp_dem -32768 0 temp_dem2 1201 0 4
+interp_ad temp_dem2 $hgtfile.dem 1201 16 40 81 2 4
+#disdem_par $hgtfile.dem $hgtfile.dem.par
+
+hgtfile='N22E114'
+replace_values $hgtfile.hgt 0 1 temp_dem 1201 0 4
+replace_values temp_dem -32768 0 temp_dem2 1201 0 4
+interp_ad temp_dem2 $hgtfile.dem 1201 16 40 81 2 4
+#disdem_par $hgtfile.dem $hgtfile.dem.par
+
+rm -f temp_dem temp_dem2 hkdem.dem hkdem.dem.par
+mosaic 2 N22E113.dem N22E113.dem.par N22E114.dem N22E114.dem.par hkdem.dem hkdem.dem.par 1 3
+disdem_par hkdem.dem hkdem.dem.par

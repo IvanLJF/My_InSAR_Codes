@@ -1,0 +1,32 @@
+;
+; Make the image fit the window
+;
+; Parameters:
+;
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac, 20150105
+;
+PRO TLI_SMC_ZOOM
+  
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  ; Get the base size of the draw widget
+  xsize=wid.base_xsize
+  ysize=wid.base_ysize
+  
+  ; Get the image size
+  samples=file.xdim
+  lines=file.ydim
+  
+  ; Calculate zoom factor
+  zf_r=samples/xsize
+  zf_azi=lines/ysize
+  
+  zf=zf_r>zf_azi
+  
+  
+  
+  
+END

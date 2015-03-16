@@ -1,0 +1,74 @@
+;
+; Mask the interferometric results using cc values.
+; 
+; Input params
+;   ccfile        : Coherence file.
+; 
+; Keywords
+;   files_to_mask : files to mask.
+;   output_patternf: pattern to rename the masked files.
+;   samples       : Samples of the input files.
+;   ccthresh      : Threshold of cc values. Default: 0.4.
+;   
+; Written by:
+;   T.LI @ Sasmac, 20141118.
+; 
+PRO TLI_MASK_INT, ccfile, files_to_mask=files_to_mask, output_pattern=output_pattern, samples=samples, cc_thresh=cc_thresh
+  
+  COMPILE_OPT idl2
+  
+  fname=TLI_FNAME(ccfile,all_suffix=all_suffix,/remove_all_suffix)
+  void=STRSPLIT(fname , '-', /extract)
+  mdate=void[0]
+  sdate=void[1]
+  
+  workpath=FILE_DIRNAME(ccfile)+PATH_SEP()
+  parfile=workpath+mdate+'.pwr.par'
+  finfo=TLI_LOAD_SLC_PAR(parfile)
+  
+  IF NOT KEYWORD_SET(samples) THEN BEGIN
+    samples=finfo.range_samples
+    lines=finfo.azimuth_lines
+  ENDIF ELSE BEGIN
+    sz=TLI_IMAGE_SIZE(ccfile, samples=samples, format='float')
+    lines=sz[1]
+  ENDELSE
+  
+  IF all_suffix NE '.filt_presv.cc' THEN BEGIN
+    Print, 'Warning! TLI_MASK_INT: cc of the filtered interferogram was assumed to use.'
+  ENDIF 
+  
+  IF NOT KEYWORD_SET(files_to_mask) THEN BEGIN
+    files_to_mask=workpath+fname+['.flt.filt.unw', '.hgt']
+  ENDIF
+  
+  cc=TLI_READDATA(ccfile, samples=samples, format='float',/swap_endian)
+  ind_valid=WHERE(cc NE 0)
+  mean_cc=MEAN(cc[ind_valid])
+  std_cc=STDDEV(cc[ind_valid])
+  
+  IF NOT KEYWORD_SET(cc_thresh) THEN BEGIN
+    cc_thresh=(mean_cc-1.00*std_cc) < 0.9
+    cc_thresh=cc_thresh>0.75
+  ENDIF
+  
+  cc_mask=WHERE(cc LE cc_thresh)
+  nfiles=N_ELEMENTS(files_to_mask)
+  FOR i=0, nfiles-1 DO BEGIN
+    file_i=TLI_READDATA(files_to_mask[i], samples=samples, format='float',/swap_endian)
+    IF NOT FILE_TEST(files_to_mask[i]) THEN BEGIN
+      Print, 'Warning! FIle does not exist:'+file_i
+      CONTINUE
+    ENDIF
+    file_i[cc_mask]=0
+    IF NOT KEYWORD_SET(output_pattern) THEN BEGIN
+      outputfile_i=files_to_mask[i]
+    ENDIF ELSE BEGIN
+      outputfile_i=files_to_mask[i]+output_pattern
+    ENDELSE
+    TLI_WRITE, outputfile_i, file_i,/swap_endian
+  ENDFOR
+  
+  Print, 'Files were masked successfully.'
+
+END

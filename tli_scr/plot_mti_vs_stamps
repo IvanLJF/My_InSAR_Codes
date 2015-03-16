@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Plot the deformation rate difference.
+#
+# Data preparation
+outputfile='mti_vs_stamps.ps'
+inputfile='mti_vs_stamps_all.txt'
+
+# 初始化
+gmtset ANNOT_FONT_SIZE_PRIMARY 9p ANNOT_FONT_PRIMARY 4 ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i \
+MAP_SCALE_HEIGHT 0.04i LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i BASEMAP_FRAME_RGB +0/0/0
+# 创建调色板
+makecpt -Ctli_def -T0/30/1 -V -Z > g.cpt
+
+psbasemap -R-65/0/-65/0 -JX3i/3i -Ba10f5::WeSn -P -K -V  > $outputfile
+psxy $inputfile -R -J -B -Cg.cpt -V -Sc0.003i -K -O >> $outputfile
+
+if false; then
+# I have to plot a shoule-be line here.
+psxy -A -J -K -O -R -W1.2p/black << END >> $outputfile
+0 0
+-70 -70
+END
+fi
+
+psscale -Cg.cpt -D3.1i/1.4i/2.8i/0.07i -E -I -O -B5::/:mm: >> $outputfile
+ps2raster -A $outputfile
+geeqie mti_vs_stamps.jpg

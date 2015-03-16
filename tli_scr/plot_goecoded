@@ -1,0 +1,26 @@
+#!/bin/sh
+
+echo '****************************************'
+echo '* Plotting geocoded deformation map... *' 
+echo '****************************************'
+pdeffile='lel6vdh_merge_geocode_GMT'
+psfile='lel6_geocoded.ps'
+
+sz=0.01i # Size of the points
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+
+makecpt -Ctli_def -T-52.241060/0.0000000/0.100000 -I -V -Z > g.cpt
+
+######################################################
+# plot geocoded results.
+psbasemap -R113.8868/113.9563/22.2859/22.3265 -JX4.73i/3i -Ba0.02f0.01::WeSn -P -K -V  > $psfile
+psimage HK_googleearth.ras -Gtblack -W4.73i/3i -O -V -K >> $psfile
+psxy $pdeffile -R -J -Cg.cpt -V -Sc$sz -K -O >> $psfile #Some problems emerged. This reconstructed an unexpected basemap. solution: remove the keyword '-B'
+psscale -Cg.cpt -D4.8i/1.88i/2.9i/0.08i -E -I -O -B5::/:mm/\y: -V >> $psfile
+
+ps2raster -A -Tt $psfile
+imgbasename=`basename $psfile '.ps'`
+convert $imgbasename.tif $imgbasename.jpg
+geeqie $imgbasename.jpg
+

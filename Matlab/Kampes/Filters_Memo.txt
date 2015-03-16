@@ -1,0 +1,71 @@
+Some Filters or Filtering Methods
+
+1.  wiener2-----------------Perform two-dimensional adaptive noise-removal filtering
+
+SyntaxJ = wiener2(I,[m n],noise)
+[J,noise] = wiener2(I,[m n])
+
+Description
+
+wiener2 lowpass-filters an intensity image that has been degraded by constant power additive noise. 
+wiener2 uses a pixelwise adaptive Wiener method based on statistics estimated from a local neighborhood of 
+each pixel. J = wiener2(I,[m n],noise) filters the image I using pixelwise adaptive Wiener filtering, using neighborhoods 
+of size m-by-n to estimate the local image mean and standard deviation. If you omit the [m n] argument, m and n default to 3. 
+The additive noise (Gaussian white noise) power is assumed to be noise. [J,noise] = wiener2(I,[m n]) also estimates 
+the additive noise power before doing the filtering. wiener2 returns this estimate in noise.
+
+2.  IMNOISE Add noise to image.
+     J = IMNOISE(I,TYPE,...) Add noise of a given TYPE to the intensity image
+    
+3.  fwind1------------Design two-dimensional FIR filter using one-dimensional window method 
+     Syntaxh = fwind1(Hd,win)
+     h = fwind1(Hd,win1,win2)
+     h = fwind1(f1,f2,Hd,...)
+ 
+ 4.  fwind2------------Design two-dimensional FIR filter using two-dimensional window method 
+      Syntaxh = fwind2(Hd,win)
+      h = fwind2(f1,f2,Hd,win)  
+      
+ 5. kaiser----------Kaiser window.
+     W = KAISER(N) returns an N-point Kaiser window in the column vector W.
+     W = KAISER(N,BTA) returns the BETA-valued N-point Kaiser window.
+     If ommited, BTA is set to 0.500.
+     
+     See also chebwin, gausswin, tukeywin, window.
+ 
+ 6.  fspecial-----------Create 2-D special filters 
+      Syntaxh = fspecial(type)
+      h = fspecial(type,parameters)
+      h = fspecial(type) creates a two-dimensional filter h of the specified type. 
+      fspecial returns h as a correlation kernel, which is the appropriate form to use with 
+      imfilter. type is a string having one of these values.
+       'average'   averaging filter
+       'disk'      circular averaging filter
+       'gaussian'  Gaussian lowpass filter
+       'laplacian' filter approximating the 2-D Laplacian operator
+       'log'       Laplacian of Gaussian filter
+       'motion'    motion filter
+       'prewitt'   Prewitt horizontal edge-emphasizing filter
+       'sobel'     Sobel horizontal edge-emphasizing filter
+      'unsharp'   unsharp contrast enhancement filter 
+      
+7.  imfilter-------------Multidimensional image filtering.
+    B = IMFILTER(A,H) filters the multidimensional array A with the
+    multidimensional filter H.  A can be logical or it can be a 
+    nonsparse numeric array of any class and dimension.  The result, 
+    B, has the same size and class as A.
+ 
+    Each element of the output, B, is computed using double-precision
+    floating point.  If A is an integer or logical array, then output 
+    elements that exceed the range of the given type are truncated, 
+    and fractional values are rounded.
+  
+8.  edge----------------Find edges in intensity image.
+    EDGE takes an intensity or a binary image I as its input, and returns a 
+    binary image BW of the same size as I, with 1's where the function 
+    finds edges in I and 0's elsewhere.
+    
+
+ 
+    
+    

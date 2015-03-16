@@ -1,0 +1,33 @@
+#!/bin/bash
+#####################################################
+###  Stop the shell script and print intermedia var.
+###  
+###  Input params:
+###    - script var.
+#####################################################
+###  Written by:
+###    Bing Xu @ MTInSAR Group, CSU
+###    20141017 : cancel the maximum limitation.
+###               T.LI @ R&D Dept.
+#####################################################
+
+if [ $# == 0 ]; then
+  echo ""
+  echo "Usage: tli_stop_point <val1> [var2] [var3] ... v2.0, 20141017"
+  echo ""
+  echo "       val1 : Variable 1 to display."
+  echo "       val2 : Variable 2 to display."
+  echo "..."
+  echo ""
+  exit
+fi
+
+echo "Parameter indices start from 0."
+j=0
+for i in $@; do
+  echo "input parameter $j is: $i"
+  let j=j+1
+done
+
+echo "Press any key to continue [Break Ctrl+C]..."
+read temp

@@ -1,0 +1,113 @@
+% show single image of the given area.
+infile='D:\myfiles\Software\Yatou_Paper\Data\Chl_dailay\S2003250.L3m_DAY_CHL_chlor_a_9km';
+
+
+range=[598,812,3566,3696];%[598,812,3566,3696];% Range of China Sea.
+data= load_hdf_chinasea(chlorfile,range(1),range(2),range(3),range(4));
+
+file_info= hdfinfo(infile);
+sds_info=file_info.SDS;
+sds_info= sds_info(1,1);
+data= hdfread(sds_info);
+data= double(data);
+data(data==-32767)=nan;
+data= data(range(1):range(2),range(3):range(4));% Get data of China sea.
+data= single(data);
+% disp(file_info.Attributes(54).Name);
+% disp(file_info.Attributes(54).Value);%
+% slope=double(file_info.Attributes(55).Value);%
+% intercept=double(file_info.Attributes(56).Value);%
+% sst= slope*sst+intercept;%file_info.Attributes(54).Value.
+% sst= single(sst);
+
+%------------------------Annotations--------------------------------
+[pathstr, filename, ext, versn]= fileparts(infile);
+img_time= double(str2double(filename(2:8)));%Date of the input file.
+
+result=day2date(img_time);
+date_anno= result(3);
+month_anno= result(2);
+year_anno= result(1);
+X=[-180:0.0833333:180];
+Y=fliplr([-90:0.0833333:90]);
+lats_range= Y(range(1):range(2));%lats range of the data
+lons_range= X(range(3):range(4));%lons range of the data
+
+%------------------------Plot image--------------------------------
+
+scale=600/max(max(size(data)));
+figure( 'Position',[50,50,scale*size(data,2),scale*size(data,1)]);
+    h=imagesc(data);
+    set(h, 'alphadata', ~isnan(data));
+%     caxis(data_range);
+%     data_range= caxis;
+    % set(gcf, 'Color', [1,1,1])
+    name= strcat('Date of the given  :', num2str(month_anno),'/', num2str(year_anno));
+    title(name,'fontsize',8);
+    colorbar;
+    x_ticks=5;
+    y_ticks=5;
+    x_step=size(Zeu_first,2)/x_ticks;  %设置x坐标轴隔多少像素显示一个刻度。
+    y_step=size(Zeu_first,1)/y_ticks;  %设置y坐标轴隔多少像素显示一个刻度。
+    xtick_loc= round(1:x_step:size(Zeu_first,2));%设置x坐标轴显示刻度的位置。
+    ytick_loc= round(1:y_step:size(Zeu_first,1));%设置y坐标轴显示刻度的位置。
+    set(gca, 'XTick', xtick_loc);% 设置x坐标轴要显示的刻度值。
+    set(gca, 'YTick', ytick_loc);% 设置y坐标轴要显示的刻度值。
+    set(gca, 'XTickLabel', {round(lons_range(xtick_loc))});
+    set(gca, 'YTickLabel', {round(lats_range(ytick_loc))});
+    set(gca, 'Color', 'white');
+    xlabel ('Longitude(E)','fontsize',10);
+    ylabel ('Latitude(N)','fontsize',10);
+stop
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    %处理sst数据
+% sst= load_hdf_chinasea(sstfile, range(1),range(2),range(3),range(4));
+file_info= hdfinfo(sst_200002);
+sst_sds_info=file_info.SDS;
+sst_sds_info= sst_sds_info(1,1);
+sst= hdfread(sst_sds_info);
+sst(sst==65535)=nan;
+sst= sst(range(1):range(2),range(3):range(4));% 读取SST的数据。
+sst= single(sst);
+disp(file_info.Attributes(54).Name);
+disp(file_info.Attributes(54).Value);%改正公式
+slope=double(file_info.Attributes(55).Value);%改正公式中的参数
+intercept=double(file_info.Attributes(56).Value);%改正公式中的参数
+sst= slope*sst+intercept;%具体转换公式参见file_info.Attributes(54).Value.
+sst= single(sst);
+sst(chl<0)=nan;
+Zeu_first=sst;
+Zeu_first(chl==-32767)=nan;
+scale=600/max(max(size(chl)));%拉伸比例
+figure( 'Position',[50,50,scale*size(Zeu_first,2),scale*size(Zeu_first,1)]);
+    h=imagesc(Zeu_first);
+    set(h, 'alphadata', ~isnan(Zeu_first));
+%     caxis(data_range);
+%     data_range= caxis;
+    % set(gcf, 'Color', [1,1,1])
+    name= strcat('Chl of month  :', num2str(month_anno),'/', num2str(year_anno));
+    title(name,'fontsize',8);
+    colorbar;
+    x_ticks=5;
+    y_ticks=5;
+    x_step=size(Zeu_first,2)/x_ticks;  %设置x坐标轴隔多少像素显示一个刻度。
+    y_step=size(Zeu_first,1)/y_ticks;  %设置y坐标轴隔多少像素显示一个刻度。
+    xtick_loc= round(1:x_step:size(Zeu_first,2));%设置x坐标轴显示刻度的位置。
+    ytick_loc= round(1:y_step:size(Zeu_first,1));%设置y坐标轴显示刻度的位置。
+    set(gca, 'XTick', xtick_loc);% 设置x坐标轴要显示的刻度值。
+    set(gca, 'YTick', ytick_loc);% 设置y坐标轴要显示的刻度值。
+    set(gca, 'XTickLabel', {round(lons_range(xtick_loc))});
+    set(gca, 'YTickLabel', {round(lats_range(ytick_loc))})
+    set(gca, 'Color', 'white');
+    xlabel ('Longitude(E)','fontsize',10);
+    ylabel ('Latitude(N)','fontsize',10);

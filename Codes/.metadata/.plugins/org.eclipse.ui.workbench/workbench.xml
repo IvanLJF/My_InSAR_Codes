@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbench progressCount="13" version="2.0">
+<workbenchAdvisor/>
+<window height="1079" width="1372" x="328" y="40">
+<fastViewData fastViewLocation="1024"/>
+<perspectiveBar>
+<itemSize x="160"/>
+</perspectiveBar>
+<coolbarLayout locked="0">
+<coolItem id="group.file" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="270" y="30"/>
+<coolItem id="additions" itemType="typeGroupMarker"/>
+<coolItem id="com.rsi.idldt.ui.edit" itemType="typeToolBarContribution" x="152" y="30"/>
+<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="84" y="30"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="40" y="30"/>
+<coolItem id="group.nav" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="184" y="30"/>
+<coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="com.rsi.idldt.proeditor.ProEditor" itemType="typeToolBarContribution" x="40" y="30"/>
+<coolItem id="group.help" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
+</coolbarLayout>
+<page focus="true" label="工作空间 － IDL">
+<editors>
+<editorArea activeWorkbook="DefaultEditorWorkbook">
+<info part="DefaultEditorWorkbook">
+<folder appearance="1" expanded="2">
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
+<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+<part id="4"/>
+<part id="5"/>
+</presentation>
+</folder>
+</info>
+</editorArea>
+<editor id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_gui.pro" partName="tli_smc_gui.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/tli_smc_gui.pro" title="tli_smc_gui.pro" tooltip="SARGUI/tli_smc_gui.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/tli_smc_gui.pro"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="3210"/>
+</editor>
+<editor id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_geocodeback.pro" partName="cwn_smc_geocodeback.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro" title="cwn_smc_geocodeback.pro" tooltip="SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="4263"/>
+</editor>
+<editor id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_import_tsx.pro" partName="tli_smc_import_tsx.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/tli/tli_smc_import_tsx.pro" title="tli_smc_import_tsx.pro" tooltip="SARGUI/tli/tli_smc_import_tsx.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/tli/tli_smc_import_tsx.pro"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="919"/>
+</editor>
+<editor id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_open_slc.pro" partName="tli_smc_open_slc.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/tli/tli_smc_open_slc.pro" title="tli_smc_open_slc.pro" tooltip="SARGUI/tli/tli_smc_open_slc.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/tli/tli_smc_open_slc.pro"/>
+<editorState selectionHPixel="0" selectionLength="34" selectionOffset="1501"/>
+</editor>
+<editor id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_swap_bytes.pro" partName="tli_smc_swap_bytes.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/tli/tli_smc_swap_bytes.pro" title="tli_smc_swap_bytes.pro" tooltip="SARGUI/tli/tli_smc_swap_bytes.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/tli/tli_smc_swap_bytes.pro"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="2502"/>
+</editor>
+<editor activePart="true" focus="true" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_offsetpwrtrac.pro" partName="cwn_smc_offsetpwrtrac.pro" path="/mnt/software/My_InSAR_Tools/Codes/SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro" title="cwn_smc_offsetpwrtrac.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="19221"/>
+</editor>
+</editors>
+<views>
+<view id="org.eclipse.ui.views.TaskList" partName="任务">
+<viewState columnWidth0="43" columnWidth1="19" columnWidth2="253" columnWidth3="78" columnWidth4="153" columnWidth5="1360" columnWidth6="0" horizontalPosition="0" verticalPosition="0">
+<columnOrder columnOrderIndex="0"/>
+<columnOrder columnOrderIndex="1"/>
+<columnOrder columnOrderIndex="2"/>
+<columnOrder columnOrderIndex="3"/>
+<columnOrder columnOrderIndex="4"/>
+<columnOrder columnOrderIndex="5"/>
+<columnOrder columnOrderIndex="6"/>
+</viewState>
+</view>
+<view id="com.rsi.idldt.ui.views.CommandLineView" partName="命令行">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.ContentOutline" partName="大纲">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="控制台">
+<viewState/>
+</view>
+<view id="org.eclipse.debug.ui.DebugView" partName="调试">
+<viewState/>
+</view>
+<view id="com.rsi.idldt.ui.views.ProfilerView" partName="剖析工具">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.navigator.ProjectExplorer" partName="项目资源管理器">
+<viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0"/>
+</view>
+<view id="org.eclipse.ui.views.ProblemView" partName="问题">
+<viewState columnWidth0="250" columnWidth1="75" columnWidth2="150" columnWidth3="899" columnWidth4="0" horizontalPosition="0" verticalPosition="0">
+<columnOrder columnOrderIndex="0"/>
+<columnOrder columnOrderIndex="1"/>
+<columnOrder columnOrderIndex="2"/>
+<columnOrder columnOrderIndex="3"/>
+<columnOrder columnOrderIndex="4"/>
+</viewState>
+</view>
+</views>
+<perspectives activePart="com.rsi.idldt.proeditor.ProEditor" activePerspective="com.rsi.idldt.ui.IDLPerspective">
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.eclipse.debug.internal.ui.DebugPerspectiveFactory" id="org.eclipse.debug.ui.DebugPerspective" label="调试"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.CmdLine"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.File"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Run"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Wizard"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.WorkingSetActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.eclipse.update.ui.softwareUpdates"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.debug.ui.DebugView"/>
+<show_view_action id="org.eclipse.debug.ui.VariableView"/>
+<show_view_action id="org.eclipse.debug.ui.BreakpointView"/>
+<show_view_action id="org.eclipse.debug.ui.ExpressionView"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="com.rsi.idldt.ui.views.CommandLineView"/>
+<show_view_action id="com.rsi.idldt.ui.views.CommandHistoryView"/>
+<show_view_action id="com.rsi.idldt.ui.views.ProfilerView"/>
+<perspective_action id="com.rsi.idldt.ui.IDLPerspective"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="com.rsi.idldt.ui.views.ProfilerView"/>
+<view id="org.eclipse.debug.ui.DebugView"/>
+<view id="org.eclipse.ui.views.ContentOutline"/>
+<view id="com.rsi.idldt.ui.views.CommandLineView"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<fastViewBars/>
+<viewLayoutRec id="com.rsi.idldt.ui.views.CommandLineView" showTitle="true" standalone="true"/>
+<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.VariableView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.BreakpointView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.ExpressionView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.7495049" ratioLeft="757" ratioRight="253" relationship="2" relative="org.eclipse.debug.internal.ui.ToolsFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.59508544" ratioLeft="557" ratioRight="379" relationship="4" relative="org.eclipse.debug.internal.ui.ToolsFolderView">&#x0A;<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.console.ConsoleView" label="控制台"/>
+<page content="org.eclipse.ui.views.TaskList" label="任务"/>
+<page content="com.rsi.idldt.ui.views.ProfilerView" label="剖析工具"/>
+<page content="org.eclipse.debug.ui.DebugView" label="调试"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@11adeb7" ratio="0.76836157" ratioLeft="136" ratioRight="41" relationship="4" relative="org.eclipse.debug.internal.ui.ConsoleFolderView">&#x0A;<folder activePageID="com.rsi.idldt.ui.views.CommandLineView" appearance="3" expanded="2">&#x0A;<page content="com.rsi.idldt.ui.views.CommandLineView" label="命令行"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.views.ResourceNavigator" ratio="0.49966952" ratioLeft="756" ratioRight="757" relationship="2" relative="org.eclipse.ui.internal.ViewStack@11adeb7"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@15d63da" ratio="0.49966866" ratioLeft="754" ratioRight="755" relationship="2" relative="org.eclipse.ui.internal.ViewStack@11adeb7">&#x0A;<folder activePageID="org.eclipse.ui.views.ProblemView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ProblemView" label="问题"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.4490566" ratioLeft="238" ratioRight="292" relationship="4" relative="org.eclipse.debug.internal.ui.ToolsFolderView"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.7495049" ratioLeft="757" ratioRight="253" relationship="2" relative="org.eclipse.ui.editorss">&#x0A;<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ContentOutline" label="大纲"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+</presentation>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="com.rsi.idldt.internal.ui.IDLPerspectiveFactory" id="com.rsi.idldt.ui.IDLPerspective" label="IDL"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.CmdLine"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.File"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Run"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Wizard"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.WorkingSetActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.eclipse.update.ui.softwareUpdates"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.debug.ui.BreakpointView"/>
+<show_view_action id="org.eclipse.debug.ui.DebugView"/>
+<show_view_action id="com.rsi.idldt.ui.views.CommandLineView"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="com.rsi.idldt.ui.views.CommandHistoryView"/>
+<show_view_action id="org.eclipse.search.ui.views.SearchView"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="com.rsi.idldt.ui.views.ProfilerView"/>
+<show_view_action id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="org.eclipse.ui.views.BookmarkView"/>
+<show_view_action id="org.eclipse.debug.ui.VariableView"/>
+<new_wizard_action id="com.rsi.idldt.core.ui.newUntitledProWizard"/>
+<new_wizard_action id="com.rsi.idldt.core.ui.newProjectWizard"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.folder"/>
+<perspective_action id="org.eclipse.debug.ui.DebugPerspective"/>
+<perspective_action id="com.rsi.idldt.ui.IDLPerspective"/>
+<view id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<view id="org.eclipse.debug.ui.DebugView"/>
+<view id="com.rsi.idldt.ui.views.CommandLineView"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<fastViewBars/>
+<viewLayoutRec id="com.rsi.idldt.ui.views.CommandLineView" showTitle="true" standalone="true"/>
+<layout>
+<mainWindow>
+<info folder="true" part="left">
+<folder activePageID="org.eclipse.ui.navigator.ProjectExplorer" appearance="2" expanded="2">
+<page content="org.eclipse.ui.navigator.ProjectExplorer" label="项目资源管理器"/>
+<page content="org.eclipse.debug.ui.DebugView" label="调试"/>
+<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@666d83" ratio="0.7495049" ratioLeft="757" ratioRight="253" relationship="2" relative="left">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@6373" ratio="0.66111654" ratioLeft="675" ratioRight="346" relationship="4" relative="left">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<page content="org.eclipse.ui.console.ConsoleView" label="控制台"/>
+<page content="org.eclipse.ui.views.ProblemView" label="问题"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@16d4b50" ratio="0.7667844" ratioLeft="217" ratioRight="66" relationship="4" relative="org.eclipse.ui.internal.ViewStack@6373">
+<folder activePageID="com.rsi.idldt.ui.views.CommandLineView" appearance="3" expanded="2">
+<page content="com.rsi.idldt.ui.views.CommandLineView" label="命令行"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
+<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info part="*" ratio="0.49959448" ratioLeft="616" ratioRight="617" relationship="2" relative="org.eclipse.ui.internal.ViewStack@16d4b50"/>
+<info folder="true" part="bottom_right" ratio="0.49959448" ratioLeft="616" ratioRight="617" relationship="2" relative="org.eclipse.ui.internal.ViewStack@6373">
+<folder appearance="2" expanded="2">
+<page content="com.rsi.idldt.ui.views.CommandHistoryView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.3081033" ratioLeft="346" ratioRight="777" relationship="2" relative="left"/>
+</mainWindow>
+<hiddenWindow height="250" width="1233" x="493" y="758">
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.debug.ui.VariableView"/>
+<view id="org.eclipse.search.ui.views.SearchView"/>
+</hiddenWindow>
+</layout>
+</perspective>
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.CmdLine"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.File"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Run"/>
+<alwaysOnActionSet id="com.rsi.idldt.ui.actionSets.Wizard"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.WorkingSetActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.eclipse.update.ui.softwareUpdates"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<show_view_action id="org.eclipse.ui.views.ResourceNavigator"/>
+<show_view_action id="org.eclipse.ui.views.BookmarkView"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.views.PropertySheet"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="org.eclipse.ui.views.ProgressView"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.folder"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.file"/>
+<new_wizard_action id="org.eclipse.ui.editors.wizards.UntitledTextFileWizard"/>
+<perspective_action id="org.eclipse.team.ui.TeamSynchronizingPerspective"/>
+<view id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.ui.views.ContentOutline"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<fastViewBars/>
+<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="topLeft">&#x0A;<folder activePageID="org.eclipse.ui.navigator.ProjectExplorer" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.navigator.ProjectExplorer" label="项目资源管理器"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="714" ratioRight="238" relationship="2" relative="topLeft">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.25945377" ratioLeft="247" ratioRight="705" relationship="2" relative="topLeft"/>
+<info folder="true" part="bottomRight" ratio="0.65957445" ratioLeft="620" ratioRight="320" relationship="4" relative="org.eclipse.ui.editorss">&#x0A;<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.TaskList" label="任务"/>
+<page content="org.eclipse.ui.views.ContentOutline" label="大纲"/>
+<page content="org.eclipse.ui.console.ConsoleView" label="控制台"/>
+<page content="org.eclipse.ui.views.ProblemView" label="问题"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">&#x0A;<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+</presentation>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+</perspectives>
+<workingSets>
+<workingSet IMemento.internal.id="我的代码"/>
+</workingSets>
+<navigationHistory>
+<editors>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli_smc_gui.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/IO/tli_write.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli/tli_smc_import_tsx.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli/tli_smc_import_csk.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli/tli_smc_open_slc.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli/tli_smc_swap_bytes.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_createoffset.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/tli_smc_gui.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_initoffsetorbit.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_initoffset.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_offsetpwr.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_offsetfit.pro"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" path="/SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro"/>
+</editors>
+<item historyLabel="tli_write.pro" index="2">
+<position/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4604" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1084" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4781" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="908" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4583" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1144" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1179" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1180" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1224" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4793" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4935" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4932" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1144" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1180" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1224" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1247" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1265" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4925" y="0"/>
+</item>
+<item historyLabel="tli_write.pro" index="2">
+<position info="not_deleted" x="1265" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4517" y="0"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="0">
+<position info="not_deleted" x="4221" y="0"/>
+</item>
+<item historyLabel="cwn_smc_geocodeback.pro" index="1">
+<position info="not_deleted" x="4263" y="0"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="0">
+<position info="not_deleted" x="1546" y="0"/>
+</item>
+<item historyLabel="tli_smc_import_tsx.pro" index="3">
+<position info="not_deleted" x="919" y="0"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="0">
+<position info="not_deleted" x="10302" y="0"/>
+</item>
+<item historyLabel="tli_smc_import_csk.pro" index="4">
+<position info="not_deleted" x="3479" y="0"/>
+</item>
+<item historyLabel="tli_smc_open_slc.pro" index="5">
+<position info="not_deleted" x="106" y="0"/>
+</item>
+<item historyLabel="tli_smc_open_slc.pro" index="5">
+<position info="not_deleted" x="1501" y="34"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="0">
+<position info="not_deleted" x="10332" y="0"/>
+</item>
+<item historyLabel="tli_smc_swap_bytes.pro" index="6">
+<position/>
+</item>
+<item historyLabel="cwn_smc_createoffset.pro" index="7">
+<position/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="10332" y="0"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="2933" y="0"/>
+</item>
+<item historyLabel="cwn_smc_initoffsetorbit.pro" index="9">
+<position info="not_deleted" x="4476" y="0"/>
+</item>
+<item historyLabel="cwn_smc_createoffset.pro" index="7">
+<position info="not_deleted" x="6211" y="0"/>
+</item>
+<item historyLabel="cwn_smc_initoffsetorbit.pro" index="9">
+<position info="not_deleted" x="4476" y="0"/>
+</item>
+<item historyLabel="cwn_smc_createoffset.pro" index="7">
+<position info="not_deleted" x="6211" y="0"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="3009" y="0"/>
+</item>
+<item historyLabel="cwn_smc_initoffset.pro" index="10">
+<position info="not_deleted" x="6536" y="18"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="3076" y="0"/>
+</item>
+<item historyLabel="cwn_smc_offsetpwr.pro" index="11">
+<position info="not_deleted" x="11476" y="17"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="3141" y="0"/>
+</item>
+<item historyLabel="cwn_smc_offsetfit.pro" index="12">
+<position info="not_deleted" x="6314" y="17"/>
+</item>
+<item historyLabel="tli_smc_gui.pro" index="8">
+<position info="not_deleted" x="3210" y="0"/>
+</item>
+<item historyLabel="cwn_smc_offsetpwrtrac.pro" index="13">
+<position info="not_deleted" x="11866" y="21"/>
+</item>
+<item historyLabel="cwn_smc_offsetpwrtrac.pro" index="13">
+<position info="not_deleted" x="18821" y="0"/>
+</item>
+<item active="true" historyLabel="cwn_smc_offsetpwrtrac.pro" index="13">
+<position info="not_deleted" x="18757" y="0"/>
+</item>
+</navigationHistory>
+<input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
+</page>
+<workbenchWindowAdvisor/>
+<actionBarAdvisor/>
+<trimLayout>
+<trimArea IMemento.internal.id="128">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
+</trimArea>
+<trimArea IMemento.internal.id="1024">
+<trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
+<trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+</trimArea>
+</trimLayout>
+</window>
+<mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_offsetpwrtrac.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_offsetpwrtrac.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_offsetfit.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_offsetfit.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_offsetfit.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_offsetpwr.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_offsetpwr.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_offsetpwr.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_initoffset.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_initoffset.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_initoffset.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_initoffsetorbit.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_initoffsetorbit.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_initoffsetorbit.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_createoffset.pro" tooltip="SARGUI/CWN/Coreg/cwn_smc_createoffset.pro">
+<persistable path="/SARGUI/CWN/Coreg/cwn_smc_createoffset.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_swap_bytes.pro" tooltip="SARGUI/tli/tli_smc_swap_bytes.pro">
+<persistable path="/SARGUI/tli/tli_smc_swap_bytes.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_import_csk.pro" tooltip="SARGUI/tli/tli_smc_import_csk.pro">
+<persistable path="/SARGUI/tli/tli_smc_import_csk.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_import_tsx.pro" tooltip="SARGUI/tli/tli_smc_import_tsx.pro">
+<persistable path="/SARGUI/tli/tli_smc_import_tsx.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_write.pro" tooltip="IO/tli_write.pro">
+<persistable path="/IO/tli_write.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_geocodeback.pro" tooltip="SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro">
+<persistable path="/SARGUI/CWN/Geocoding/cwn_smc_geocodeback.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="cwn_smc_gcmapfine.pro" tooltip="SARGUI/CWN/Geocoding/cwn_smc_gcmapfine.pro">
+<persistable path="/SARGUI/CWN/Geocoding/cwn_smc_gcmapfine.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_smc_spawn.pro" tooltip="SARGUI/tli/tli_smc_spawn.pro">
+<persistable path="/SARGUI/tli/tli_smc_spawn.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_readtxt.pro" tooltip="IO/tli_readtxt.pro">
+<persistable path="/IO/tli_readtxt.pro"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="com.rsi.idldt.proeditor.ProEditor" name="tli_readtxt(冲突_litao-HP-Z600-Workstation_2014-10-14 12-16-46).pro" tooltip="IO/tli_readtxt(冲突_litao-HP-Z600-Workstation_2014-10-14 12-16-46).pro">
+<persistable path="/IO/tli_readtxt(冲突_litao-HP-Z600-Workstation_2014-10-14 12-16-46).pro"/>
+</file>
+</mruList>
+</workbench>

@@ -1,0 +1,280 @@
+#! /bin/sh
+######################################################
+###  tli_geocode_unw                               ###
+###    using:
+###      - unwrapped image   
+###      - par file containing orbital data and 
+###        geometric data.
+###
+######################################################
+###  Written by:
+###    T.LI @ Sasmac, 20141016
+######################################################
+echo ""
+echo "tli_geocode_unw. v 1.0, 20141016"
+echo ""
+echo "  Required data:" 
+echo "    - unwrapped image"
+echo "    - par file"
+echo ""
+
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_geocode_unw <unw> <par> [gcp_method] [dem] [geocode_method]"
+  echo ""
+  echo "Input params:"
+  echo "  "
+  echo "  unw  : unwrapped image."
+  echo "  par  : par file of the master slc image."
+  echo "  gcp_method: GCP selection method. (enter '-' for default: 0)"
+  echo "         0: Using geocoded DEM as GCP"
+  echo "         1: Using manually selected points as GCP"
+  echo "         2: Using no GCP"
+  echo "  dem  : DEM file as reference."
+  echo "  geocode_method: Geocode method. (enter '-' for default: 1)"
+  echo "         0: Using coarse coreg."
+  echo "         1: Using fine coreg."
+  echo "         2: Using existed lookup table."
+  exit
+fi
+
+### Assignments
+
+# Input file
+if [ ! -f $1 ]; then
+  echo "Error! Unwrapped file not exist: $1"
+  echo ""
+  exit
+else
+  unwfile=$1
+fi
+if [ ! -f $2 ]; then
+  echo "Error! Master file not exist: $2"
+  echo ""
+  exit
+else
+  parfile=$2
+fi 
+
+gcp_method=0
+if [ $# -ge 3 ]; then
+  if [ $3 != '-' ]; then
+    gcp_method=$3
+  fi 
+fi 
+
+dem='-'
+if [ $# -ge 4 ];then
+  dem=$4
+fi 
+
+geocode_method=1
+if [ $# -ge 5 ]; then
+  if [ $5 != '-' ]; then
+    geocode_method=$5
+  fi 
+fi 
+
+fname=${unwfile%.flt.filt.unw} # Get the master date and slave date.
+
+offfile=$fname.off 
+basefile=$fname.base 
+master_date=${fname%-*}
+slave_date=${fname##*-}
+
+
+mlifile=$master_date.pwr
+
+col_post=0.00000833333
+row_post=$col_post
+
+# output file
+hgtfile=$fname.hgt 
+hgt_grdfile=$fname.grd 
+rhgtfile=$fname.rhgt
+rhgt_grdfile=$master_date.grd 
+add_phase_ramp=1  # Do not add back the phase ramp (0). Add back the phase ramp (1).
+
+# Assignments
+width=`tli_params $master_date.pwr.par range_samples`
+lines=`tli_params $master_date.pwr.par azimuth_lines`
+rps=`tli_params $master_date.pwr.par range_pixel_spacing`
+aps=`tli_params $master_date.pwr.par azimuth_pixel_spacing`
+
+case "$gcp_method" in 
+  0)
+    #Using geocoded srtm data 
+    if [ ! -f $dem ]; then
+      echo 'Error! Dem not exist.'
+      exit
+    fi
+    idl <<EOF
+      TLI_GCP_DEM, "`pwd`/$unwfile", "$dem" , npt=10000, geocode_method=$geocode_method
+EOF
+
+
+    echo 'Select GCP using geocoded DEM.' >> log.txt
+    echo TLI_GCP_DEM, "`pwd`/$unwfile", "$dem" , npt=10000, geocode_method="$geocode_method" >>log.txt
+    gcp_phase $unwfile $offfile $fname.gcp $fname.gcp_ph
+    base_ls $master_date.rslc.par $offfile $fname.gcp_ph $basefile 1 1 1 1 1 1
+    ;;
+  1)
+    # Using manually selected points
+    echo "Please select GCP and enter the corresponding height values in the blank."
+    gcp_ras $unwfile.ras $fname.gcp
+    gcp_phase $unwfile $offfile $fname.gcp $fname.gcp_ph
+    base_ls $master_date.rslc.par $offfile $fname.gcp_ph $basefile 1 1 1 1 1 1
+    ;;
+  2)
+    idl <<EOF
+      tli_base_ls, "`pwd`/$basefile"
+EOF
+    ;;
+  *)
+    echo 'Method not supported.'
+    exit
+    ;;
+esac
+
+if false; then
+# Interpolation, tli@ sasmac, 20141116
+interp_ad $unwfile $unwfile.interp $width 32 8 16 2
+rasrmg $unwfile.interp $mlifile $width - - - 1 1 - - - - - $unwfile.interp.ras 
+fi
+
+###########################################################
+# Height map.
+rm -f $hgtfile $hgt_grdfile
+hgt_map $unwfile $parfile $offfile $basefile $hgtfile $hgt_grdfile $add_phase_ramp
+rashgt $hgtfile $mlifile $width - - - - - 160 - - - $hgtfile.ras
+
+# Mask hgt file
+if [ ! -f $fname.flt.filt.unw -a ! -f $hgtfile ]; then
+  tli_backup $fname.flt.filt.unw $hgtfile  # Backup the two files.
+fi 
+idl << EOF
+  TLI_MASK_INT, "`pwd`/$fname.filt_presv.cc"
+EOF
+
+if false; then
+  # Interp
+  interp_ad $hgtfile $hgtfile.interp $width 64 32 32 2
+  rasrmg $hgtfile.interp $mlifile $width - - - 1 1 - - - - - $hgtfile.interp.ras 
+  mv $hgtfile.interp $hgtfile
+fi 
+
+
+# Mask again
+idl << EOF
+  TLI_MASK_INT, "`pwd`/$fname.filt.cc", cc_thresh=0.01 
+EOF
+
+# Plot results
+rasrmg $fname.flt.filt.unw $mlifile $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $fname.flt.filt.unw.mask.ras 
+
+rashgt $hgtfile $mlifile $width - - - - - 160 - - - $hgtfile.msk.ras
+
+############################################################
+###  Phase to height conversion.
+###  This is preferred to geocoding.
+###  Because geocode may cause ugly interpolation error.
+#############################################################
+
+if true; then  # This is not necessary if geocoding will be applied.
+  # Reample the height map to orthonormal coordinates.
+  echo "Resampling the height map to orthonormal coordinates. Please wait ..."
+  res_space=-  # Pixel spacing of the resampled data.
+  res_map $hgtfile $hgt_grdfile $mlifile $parfile $offfile $rhgtfile $rhgt_grdfile 7 7 $res_space >rhgt.par
+  # Extract params from rhgt.hdr
+  void=`awk 'NR == 13 {print}' rhgt.par`
+  void=${void##*:}
+  col_post=${void% *}
+  row_post=${void##* }
+  void=`awk 'NR == 23 {print}' rhgt.par`
+  width_grd=${void##*:}
+  
+  #interp_ad $rhgtfile $rhgtfile.interp $width_grd 
+  raspwr $rhgt_grdfile $width_grd 
+  rashgt $rhgtfile $rhgt_grdfile $width_grd - - - 1 1 160 - - - $rhgtfile.ras # Display the orthonormal image.
+  rasshd $rhgtfile $width_grd $col_post $row_post 1 0 1 1 - - - $rhgtfile'.shd.ras' # The shaded relief result.
+ # geeqie $hgtfile'.interp_shd.ras'
+fi 
+
+
+################################################################
+###  Geocoding.
+###  Not recommended.
+###  If you wanna run the following scripts, please do 
+###    0: Assign dem path.
+###    1: mask the phase to height conversion.
+###    2: un-mask the following scripts.
+################################################################
+if [ -f $dem ]; then
+
+  #################################################################
+  ### Interp
+  ################################################################
+  if false; then  
+  # interpolate
+  interp_ad $hgtfile $hgtfile.interp $width 32 64 64 2 2 1
+  #bpf $hgtfile $hgtfile.sm $width - - - - - - 2 1 - -
+  # rashgt $hgtfile.interp $mlifile $width - - - - - 160 - - - $hgtfile.interp.ras
+  rashgt $hgtfile.interp - $width - - - - - 160 - - - $hgtfile.interp.ras
+
+  geeqie $hgtfile.interp.ras
+
+  hgtfile=$hgtfile.sm
+  fi 
+  
+  tli_geocode_dem $master_date.pwr $dem $hgtfile 2
+  
+  
+  
+  
+if false; then
+  # Geocode the hgt file to UTM-projection.
+  rm -f dem_seg dem_seg.par sim_sar lookup lookup_fine
+  gc_map $mlifile.par - $dem.par $dem dem_seg.par dem_seg lookup 5 5 sim_sar
+
+  if true; then  # Using fine coreg.
+    rm -f $master_date.diff_par
+    echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+    create_diff_par $mlifile.par - $master_date.diff_par 1 <create_diffpar
+    rm -f create_diffpar
+  
+    width_mli=`tli_params $master_date.pwr.par 'range_samples'`
+    line_mli=`tli_params $master_date.pwr.par 'azimuth_lines'`
+    width_dem=`tli_params dem_seg.par 'width'`
+    geocode lookup sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 1 0 # Initial sim_sar.rdc file.
+  
+    offset_pwrm sim_sar.rdc $mlifile $master_date.diff_par $master_date.offs $master_date.snr 128 128 offsets 2 
+    offset_fitm $master_date.offs $master_date.snr $master_date.diff_par coffs coffsets - -
+    offset_pwrm sim_sar.rdc $mlifile $master_date.diff_par $master_date.offs $master_date.snr 32 32 offsets 2 
+    offset_fitm $master_date.offs $master_date.snr $master_date.diff_par coffs coffsets - - >> coreg_quality_DEM
+    width_dem=`tli_params dem_seg.par 'width'`
+    width_mli=`tli_params $master_date.pwr.par 'range_samples'`
+    line_mli=`tli_params $master_date.pwr.par 'azimuth_lines'`
+
+    gc_map_fine lookup $width_dem $master_date.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+    cp lookup_fine lookup
+  fi
+
+  width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+  interp_mode=2 # 0: nearest neighbor, 1: bicubic, 2: bicublic-log
+  geocode_back $hgtfile $width lookup $hgtfile.utm $width_dem - $interp_mode 0  #Geocoded hgt
+  geocode_back $mlifile $width lookup $mlifile.utm $width_dem - 1 0  #Geocoded hgt
+
+  geocode lookup sim_sar $width_dem sim_sar.rdc $width $lines 2 0
+  geocode lookup dem_seg $width_dem $master_date.dem.hgt $width $lines 2 0 #这儿可能有问题
+
+fi
+
+
+width_dem=`tli_params dem_seg.par 'width'`
+width_mli=`tli_params $master_date.pwr.par 'range_samples'`
+rashgt $hgtfile.utm $mlifile.utm $width_dem - - - - - 160 - - - $hgtfile.utm.ras
+rasshd $hgtfile.utm $width_dem $rps $aps 1 0 1 1 - - - $hgtfile.utm.shd.ras
+rashgt $master_date.dem.hgt $mlifile $width_mli - - - - - 160 - - - $master_date.dem.hgt.ras
+# geeqie $hgtfile.utm.shd.ras &
+
+fi

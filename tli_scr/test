@@ -1,0 +1,3 @@
+#! /bin/sh
+geeqie 05721_25394.cc.ras &
+echo 'This is a test.'

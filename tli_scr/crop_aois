@@ -1,0 +1,26 @@
+#! /bin/sh
+
+# crop the images using convert.
+# convert the tif image into bmp.
+if ! [ -e lel1_vdh.bmp ] ; then
+  convert lel1_vdh.tif lel1_vdh.bmp
+fi
+
+if ! [ -e lel10_vdh_merge.bmp ] ; then
+  convert lel10_vdh_merge.tif lel10_vdh_merge.bmp
+fi
+
+convert lel1_vdh.bmp -crop 180x160+790+500 lel1_1.bmp
+convert lel1_vdh.bmp -crop 360x320+1900+0 lel1_2.bmp
+convert lel1_vdh.bmp -crop 280x250+1460+960 lel1_3.bmp
+convert lel1_vdh.bmp -crop 240x213+2140+1167 lel1_4.bmp
+convert lel1_vdh.bmp -crop 160x290+1090+1750 lel1_5.bmp
+convert lel1_vdh.bmp -crop 180x160+862+2187 lel1_6.bmp
+
+convert lel10_vdh_merge.bmp -crop 180x160+790+500 lel10_1.bmp
+convert lel10_vdh_merge.bmp -crop 360x320+1900+0 lel10_2.bmp
+convert lel10_vdh_merge.bmp -crop 280x250+1460+960 lel10_3.bmp
+convert lel10_vdh_merge.bmp -crop 240x213+2140+1167 lel10_4.bmp
+convert lel10_vdh_merge.bmp -crop 160x290+1090+1750 lel10_5.bmp
+convert lel10_vdh_merge.bmp -crop 180x160+862+2187 lel10_6.bmp
+

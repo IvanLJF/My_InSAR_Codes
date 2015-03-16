@@ -1,0 +1,188 @@
+#!/bin/bash
+##################################################################
+###   PS_Data_Prepare.sh: Script for PS analysis preparation.  ###
+###         using:                                             ###
+###         - Original SLCs
+###         
+###         - Original DEM
+##################################################################
+###   History
+###     20120224: Written by T.LI @ CUHK.
+###     20140813: Re-organized by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** PS_Data_Prepare.sh Prepare data for PS analysis v1.0 20140813"
+echo " "
+echo "    Required data:"
+echo "       - Original SLCs (co-registered)"
+echo "       - DEM file."
+
+if [ $# -lt 1 ]
+then
+  echo " "
+  echo "Usage: PS_Data_Prepare.sh <master_date> [SLC_copy_flag] [DEM_process_flag] [rslc_path] [dem] [itab_type] [piece_path] [roff] [nr] [loff] [nl]"
+  echo ""
+  echo "input parameters:"
+  echo ""
+  echo "  master_date     : Date of the master image."
+  echo "  SLC_copy_flag   : SLC_copy flag (enter "-" for default: 0)"
+  echo "                    0: Do not execute the step."
+  echo "                    1: Execute the step."
+  echo "  DEM_process_flag: DEM process flag (enter "-" for default: 0)"
+  echo "                    0: Do not execute the step."
+  echo "                    1: Execute the step by using cross-correlation (Good results can only be assured when DEM resolution is high)."
+  echo "                    2: Execute the step by using initial lookup table."
+  echo "  rslc_path       : (input) Path containing all coregistered rslcs. (enter - if SLC_copy_flag eq 0)"
+  echo "  dem             : (input) DEM file. (enter - if DEM_process_flag eq 0)"
+  echo "  itab_type       : Itab type (default = 0)"
+  echo "                    0: Single master."
+  echo "                    1: All pairs."
+  echo "  piece_path      : Path of the cropped SLC pieces. (enter - for default: pwd/piece)"
+  echo "  roff            : offset to starting range sample (enter - for default: 0)"
+  echo "  nr              : number of range samples (enter - for default: to end of line)"
+  echo "  loff            : offset to starting line (enter - for default: 0)"
+  echo "  nl              : number of lines to copy (enter - for default: to end of file)"
+  echo " "
+  exit
+fi
+
+# Assignment
+master_date=$1
+SLC_copy_flag="0"
+  if [ $# -ge 2 ]; then
+    if [ $2 != "-" ]; then
+      SLC_copy_flag=$2
+    fi
+  fi
+
+DEM_process_flag=0 ; if [ $# -ge 3 ];   then  DEM_process_flag=$3   ; fi
+rslc_path="-"        ; if [ $# -ge 4 ];   then  rslc_path=$4          ; fi
+if [ $DEM_process_flag != 1 ]; then 
+  if [ $# -lt 5 ]; then
+    echo "PS_Data_Prepare: ERROR, please specify the DEM file."
+    exit
+  fi
+  dem=$5
+fi
+itab_type="1"          ; if [ $# -ge 6 ];   then  itab_type=$6          ; fi
+piece_path=`pwd`/piece ; if [ $# -ge 7 -a $piece_path = "-" ];   then  piece_path=$7         ; fi
+roff="-"               ; if [ $# -ge 8 ];   then  roff=$8               ; fi
+nr="-"                 ; if [ $# -ge 9 ];   then  nr=$9                 ; fi
+loff="-"               ; if [ $# -ge 10 ];  then  loff=${10}              ; fi
+nl="-"                 ; if [ $# -ge 11 ] ; then  nl=${11}               ; fi
+
+# Some pre-defined file names.
+dem_par=$dem.par
+masterpwr=$piece_path/$master_date.rslc.pwr
+mslc_par=$piece_path/$master_date.rslc.par
+
+# Step 1, file cropping.
+if [ $SLC_copy_flag == 0 ]; then
+  echo "We will not crop the images."
+  find $piece_path -name "*.rslc" -exec echo {} {}.par >SLC_tab \;
+  find $piece_path -name "*.pwr" -exec echo {} >im_list \;
+else
+  mkdir -p $piece_path
+  rm -f SLC_org im_list SLC_tab
+  find $rslc_path -name "*.rslc" -follow -exec echo {} {}.par >SLC_org \;
+  
+  SLC_copy_all SLC_org $piece_path $roff $nr $loff $nl
+  find $piece_path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+  find $piece_path -name "*.rslc" -exec echo {} {}.par >SLC_tab \;
+  find $piece_path -name "*.pwr" -exec echo {} >im_list \;
+  width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+  line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+  width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+  line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+  type=0
+  format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+  if [ "$format"=="SCOMPLEX" ];  then
+    type=1
+  fi
+  ave_image im_list $width ave.pwr  #ave.pwr
+  mv $masterpwr.par .
+  mv $masterpwr .
+  rm -f $piece_path/*.pwr $piece_path/*.pwr.par
+  mv $master_date.rslc.pwr.par $piece_path/
+  mv $master_date.rslc.pwr $piece_path/
+  raspwr ave.pwr $width 1 0 1 1 1 0.35 1 ave.ras 0 0
+fi
+
+width_mli=$(awk '$1=="range_samples:" {print $2}' $masterpwr.par)
+line_mli=$(awk '$1=="azimuth_lines:" {print $2}' $masterpwr.par)
+width=$(awk '$1=="range_samples:" {print $2}' $mslc_par)
+line=$(awk '$1=="azimuth_lines:" {print $2}' $mslc_par)
+type=0
+format=$(awk '$1=="image_format:" {print $2}' $mslc_par)
+if [ "$format"=="SCOMPLEX" ];  then
+  type=1
+fi
+
+# Step 2, DEM processing.
+case $DEM_process_flag in
+0)
+  echo "We will not process the DEM.";;
+1)
+  echo "DEM coregistration using cross-correlation. The DEM spatial resolution assumes to be high."
+  rm -f dem_seg dem_seg.par lookup lookup_fine
+  gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 30 30 sim_sar  # Use disdem_par to check dem_seg.  
+  # *** sim_sar 的坐标系是DEM坐标系 ***
+  # *** lookup table 应该是与sim_sar大小一致的，与dem_seg大小也一致 ***
+  # *** 每个点上的数对应sim_sar的像素在slc中的坐标 ***
+  # *** 注意保证DEM的正确性。特别是投影类型。
+  echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+  create_diff_par $masterpwr.par - $master_date.diff_par 1 <create_diffpar
+  rm -f create_diffpar
+  offset_pwrm sim_sar ../ave.pwr $master_date.diff_par $master_date.offs $master_date.snr - - offsets 2
+  offset_fitm $master_date.offs $master_date.snr $master_date.diff_par coffs coffsets - -
+  offset_pwrm sim_sar ../ave.pwr $master_date.diff_par $master_date.offs $master_date.snr - - offsets 4 40 40 -  #解算偏移量参数
+  width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+  gc_map_fine lookup $width_dem $master_date.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+  geocode_back ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+  raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras
+  row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+  geocode lookup_fine sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+  geocode lookup_fine dem_seg $width_dem $master_date.hgt $width - 1 0
+  raspwr $master_date.hgt $width_mli 1 0 1 1 1. .35 1 $master_date.hgt.ras;;
+2) 
+  gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 30 30 sim_sar  # Use disdem_par to check dem_seg.  
+  width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+  geocode lookup dem_seg $width_dem $master_date.hgt $width - 1 0
+  
+  geocode_back ave.pwr $width_mli lookup ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+  raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras
+  raspwr $master_date.hgt $width_mli 1 0 1 1 1. .35 1 $master_date.hgt.ras;;
+*)
+  echo "Error! Method not supported: $DEM_process_flag"
+  exit;;
+esac
+
+# Step 3, Baseline calculation.
+base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+
+# Step 4, PS detection.
+pwr_stat SLC_tab $mslc_par msr pt 2 1 - - - - $type 1
+ras_pt pt - ave.ras pt.ras - - 255 255 0 3
+
+# Step 5, PS interfere.
+rm -f pSLC
+SLC2pt SLC_tab pt - pSLC_par pSLC -
+base_orbit_pt pSLC_par itab - pbase
+
+# Step 6, PS height calculation.
+npt pt >numberp
+np=$(awk '$1 == "total_number_of_points:" {print $2}' numberp)
+rm -f numberp
+rm -f pdem
+data2pt $master_date.hgt $masterpwr.par pt $mslc_par pdem 1 2   # 如有问题，检查参数，某些参数用-来代替会出现问题
+
+# Step 7, PS phase differential.
+rm -f pint
+intf_pt pt - itab - pSLC pint $type pSLC_par
+# pdismph_pwr24 pt - $mslc_par pint 25 $masterpwr.par ave.pwr 1 #显示第25幅影像的干涉图
+rm -f psim_unw0
+phase_sim_pt pt - pSLC_par - itab - pbase pdem psim_unw0 - 0 0 #############注意，相位模拟可能存在问题
+rm -f pdiff0
+sub_phase_pt pt - pint - psim_unw0 pdiff0 1 0
+#prasmph_pwr24 pt - $mslc_par pdiff0 - $masterpwr.par ave.pwr 1 # Produce the 3rd different interferogram of the pt. Named as pdiff.ras.
+#dis_ipta pt - pSLC_par - itab pbase 0 pdiff0 1 pt.ras 30 -0.01 0.01 2 # #########版本不同，命令不同，注意参数的设置

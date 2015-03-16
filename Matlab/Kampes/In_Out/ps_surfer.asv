@@ -1,0 +1,23 @@
+% reading PSs coordinates and converting them into the text file that is
+% readable by Surfer
+
+PS_Num=14581;   % total number of PSs
+r0=751; rN=1500;      % starting and ending rows in the original differential interferogram
+rows=rN-r0+1;
+c0=2051; cN=3400;  % starting and ending colums in the original differential interferogram
+cols=cN-c0+1;
+
+% read the coordiantes of all PSs
+PSCoor=freadbk('D:\PhoenixSBAS\Results\PSCoorN.dat', PS_Num, 'uint16');
+
+% open a textfile to write all coordinates of PS points
+fid=fopen('D:\PhoenixSBAS\Results\PSCoorN_Surfer.dat', 'wt');
+
+% prepare a post file for Surfer 8.0
+PSCoor(:,1)=cols-(PSCoor(:,1)-c0);
+PSCoor(:,2)=rows-(PSCoor(:,2)-r0);
+
+for i=1:PS_Num
+    fprintf(fid, '%d    %d\n', PSCoor(i,1), rows-R(i)+1);
+end
+fclose(fid);

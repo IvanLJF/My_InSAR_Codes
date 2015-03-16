@@ -1,0 +1,37 @@
+     ;-------------------------------------------------------------------
+      ; Chen Wei
+      'flat': BEGIN
+        Case STRLOWCASE(event.value) OF
+          'base_init'                          : cw_smc_base_init     ; change 'offset method' to widget_dropbox
+                                                                      ; Good, pay attention to definitions. And information dialog should be centered.
+          'base_perp'                          : cw_smc_base_perp
+          'phase_slope_base'                   : cw_smc_ph_slope_base ; Change interferogram type to dropbox.inverse flag to dropbox.outputfile should be *.flt
+          
+          ELSE: TLI_SMC_DUMMY, inputstr='Function was not designed!'
+        ENDCASE
+      END
+      
+      'unw': BEGIN
+      
+        Case STRLOWCASE(event.value) OF
+        
+          'adf'                                          :  cw_smc_adf   ; Title of tlb.
+          'branch cut.corr_flag'                                :    cw_smc_corr_flag   ; Attention when matching case statement.
+          'branch cut.neutron'                               :   cw_smc_neutron
+          'branch cut.residue'                                 :  cw_smc_residue
+          'branch cut.tree_cc'                                  : cw_smc_tree_cc
+          'branch cut.grasses'                                  : cw_smc_grasses
+          'mcf.rascc_mask'                             : cw_smc_rascc_mask
+          'mcf.rascc_mask_thining'            : cw_smc_rascc_mask_thinning
+          'mcf.mcf'                                          : cw_smc_mcf
+          'mcf.interp_ad'                               : cw_smc_interp_ad
+          'mcf.unw_model'                           : cw_smc_unw_model
+          'snaphu.gamma2snaphu.interferogram'            : cw_smc_gamma2snaphu_int
+          'snaphu.gamma2snaphu.cc'              : cw_smc_gamma2snaphu_cc
+          'snaphu.snaphu'                                    : cw_smc_snaphu
+          'snaphu.snaphu2gamma.unw'                    : cw_smc_snaphu2gamma_UNW
+          ELSE: TLI_SMC_DUMMY, inputstr='Function was not designed!'
+        ENDCASE
+      END
+      ; Chenwei
+      ;--------------------------------------------------------------------------

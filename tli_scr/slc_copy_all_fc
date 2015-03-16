@@ -1,0 +1,30 @@
+#! /bin/sh
+
+# Script that:
+#	Copy subset data from original SLCs.
+# Usage:
+#	./slc_aoi
+# Written by:
+#	T.LI @ InSAR Group 
+#	SWJTU & CUHK, 22/02/13
+
+origpath="/mnt/backup/TSX-HK/Coreg_SLC_GAMMA"  
+roff="14047"      #roff: offset to starting range sample
+nr="126"       #nr: number of range samples
+loff="9745"    #loff: offset number of lines to start
+nl="132"       #nl: number of lines to copy (enter 0: to end of file)
+
+workpath=`pwd`
+path=$workpath/piece
+rm -fr SLC_org SLC_tab im_list piece
+mkdir -p $path
+find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+nlines=$(awk 'END{print NR}' SLC_org)
+for i in $( seq 1 1 $nlines )
+do
+	echo $i/$nlines
+	SLC_fname=$(sed -n "$i,1p" SLC_org | awk '{print $1}')
+	SLC_date=${SLC_fname:(-13):8}
+	SLC_copy $SLC_fname $SLC_fname.par $path/$SLC_date.rslc $path/$SLC_date.rslc.par 3 - $roff $nr $loff $nl 0 -
+done
+

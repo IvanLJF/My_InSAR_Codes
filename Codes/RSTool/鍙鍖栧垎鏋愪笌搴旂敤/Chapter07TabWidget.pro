@@ -1,0 +1,43 @@
+; Chapter07TabWidget.pro
+PRO MyCheck, ev
+  WIDGET_CONTROL, ev.TOP, GET_UVALUE=stash
+  IF ev.SELECT EQ 1 THEN BEGIN
+    Result=DIALOG_MESSAGE('SWITCH is Selected!',/INFORMATION)
+  ENDIF ELSE BEGIN
+    Result=DIALOG_MESSAGE("SWITCH isn't Selected!",/INFORMATION)
+  ENDELSE
+END
+PRO MySlider, ev
+  WIDGET_CONTROL, ev.TOP, GET_UVALUE=stash
+  WIDGET_CONTROL, ev.ID, GET_VALUE = SliderValue
+  SliderValue = STRTRIM(STRING(SliderValue),2)
+  Result=DIALOG_MESSAGE('Slider value:'+SliderValue,/INFORMATION)
+END
+PRO MyText, ev
+  WIDGET_CONTROL, ev.TOP, GET_UVALUE=stash
+  WIDGET_CONTROL, ev.ID, GET_VALUE = TextValue
+  Result=DIALOG_MESSAGE('TextValue:'+TextValue,/INFORMATION)
+END
+PRO Chapter07TabWidget_event, ev
+  WIDGET_CONTROL, ev.TOP, GET_UVALUE=stash
+  IF (ev.ID EQ stash.bDone) THEN WIDGET_CONTROL, ev.TOP, /DESTROY
+END
+PRO Chapter07TabWidget, LOCATION=location
+  wTLB = WIDGET_BASE(/COLUMN, /BASE_ALIGN_TOP, XSIZE=590,YSIZE=160)
+  wTab = WIDGET_TAB(wTLB, LOCATION=location, XSIZE=560,YSIZE=100)
+  wT1 = WIDGET_BASE(wTab, TITLE='TAB 1', /NONEXCLUSIVE,/ROW)
+  wCB = WIDGET_BUTTON(wT1, VALUE='SWITCH', EVENT_PRO='MyCheck')
+  wT2 = WIDGET_BASE(wTab, TITLE='TAB 2', /COLUMN)
+  wLabel = WIDGET_LABEL(wT2, VALUE='Move the Slider')
+  wSlider = WIDGET_SLIDER(wT2, EVENT_PRO='MySlider',XSIZE=520)
+  wT3 = WIDGET_BASE(wTab, TITLE='TAB 3', /COLUMN)
+  wLabel = WIDGET_LABEL(wT3, VALUE='Enter some text')
+  wText=WIDGET_TEXT(wT3,/EDITABLE,EVENT_PRO='MyText',XSIZE=90)
+  wControl = WIDGET_BASE(wTLB, /ROW)
+  bDone = WIDGET_BUTTON(wControl, VALUE='Done')
+  stash = { bDone:bDone, wCB:wCB, wSlider:wSlider,wText:wText }
+  WIDGET_CONTROL, wTLB, /REALIZE
+  WIDGET_CONTROL, wTLB, SET_UVALUE=stash
+  XMANAGER, 'Chapter07TabWidget', wTLB, /NO_BLOCK
+END
+

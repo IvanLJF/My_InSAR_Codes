@@ -1,0 +1,23 @@
+1 代码整体说明：
+  以cal_*命名的m文件，主要用于计算分析。
+  以show_*命名的m文件，主要用于显示结果。
+
+2 各代码功能说明：
+  1） cal_opp_all.m			：主程序，计算2000年到2020年所有的OPP。调用的模型在第40行。
+  2） cal_opp_chinasea_ls.m		：响应程序1）的算法。最小二乘模型。
+  3） cal_opp_chinasea_vgpm.m		：响应程序1）的算法。VGPM模型。
+  4） day2date.m			：将成像天数转换成对应日期。
+  5） load_hdf_chinasea.m		：读取指定区域的hdf文件。此处读取的范围为中国海域。
+  6） mydl.m				：计算光照时间（拷贝自老师）。
+  7） OPP_v2.m				：计算VGPM模型（拷贝自老师，仅供参考，正确版本）
+  8） opp_vgpm2.m			：计算VGPM模型（拷贝自老师，仅供参考，错误版本）
+  9） oppls.m				：响应程序2）的算法。最小二乘模型核心算法。
+  10）show_data.m			：显示单独的某个数据（供测试用）。
+  11）show_lsmodel_200309.m		：展示2003年9月的最小二乘模型。
+  12）show_opp14710_samecolorbar.m	：展示2003年1、4、7、10四个月的OPP分布。
+  13）show_seasonal_opp.m		：展示2003年春夏秋冬四季的OPP分布。
+  14）show_time_series.m		：对所有月份的OPP进行时间序列分析。
+  15）show_VGPM_chla_modify_not.m	：改正和未改正的chla计算出的vgpm模型结果。
+  16）show_Zeu_k490_Ctot.m		：对比分析K490和Ctot计算得到的Zeu之间的差别。
+  17）vgpm.m				：响应程序3）的算法。VGPM模型核心算法。
+  18）yatou_OPP_vgpm.m			：做图程序。（拷贝自老师，仅供参考）

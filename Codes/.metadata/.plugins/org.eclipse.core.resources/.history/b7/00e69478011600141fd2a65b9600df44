@@ -1,0 +1,1500 @@
+!SESSION 2014-07-28 10:43:41.442 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.5.0_11
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=zh_CN
+Command-line arguments:  -os linux -ws gtk -arch x86
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.019
+!MESSAGE NLS unused message: fileManager_cannotLock in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.019
+!MESSAGE NLS unused message: fileManager_couldNotSave in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.019
+!MESSAGE NLS unused message: fileManager_updateFailed in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.019
+!MESSAGE NLS unused message: fileManager_illegalInReadOnlyMode in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.019
+!MESSAGE NLS unused message: fileManager_notOpen in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.077
+!MESSAGE NLS unused message: application_invalidExtension in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.077
+!MESSAGE NLS unused message: application_noIdFound in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.077
+!MESSAGE NLS unused message: application_notFound in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.077
+!MESSAGE NLS unused message: application_returned in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.078
+!MESSAGE NLS unused message: meta_authFormatChanged in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.078
+!MESSAGE NLS unused message: meta_keyringFileAlreadySpecified in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.078
+!MESSAGE NLS unused message: meta_unableToReadAuthorization in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.078
+!MESSAGE NLS unused message: meta_unableToWriteAuthorization in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.316
+!MESSAGE NLS unused message: utils_wrongLength in: org.eclipse.core.internal.utils.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.513
+!MESSAGE NLS unused message: WorkbenchWindow_closeAll in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.514
+!MESSAGE NLS unused message: NestedContext_0 in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.514
+!MESSAGE NLS unused message: NewWizardNewPage_moreHelp in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.514
+!MESSAGE NLS unused message: NewWizardNewPage_noHelp in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.515
+!MESSAGE NLS unused message: WizardsGeneralCategory_label in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.515
+!MESSAGE NLS unused message: ViewsPreferencePage_override in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.516
+!MESSAGE NLS unused message: EditorManager_unableToOpenEditors in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.517
+!MESSAGE NLS unused message: EditorManager_unableToRestoreEditorTitle in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.517
+!MESSAGE NLS unused message: Startup_DefaultProductName in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.518
+!MESSAGE NLS unused message: FastViewBar_dock_on in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.519
+!MESSAGE NLS unused message: FastViewBar_Left in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.519
+!MESSAGE NLS unused message: FastViewBar_Right in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.519
+!MESSAGE NLS unused message: FastViewBar_Bottom in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.520
+!MESSAGE NLS unused message: PartSite_needsWidgetsError in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.520
+!MESSAGE NLS unused message: PartFactory_wrongtype in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.521
+!MESSAGE NLS unused message: Operations_undoRedoCommand in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.521
+!MESSAGE NLS unused message: HeapStatus_Error in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.522
+!MESSAGE NLS unused message: TrimCommon_ShowTrim in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.522
+!MESSAGE NLS unused message: TrimCommon_Immediate in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.522
+!MESSAGE NLS unused message: ContentAssist_Cue_Description in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.808
+!MESSAGE NLS unused message: CreateProjectAction_text in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.809
+!MESSAGE NLS unused message: CreateProjectAction_toolTip in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.810
+!MESSAGE NLS unused message: OpenWorkspaceFileAction_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.810
+!MESSAGE NLS unused message: OpenWorkspaceFileAction_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.811
+!MESSAGE NLS unused message: CopyProjectAction_progressTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.811
+!MESSAGE NLS unused message: MoveProjectAction_progressMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.812
+!MESSAGE NLS unused message: RenameResourceAction_progressMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.812
+!MESSAGE NLS unused message: DeleteResourceAction_messageTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.812
+!MESSAGE NLS unused message: DeleteResourceAction_outOfSyncError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.813
+!MESSAGE NLS unused message: DeleteResourceAction_outOfSyncQuestion in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.813
+!MESSAGE NLS unused message: DeleteResourceAction_deletionExceptionMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.814
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_categories in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.814
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_capabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.814
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.815
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_grayItems in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.815
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_disabledLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.815
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.815
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_disabledCapability in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.815
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_invalidCapability in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.816
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_missingPrereqs in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.816
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_requiredPrereq in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.816
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_requiredPrereqs in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.816
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_membershipConflict in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.817
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_membershipPrereqConflict in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.817
+!MESSAGE NLS unused message: Capability_nameMissing in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.817
+!MESSAGE NLS unused message: ICategory_other in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.817
+!MESSAGE NLS unused message: NewProjectWizard_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.818
+!MESSAGE NLS unused message: NewProjectWizard_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.818
+!MESSAGE NLS unused message: NewProjectWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.818
+!MESSAGE NLS unused message: NewProjectWizard_invalidCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.818
+!MESSAGE NLS unused message: NewProjectWizard_noWizard in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.819
+!MESSAGE NLS unused message: CreateProjectWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.819
+!MESSAGE NLS unused message: CreateProjectWizard_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.819
+!MESSAGE NLS unused message: CreateProjectWizard_caseVariantExistsError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.819
+!MESSAGE NLS unused message: RemoveCapabilityWizard_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.820
+!MESSAGE NLS unused message: RemoveCapabilityWizard_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.820
+!MESSAGE NLS unused message: WizardNewProjectCapabilityPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.820
+!MESSAGE NLS unused message: WizardNewProjectCapabilityPage_noCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.820
+!MESSAGE NLS unused message: WizardProjectReviewPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.821
+!MESSAGE NLS unused message: WizardProjectConfigurePage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.821
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.821
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.821
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.821
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_noWizard in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.822
+!MESSAGE NLS unused message: WizardStepGroup_stepsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.822
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_detailsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.822
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_instructionNextLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.822
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_instructionFinishLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.823
+!MESSAGE NLS unused message: MultiStepWizard_finishLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.823
+!MESSAGE NLS unused message: CreateProjectStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.823
+!MESSAGE NLS unused message: CreateProjectStep_details in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.823
+!MESSAGE NLS unused message: InstallCapabilityStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.824
+!MESSAGE NLS unused message: RemoveCapabilityStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.824
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription0 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.824
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription1 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.824
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription2 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.825
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.825
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.825
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.825
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityExist in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.826
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityRequired in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.826
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityMissing in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.826
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilitySet in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.826
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.827
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_locationError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.832
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_defaultLocationError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.833
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_projectLocationExistsMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.833
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_projectContentsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.834
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_useDefaultLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.834
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_directoryLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.834
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_locationLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.835
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_browseLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.835
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_chooseCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.836
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_noCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.836
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.836
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.836
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_invalidSelection in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.837
+!MESSAGE NLS unused message: ProjectCapabilityEditingPropertyPage_add in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.837
+!MESSAGE NLS unused message: ProjectCapabilityEditingPropertyPage_remove in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.837
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_capabilityRequired in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.838
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.838
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_choosePerspective in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.838
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_options in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.838
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_newWindow in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.838
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_sameWindow in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.839
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.839
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.929
+!MESSAGE NLS unused message: AnimatedCanvas_JobInvocationError in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.929
+!MESSAGE NLS unused message: ErrorNotificationDialog_ClearButtonTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.930
+!MESSAGE NLS unused message: ErrorNotificationDialog_ShowButtonTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.930
+!MESSAGE NLS unused message: JobInfo_Percent in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.931
+!MESSAGE NLS unused message: JobInfo_Percent2 in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.931
+!MESSAGE NLS unused message: JobInfo_Format in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.932
+!MESSAGE NLS unused message: JobInfo_TaskFormat in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.932
+!MESSAGE NLS unused message: JobInfo_TaskFormat2 in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.932
+!MESSAGE NLS unused message: JobInfo_BlocksUserOperationFormat in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.933
+!MESSAGE NLS unused message: UIJob_displayNotSet in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.933
+!MESSAGE NLS unused message: AnimateJob_JobName in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.933
+!MESSAGE NLS unused message: AnimationItem_InProgressStatus in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.933
+!MESSAGE NLS unused message: AnimationItem_NotRunningStatus in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.934
+!MESSAGE NLS unused message: ProgressView_ShowErrorAction in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.934
+!MESSAGE NLS unused message: NewProgressView_RemoveJobToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.934
+!MESSAGE NLS unused message: AnimationItem_RedrawJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.935
+!MESSAGE NLS unused message: JobProgressManager_OpenProgressJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.935
+!MESSAGE NLS unused message: AnimationItem_HoverHelp in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.935
+!MESSAGE NLS unused message: StatusLineProgressListener_Refresh in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.935
+!MESSAGE NLS unused message: ProgressFeedbackManager_OpenFeedbackJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.936
+!MESSAGE NLS unused message: ProgressFeedbackDialog_DialogTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.936
+!MESSAGE NLS unused message: CancelJobsButton_title in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.936
+!MESSAGE NLS unused message: BlockedJobsDialog_CancelBlocking_title in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.936
+!MESSAGE NLS unused message: MonitorProvider_oneValueMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.937
+!MESSAGE NLS unused message: MonitorProvider_twoValueMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.937
+!MESSAGE NLS unused message: MonitorProvider_twoValueUnknownMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.937
+!MESSAGE NLS unused message: ProgressFeedbackManager_invalidThreadMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.938
+!MESSAGE NLS unused message: ErrorNotificationDialog_ErrorNotificationTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.938
+!MESSAGE NLS unused message: ErrorNotificationDialog_ClearSelectionAction in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.938
+!MESSAGE NLS unused message: ErrorNotificationManager_RefreshErrorDialogJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.938
+!MESSAGE NLS unused message: AnimationItem_openFloatingWindowJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.939
+!MESSAGE NLS unused message: AnimationManager_AnimationCleanUp in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.939
+!MESSAGE NLS unused message: ProgressView_ToggleWindowMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.939
+!MESSAGE NLS unused message: ProgressFloatingWindow_CloseToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.939
+!MESSAGE NLS unused message: ProgressFloatingWindow_OpenToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.940
+!MESSAGE NLS unused message: AnimationItem_CloseWindowJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.940
+!MESSAGE NLS unused message: AnimationManager_DoneJobName in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:42.940
+!MESSAGE NLS unused message: ProgressMonitorFocusJobDialog_OpenDialogJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.724
+!MESSAGE NLS unused message: BreakpointManager_Breakpoint_extension__0__missing_required_attribute__markerType_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.725
+!MESSAGE NLS unused message: BreakpointManager_Breakpoint_extension__0__missing_required_attribute__class_2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.725
+!MESSAGE NLS unused message: BreakpointManager_Class__0__specified_by_breakpoint_extension__1__does_not_implement_required_interface_IBreakpoint__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.726
+!MESSAGE NLS unused message: BreakpointManager_An_exception_occurred_during_breakpoint_change_notification__4 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.726
+!MESSAGE NLS unused message: BreakpointManager_An_exception_occurred_during_breakpoint_change_notification__5 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.726
+!MESSAGE NLS unused message: DebugPlugin_Invalid_status_handler_extension___0__2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.726
+!MESSAGE NLS unused message: DebugPlugin_Debug_async_queue_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.727
+!MESSAGE NLS unused message: DebugPlugin_Registered_status_handler__0__does_not_implement_required_interface_IStatusHandler__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.727
+!MESSAGE NLS unused message: DebugPlugin_An_exception_occurred_while_dispatching_debug_events__2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.727
+!MESSAGE NLS unused message: DebugPlugin_An_exception_occurred_while_filtering_debug_events__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.727
+!MESSAGE NLS unused message: DebugPlugin_31 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.728
+!MESSAGE NLS unused message: DebugPlugin_0 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.728
+!MESSAGE NLS unused message: LaunchManager_Invalid_source_locator_extentsion_defined_by_plug_in____0_______id___not_specified_12 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.729
+!MESSAGE NLS unused message: LaunchManager_Invalid_launch_configuration_comparator_extension_defined_by_plug_in__0____attribute_not_specified_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.729
+!MESSAGE NLS unused message: LaunchManager_An_exception_occurred_during_launch_change_notification__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.729
+!MESSAGE NLS unused message: LaunchManager_An_exception_occurred_during_launch_configuration_change_notification__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.730
+!MESSAGE NLS unused message: ExpressionManager_An_exception_occurred_during_expression_change_notification__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.730
+!MESSAGE NLS unused message: LaunchConfigurationType_9 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.730
+!MESSAGE NLS unused message: LaunchConfigurationType_10 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:43.730
+!MESSAGE NLS unused message: MemoryRenderingManager_ErrorMsg in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.232
+!MESSAGE NLS unused message: DisconnectActionDelegate_Disconnect_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.233
+!MESSAGE NLS unused message: DisconnectActionDelegate_Exceptions_occurred_attempting_to_disconnect__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.234
+!MESSAGE NLS unused message: ResumeActionDelegate_Exceptions_occurred_attempting_to_resume__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.234
+!MESSAGE NLS unused message: ResumeActionDelegate_Resume_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.235
+!MESSAGE NLS unused message: StepIntoActionDelegate_Exceptions_occurred_attempting_to_step_into_the_frame_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.235
+!MESSAGE NLS unused message: StepIntoActionDelegate_Step_into_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.236
+!MESSAGE NLS unused message: StepOverActionDelegate_Exceptions_occurred_attempting_to_step_over_the_frame_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.236
+!MESSAGE NLS unused message: StepOverActionDelegate_Step_over_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.236
+!MESSAGE NLS unused message: StepReturnActionDelegate_Exceptions_occurred_attempting_to_run_to_return_of_the_frame__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.236
+!MESSAGE NLS unused message: StepReturnActionDelegate_Run_to_return_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.237
+!MESSAGE NLS unused message: SuspendActionDelegate_Exceptions_occurred_attempting_to_suspend__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.237
+!MESSAGE NLS unused message: SuspendActionDelegate_Suspend_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.237
+!MESSAGE NLS unused message: TerminateActionDelegate_Exceptions_occurred_attempting_to_terminate__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.238
+!MESSAGE NLS unused message: TerminateActionDelegate_Terminate_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.238
+!MESSAGE NLS unused message: TerminateAndRemoveActionDelegate_Exceptions_occurred_attempting_to_terminate_and_remove_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.238
+!MESSAGE NLS unused message: TerminateAndRemoveActionDelegate_Terminate_and_remove_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.238
+!MESSAGE NLS unused message: AbstractDebugActionDelegate_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.239
+!MESSAGE NLS unused message: AssignValueAction_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.239
+!MESSAGE NLS unused message: AssignValueAction_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.239
+!MESSAGE NLS unused message: AssignValueAction_3 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.240
+!MESSAGE NLS unused message: AssignValueAction_4 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.240
+!MESSAGE NLS unused message: AssignValueAction_0 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.240
+!MESSAGE NLS unused message: AssignValueAction_5 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.244
+!MESSAGE NLS unused message: find_replace_action_label in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.245
+!MESSAGE NLS unused message: find_replace_action_tooltip in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.245
+!MESSAGE NLS unused message: find_replace_action_image in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.245
+!MESSAGE NLS unused message: find_replace_action_description in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.245
+!MESSAGE NLS unused message: VariablesView__error_occurred_retrieving_value__18 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.246
+!MESSAGE NLS unused message: AvailableLogicalStructuresAction_2 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.246
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_0 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.246
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_1 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.246
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_2 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.247
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_3 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.386
+!MESSAGE NLS unused message: ExtensionFilterRegistry_16 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.387
+!MESSAGE NLS unused message: CommonElementAdapter_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.387
+!MESSAGE NLS unused message: NavigatorContentExtensionRecord_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.387
+!MESSAGE NLS unused message: PropertyDialog_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.388
+!MESSAGE NLS unused message: NavigatorSelectionSerializer_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.388
+!MESSAGE NLS unused message: FetchElementsJob_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.388
+!MESSAGE NLS unused message: NavigatorSelectionSerializer_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.389
+!MESSAGE NLS unused message: DropHandlerRegistry_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.389
+!MESSAGE NLS unused message: PropertyDialog_messageTitle in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.389
+!MESSAGE NLS unused message: CopyAction_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.389
+!MESSAGE NLS unused message: PasteAction_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.390
+!MESSAGE NLS unused message: SerializerDescriptor_5 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.390
+!MESSAGE NLS unused message: TreeViewerElementCollector_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.390
+!MESSAGE NLS unused message: Could_not_provide_parent_for_element in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.390
+!MESSAGE NLS unused message: TreeViewerElementCollector_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.391
+!MESSAGE NLS unused message: SerializerDescriptor_3 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.391
+!MESSAGE NLS unused message: SerializerDescriptor_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.391
+!MESSAGE NLS unused message: SerializerDescriptor_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.391
+!MESSAGE NLS unused message: DropHandlerDescriptor_10 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.391
+!MESSAGE NLS unused message: PropertyDialog_noPropertyMessage in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.392
+!MESSAGE NLS unused message: CommonDropHandlerService_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.392
+!MESSAGE NLS unused message: NavigatorDropSelectionDialog_3 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.392
+!MESSAGE NLS unused message: NavigatorDropSelectionDialog_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.392
+!MESSAGE NLS unused message: ExtensionFilterDescriptor_11 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.393
+!MESSAGE NLS unused message: ExtensionFilterDescriptor_10 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.393
+!MESSAGE NLS unused message: PendingUpdateAdapter_PendingLabel in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.393
+!MESSAGE NLS unused message: PropertyDialog_text in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.393
+!MESSAGE NLS unused message: PropertyDialog_propertyMessage in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.394
+!MESSAGE NLS unused message: NavigatorExtensionSite_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.864
+!MESSAGE NLS unused message: OpenExternalFileAction_title in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.865
+!MESSAGE NLS unused message: OpenExternalFileAction_message_fileNotFound in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.865
+!MESSAGE NLS unused message: OpenExternalFileAction_message_filesNotFound in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.866
+!MESSAGE NLS unused message: OpenExternalFileAction_title_selectWorkspaceFile in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.866
+!MESSAGE NLS unused message: OpenExternalFileAction_message_fileLinkedToMultiple in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:44.866
+!MESSAGE NLS unused message: OpenExternalFileAction_message_errorOnOpen in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+!SESSION 2014-07-28 10:43:58.985 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.5.0_11
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=zh_CN
+Command-line arguments:  -data /mnt/software/My_InSAR_Tools/Codes -os linux -ws gtk -arch x86
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.565
+!MESSAGE NLS unused message: fileManager_cannotLock in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.565
+!MESSAGE NLS unused message: fileManager_couldNotSave in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.565
+!MESSAGE NLS unused message: fileManager_updateFailed in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.565
+!MESSAGE NLS unused message: fileManager_illegalInReadOnlyMode in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.566
+!MESSAGE NLS unused message: fileManager_notOpen in: org.eclipse.core.internal.runtime.commonMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.623
+!MESSAGE NLS unused message: application_invalidExtension in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.623
+!MESSAGE NLS unused message: application_noIdFound in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.623
+!MESSAGE NLS unused message: application_notFound in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.623
+!MESSAGE NLS unused message: application_returned in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.623
+!MESSAGE NLS unused message: meta_authFormatChanged in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.624
+!MESSAGE NLS unused message: meta_keyringFileAlreadySpecified in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.624
+!MESSAGE NLS unused message: meta_unableToReadAuthorization in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.624
+!MESSAGE NLS unused message: meta_unableToWriteAuthorization in: org.eclipse.core.internal.runtime.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:43:59.841
+!MESSAGE NLS unused message: utils_wrongLength in: org.eclipse.core.internal.utils.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.075
+!MESSAGE NLS unused message: WorkbenchWindow_closeAll in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.075
+!MESSAGE NLS unused message: NestedContext_0 in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.076
+!MESSAGE NLS unused message: NewWizardNewPage_moreHelp in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.076
+!MESSAGE NLS unused message: NewWizardNewPage_noHelp in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.077
+!MESSAGE NLS unused message: WizardsGeneralCategory_label in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.077
+!MESSAGE NLS unused message: ViewsPreferencePage_override in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.078
+!MESSAGE NLS unused message: EditorManager_unableToOpenEditors in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.079
+!MESSAGE NLS unused message: EditorManager_unableToRestoreEditorTitle in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.080
+!MESSAGE NLS unused message: Startup_DefaultProductName in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.082
+!MESSAGE NLS unused message: FastViewBar_dock_on in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.082
+!MESSAGE NLS unused message: FastViewBar_Left in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.083
+!MESSAGE NLS unused message: FastViewBar_Right in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.083
+!MESSAGE NLS unused message: FastViewBar_Bottom in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.083
+!MESSAGE NLS unused message: PartSite_needsWidgetsError in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.084
+!MESSAGE NLS unused message: PartFactory_wrongtype in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.084
+!MESSAGE NLS unused message: Operations_undoRedoCommand in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.085
+!MESSAGE NLS unused message: HeapStatus_Error in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.085
+!MESSAGE NLS unused message: TrimCommon_ShowTrim in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.086
+!MESSAGE NLS unused message: TrimCommon_Immediate in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.087
+!MESSAGE NLS unused message: ContentAssist_Cue_Description in: org.eclipse.ui.internal.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.386
+!MESSAGE NLS unused message: CreateProjectAction_text in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.386
+!MESSAGE NLS unused message: CreateProjectAction_toolTip in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.387
+!MESSAGE NLS unused message: OpenWorkspaceFileAction_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.387
+!MESSAGE NLS unused message: OpenWorkspaceFileAction_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.388
+!MESSAGE NLS unused message: CopyProjectAction_progressTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.389
+!MESSAGE NLS unused message: MoveProjectAction_progressMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.389
+!MESSAGE NLS unused message: RenameResourceAction_progressMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.390
+!MESSAGE NLS unused message: DeleteResourceAction_messageTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.390
+!MESSAGE NLS unused message: DeleteResourceAction_outOfSyncError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.390
+!MESSAGE NLS unused message: DeleteResourceAction_outOfSyncQuestion in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.391
+!MESSAGE NLS unused message: DeleteResourceAction_deletionExceptionMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.392
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_categories in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.392
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_capabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.392
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.393
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_grayItems in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.393
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_disabledLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.393
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.393
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_disabledCapability in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.394
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_invalidCapability in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.394
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_missingPrereqs in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.394
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_requiredPrereq in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.394
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_requiredPrereqs in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.395
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_membershipConflict in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.395
+!MESSAGE NLS unused message: ProjectCapabilitySelectionGroup_membershipPrereqConflict in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.395
+!MESSAGE NLS unused message: Capability_nameMissing in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.395
+!MESSAGE NLS unused message: ICategory_other in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.396
+!MESSAGE NLS unused message: NewProjectWizard_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.396
+!MESSAGE NLS unused message: NewProjectWizard_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.396
+!MESSAGE NLS unused message: NewProjectWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.396
+!MESSAGE NLS unused message: NewProjectWizard_invalidCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.396
+!MESSAGE NLS unused message: NewProjectWizard_noWizard in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.397
+!MESSAGE NLS unused message: CreateProjectWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.397
+!MESSAGE NLS unused message: CreateProjectWizard_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.397
+!MESSAGE NLS unused message: CreateProjectWizard_caseVariantExistsError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.397
+!MESSAGE NLS unused message: RemoveCapabilityWizard_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.398
+!MESSAGE NLS unused message: RemoveCapabilityWizard_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.398
+!MESSAGE NLS unused message: WizardNewProjectCapabilityPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.398
+!MESSAGE NLS unused message: WizardNewProjectCapabilityPage_noCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.398
+!MESSAGE NLS unused message: WizardProjectReviewPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.399
+!MESSAGE NLS unused message: WizardProjectConfigurePage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.399
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.399
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.399
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.400
+!MESSAGE NLS unused message: UpdateProjectCapabilityWizard_noWizard in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.400
+!MESSAGE NLS unused message: WizardStepGroup_stepsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.400
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_detailsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.400
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_instructionNextLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.401
+!MESSAGE NLS unused message: MultiStepReviewWizardPage_instructionFinishLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.401
+!MESSAGE NLS unused message: MultiStepWizard_finishLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.401
+!MESSAGE NLS unused message: CreateProjectStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.401
+!MESSAGE NLS unused message: CreateProjectStep_details in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.402
+!MESSAGE NLS unused message: InstallCapabilityStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.402
+!MESSAGE NLS unused message: RemoveCapabilityStep_label in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.402
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription0 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.402
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription1 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.402
+!MESSAGE NLS unused message: RemoveCapabilityStep_defaultDescription2 in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.403
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.403
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.403
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_windowTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.403
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityExist in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.404
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityRequired in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.404
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilityMissing in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.404
+!MESSAGE NLS unused message: ProjectCapabilitySimpleSelectionPage_capabilitySet in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.404
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_description in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.405
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_locationError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.405
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_defaultLocationError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.405
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_projectLocationExistsMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.405
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_projectContentsLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.406
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_useDefaultLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.406
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_directoryLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.406
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_locationLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.406
+!MESSAGE NLS unused message: WizardNewProjectCreationPage_browseLabel in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.407
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_chooseCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.407
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_noCapabilities in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.408
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.408
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_internalError in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.408
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_invalidSelection in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.408
+!MESSAGE NLS unused message: ProjectCapabilityEditingPropertyPage_add in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.409
+!MESSAGE NLS unused message: ProjectCapabilityEditingPropertyPage_remove in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.409
+!MESSAGE NLS unused message: ProjectCapabilityPropertyPage_capabilityRequired in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.409
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_title in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.409
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_choosePerspective in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.410
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_options in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.410
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_newWindow in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.410
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_sameWindow in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.410
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_errorTitle in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.411
+!MESSAGE NLS unused message: ProjectPerspectiveChoiceDialog_errorMessage in: org.eclipse.ui.internal.ide.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.513
+!MESSAGE NLS unused message: AnimatedCanvas_JobInvocationError in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.514
+!MESSAGE NLS unused message: ErrorNotificationDialog_ClearButtonTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.514
+!MESSAGE NLS unused message: ErrorNotificationDialog_ShowButtonTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.515
+!MESSAGE NLS unused message: JobInfo_Percent in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.515
+!MESSAGE NLS unused message: JobInfo_Percent2 in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.515
+!MESSAGE NLS unused message: JobInfo_Format in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.516
+!MESSAGE NLS unused message: JobInfo_TaskFormat in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.516
+!MESSAGE NLS unused message: JobInfo_TaskFormat2 in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.516
+!MESSAGE NLS unused message: JobInfo_BlocksUserOperationFormat in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.516
+!MESSAGE NLS unused message: UIJob_displayNotSet in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.517
+!MESSAGE NLS unused message: AnimateJob_JobName in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.517
+!MESSAGE NLS unused message: AnimationItem_InProgressStatus in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.517
+!MESSAGE NLS unused message: AnimationItem_NotRunningStatus in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.517
+!MESSAGE NLS unused message: ProgressView_ShowErrorAction in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.517
+!MESSAGE NLS unused message: NewProgressView_RemoveJobToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.518
+!MESSAGE NLS unused message: AnimationItem_RedrawJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.518
+!MESSAGE NLS unused message: JobProgressManager_OpenProgressJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.518
+!MESSAGE NLS unused message: AnimationItem_HoverHelp in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.518
+!MESSAGE NLS unused message: StatusLineProgressListener_Refresh in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.519
+!MESSAGE NLS unused message: ProgressFeedbackManager_OpenFeedbackJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.519
+!MESSAGE NLS unused message: ProgressFeedbackDialog_DialogTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.519
+!MESSAGE NLS unused message: CancelJobsButton_title in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.519
+!MESSAGE NLS unused message: BlockedJobsDialog_CancelBlocking_title in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.520
+!MESSAGE NLS unused message: MonitorProvider_oneValueMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.520
+!MESSAGE NLS unused message: MonitorProvider_twoValueMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.520
+!MESSAGE NLS unused message: MonitorProvider_twoValueUnknownMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.520
+!MESSAGE NLS unused message: ProgressFeedbackManager_invalidThreadMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.520
+!MESSAGE NLS unused message: ErrorNotificationDialog_ErrorNotificationTitle in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.521
+!MESSAGE NLS unused message: ErrorNotificationDialog_ClearSelectionAction in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.521
+!MESSAGE NLS unused message: ErrorNotificationManager_RefreshErrorDialogJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.521
+!MESSAGE NLS unused message: AnimationItem_openFloatingWindowJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.521
+!MESSAGE NLS unused message: AnimationManager_AnimationCleanUp in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.522
+!MESSAGE NLS unused message: ProgressView_ToggleWindowMessage in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.522
+!MESSAGE NLS unused message: ProgressFloatingWindow_CloseToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.522
+!MESSAGE NLS unused message: ProgressFloatingWindow_OpenToolTip in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.522
+!MESSAGE NLS unused message: AnimationItem_CloseWindowJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.523
+!MESSAGE NLS unused message: AnimationManager_DoneJobName in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:00.523
+!MESSAGE NLS unused message: ProgressMonitorFocusJobDialog_OpenDialogJob in: org.eclipse.ui.internal.progress.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.602
+!MESSAGE NLS unused message: ExtensionFilterRegistry_16 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.603
+!MESSAGE NLS unused message: CommonElementAdapter_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.603
+!MESSAGE NLS unused message: NavigatorContentExtensionRecord_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.603
+!MESSAGE NLS unused message: PropertyDialog_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.604
+!MESSAGE NLS unused message: NavigatorSelectionSerializer_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.605
+!MESSAGE NLS unused message: FetchElementsJob_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.605
+!MESSAGE NLS unused message: NavigatorSelectionSerializer_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.605
+!MESSAGE NLS unused message: DropHandlerRegistry_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.606
+!MESSAGE NLS unused message: PropertyDialog_messageTitle in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.606
+!MESSAGE NLS unused message: CopyAction_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.606
+!MESSAGE NLS unused message: PasteAction_toolTip in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.606
+!MESSAGE NLS unused message: SerializerDescriptor_5 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.606
+!MESSAGE NLS unused message: TreeViewerElementCollector_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.607
+!MESSAGE NLS unused message: Could_not_provide_parent_for_element in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.607
+!MESSAGE NLS unused message: TreeViewerElementCollector_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.607
+!MESSAGE NLS unused message: SerializerDescriptor_3 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.607
+!MESSAGE NLS unused message: SerializerDescriptor_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.608
+!MESSAGE NLS unused message: SerializerDescriptor_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.608
+!MESSAGE NLS unused message: DropHandlerDescriptor_10 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.609
+!MESSAGE NLS unused message: PropertyDialog_noPropertyMessage in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.609
+!MESSAGE NLS unused message: CommonDropHandlerService_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.609
+!MESSAGE NLS unused message: NavigatorDropSelectionDialog_3 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.610
+!MESSAGE NLS unused message: NavigatorDropSelectionDialog_1 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.610
+!MESSAGE NLS unused message: ExtensionFilterDescriptor_11 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.610
+!MESSAGE NLS unused message: ExtensionFilterDescriptor_10 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.611
+!MESSAGE NLS unused message: PendingUpdateAdapter_PendingLabel in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.611
+!MESSAGE NLS unused message: PropertyDialog_text in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.611
+!MESSAGE NLS unused message: PropertyDialog_propertyMessage in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.612
+!MESSAGE NLS unused message: NavigatorExtensionSite_0 in: org.eclipse.ui.internal.navigator.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.761
+!MESSAGE NLS unused message: BreakpointManager_Breakpoint_extension__0__missing_required_attribute__markerType_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.762
+!MESSAGE NLS unused message: BreakpointManager_Breakpoint_extension__0__missing_required_attribute__class_2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.762
+!MESSAGE NLS unused message: BreakpointManager_Class__0__specified_by_breakpoint_extension__1__does_not_implement_required_interface_IBreakpoint__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.762
+!MESSAGE NLS unused message: BreakpointManager_An_exception_occurred_during_breakpoint_change_notification__4 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.762
+!MESSAGE NLS unused message: BreakpointManager_An_exception_occurred_during_breakpoint_change_notification__5 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.763
+!MESSAGE NLS unused message: DebugPlugin_Invalid_status_handler_extension___0__2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.763
+!MESSAGE NLS unused message: DebugPlugin_Debug_async_queue_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.763
+!MESSAGE NLS unused message: DebugPlugin_Registered_status_handler__0__does_not_implement_required_interface_IStatusHandler__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.763
+!MESSAGE NLS unused message: DebugPlugin_An_exception_occurred_while_dispatching_debug_events__2 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.764
+!MESSAGE NLS unused message: DebugPlugin_An_exception_occurred_while_filtering_debug_events__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.768
+!MESSAGE NLS unused message: DebugPlugin_31 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.768
+!MESSAGE NLS unused message: DebugPlugin_0 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.769
+!MESSAGE NLS unused message: LaunchManager_Invalid_source_locator_extentsion_defined_by_plug_in____0_______id___not_specified_12 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.769
+!MESSAGE NLS unused message: LaunchManager_Invalid_launch_configuration_comparator_extension_defined_by_plug_in__0____attribute_not_specified_1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.770
+!MESSAGE NLS unused message: LaunchManager_An_exception_occurred_during_launch_change_notification__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.770
+!MESSAGE NLS unused message: LaunchManager_An_exception_occurred_during_launch_configuration_change_notification__3 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.770
+!MESSAGE NLS unused message: ExpressionManager_An_exception_occurred_during_expression_change_notification__1 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.771
+!MESSAGE NLS unused message: LaunchConfigurationType_9 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.771
+!MESSAGE NLS unused message: LaunchConfigurationType_10 in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:01.771
+!MESSAGE NLS unused message: MemoryRenderingManager_ErrorMsg in: org.eclipse.debug.internal.core.DebugCoreMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.281
+!MESSAGE NLS unused message: DisconnectActionDelegate_Disconnect_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.282
+!MESSAGE NLS unused message: DisconnectActionDelegate_Exceptions_occurred_attempting_to_disconnect__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.282
+!MESSAGE NLS unused message: ResumeActionDelegate_Exceptions_occurred_attempting_to_resume__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.283
+!MESSAGE NLS unused message: ResumeActionDelegate_Resume_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.283
+!MESSAGE NLS unused message: StepIntoActionDelegate_Exceptions_occurred_attempting_to_step_into_the_frame_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.283
+!MESSAGE NLS unused message: StepIntoActionDelegate_Step_into_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.283
+!MESSAGE NLS unused message: StepOverActionDelegate_Exceptions_occurred_attempting_to_step_over_the_frame_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.283
+!MESSAGE NLS unused message: StepOverActionDelegate_Step_over_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.284
+!MESSAGE NLS unused message: StepReturnActionDelegate_Exceptions_occurred_attempting_to_run_to_return_of_the_frame__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.284
+!MESSAGE NLS unused message: StepReturnActionDelegate_Run_to_return_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.284
+!MESSAGE NLS unused message: SuspendActionDelegate_Exceptions_occurred_attempting_to_suspend__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.284
+!MESSAGE NLS unused message: SuspendActionDelegate_Suspend_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.285
+!MESSAGE NLS unused message: TerminateActionDelegate_Exceptions_occurred_attempting_to_terminate__2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.285
+!MESSAGE NLS unused message: TerminateActionDelegate_Terminate_failed__1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.285
+!MESSAGE NLS unused message: TerminateAndRemoveActionDelegate_Exceptions_occurred_attempting_to_terminate_and_remove_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.285
+!MESSAGE NLS unused message: TerminateAndRemoveActionDelegate_Terminate_and_remove_failed_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.286
+!MESSAGE NLS unused message: AbstractDebugActionDelegate_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.286
+!MESSAGE NLS unused message: AssignValueAction_1 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.286
+!MESSAGE NLS unused message: AssignValueAction_2 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.286
+!MESSAGE NLS unused message: AssignValueAction_3 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.287
+!MESSAGE NLS unused message: AssignValueAction_4 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.287
+!MESSAGE NLS unused message: AssignValueAction_0 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.287
+!MESSAGE NLS unused message: AssignValueAction_5 in: org.eclipse.debug.internal.ui.actions.ActionMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.370
+!MESSAGE NLS unused message: OpenExternalFileAction_title in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.371
+!MESSAGE NLS unused message: OpenExternalFileAction_message_fileNotFound in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.371
+!MESSAGE NLS unused message: OpenExternalFileAction_message_filesNotFound in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.372
+!MESSAGE NLS unused message: OpenExternalFileAction_title_selectWorkspaceFile in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.372
+!MESSAGE NLS unused message: OpenExternalFileAction_message_fileLinkedToMultiple in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.373
+!MESSAGE NLS unused message: OpenExternalFileAction_message_errorOnOpen in: org.eclipse.ui.internal.editors.text.TextEditorMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.994
+!MESSAGE NLS unused message: find_replace_action_label in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.994
+!MESSAGE NLS unused message: find_replace_action_tooltip in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.994
+!MESSAGE NLS unused message: find_replace_action_image in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.994
+!MESSAGE NLS unused message: find_replace_action_description in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.995
+!MESSAGE NLS unused message: VariablesView__error_occurred_retrieving_value__18 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.995
+!MESSAGE NLS unused message: AvailableLogicalStructuresAction_2 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.995
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_0 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:02.995
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_1 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:03.004
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_2 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:44:03.004
+!MESSAGE NLS unused message: MaxDetailsLengthDialog_3 in: org.eclipse.debug.internal.ui.views.variables.VariablesViewMessages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:45:45.147
+!MESSAGE NLS unused message: DataTransfer_scanningChildren in: org.eclipse.ui.internal.wizards.datatransfer.messages
+
+!ENTRY org.eclipse.osgi 2 1 2014-07-28 10:45:45.149
+!MESSAGE NLS unused message: ZipExport_description in: org.eclipse.ui.internal.wizards.datatransfer.messages

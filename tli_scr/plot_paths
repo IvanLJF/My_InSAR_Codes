@@ -1,0 +1,21 @@
+#! /bin/sh
+gmtset ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+       LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i GRID_PEN_PRIMARY 0.5p
+
+outputfile=integral_paths.ps
+psbasemap -R116.95583/117.11165/39.045850/39.179167 -JX5i/5i -Ba0.02f0.01g0.03::WeSn -P -K -V  >$outputfile
+
+psimage ../geocode/noborder/ave.utm.rmli.ras -Gtblack -W5i/5i -O -K -V >>$outputfile
+
+psxy path0 -J -K -R -W0.01i/0/255/0 -O -V >> $outputfile
+psxy path0 -Gred -J -K -R -St0.03i -W0.001i -O -V >> $outputfile
+
+psxy path1 -J -K -R -W0.01i/0/255/0 -O -V >> $outputfile
+psxy path1 -Gred -J -K -R -St0.03i -W0.001i -O -V >> $outputfile
+
+psxy path2 -J -K -R -W0.01i/0/255/0 -O -V >> $outputfile
+psxy path2 -Gred -J -K -R -St0.03i -W0.001i -O -V >> $outputfile
+
+psxy path3 -J -K -R -W0.01i/0/255/0 -O -V >> $outputfile
+psxy path3 -Gred -J -R -St0.03i -W0.001i -O -V >> $outputfile
+ps2raster -A $outputfile

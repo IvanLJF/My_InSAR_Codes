@@ -1,0 +1,135 @@
+#!/bin/sh
+#######################################
+# Script that:
+#       - Do DInSAR for each pair of SLCs. 
+#	  - GAMMA scripts are used all over this scr.
+# Written by,
+# 	-T.LI @ ISEIS, 29/04/2013
+######################################
+
+# Check input params
+if [ $# -ne 2 ]
+then
+    echo "Usage: ./diff_single_pair.sh <master> <slave>"
+    echo " "
+    echo "input parameters:"
+    echo "  master     master date(yyyymmdd)"
+    echo "  slave      slave date(yyyymmdd)"
+    exit 0
+fi
+
+MASTER=$1
+SLAVE=$2
+M_P=${MASTER}
+S_P=${SLAVE}
+m_slc=../piece/$M_P.rslc
+s_slc=../piece/$S_P.rslc
+par_m=$m_slc.par
+par_s=$s_slc.par
+MS_off=$M_P-$S_P.off
+
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > temp
+######################################
+create_offset $par_m $par_s $MS_off 1 1 1 <temp
+rm -f temp
+
+interf_SLC $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.int 1 1
+######################################
+
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+#rasmph $M_P-$S_P.int $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.int.bmp
+rasmph_pwr $M_P-$S_P.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.intandpwr.bmp
+
+base_init $par_m $par_s $MS_off $M_P-$S_P.int $M_P-$S_P.base 0 1024 1024
+base_perp $M_P-$S_P.base $par_m $MS_off > $M_P-$S_P.base.perp.txt
+
+phase_sim $par_m $MS_off $M_P-$S_P.base ../$M_P.hgt $M_P-$S_P.sim_unw.unflt 0 0 - -
+phase_sim $par_m $MS_off $M_P-$S_P.base ../$M_P.hgt $M_P-$S_P.sim_unw.flt 1 0 - -
+
+rasrmg $M_P-$S_P.sim_unw.unflt $M_P-$S_P.pwr1 $width - - - - - - - - - - $M_P-$S_P.sim_unw.unflt.bmp
+rasrmg $M_P-$S_P.sim_unw.flt $M_P-$S_P.pwr1 $width - - - - - - - - - - $M_P-$S_P.sim_unw.flt.bmp
+
+######################################
+###Subtractiing the simulated unwrapped phase from the complex interferogram
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_P-$S_P.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+sub_phase $M_P-$S_P.int $M_P-$S_P.sim_unw.unflt $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+rasmph_pwr $M_P-$S_P.diff.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.int.pwr.bmp
+
+
+
+
+if false
+then
+######################################
+######################################
+### Curved Earth phase trend removal("flattening")
+###ph_slop_base Subtract/add interferogram flat-Earth phase trend as estimated from initial baseline
+######################################
+ph_slope_base $M_P-$S_P.int $par_m $MS_off $M_P-$S_P.base $M_P-$S_P.flt 1 0
+
+
+#rasmph $M_P-$S_P.flt $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.flt.bmp
+rasmph_pwr $M_P-$S_P.flt $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltandpwr.bmp
+######################################
+###filter flattened interferogram
+######################################
+adf $M_P-$S_P.flt $M_P-$S_P.flt.sm1 $M_P-$S_P.sm.cc1 $width 0.3 64
+adf $M_P-$S_P.flt.sm1 $M_P-$S_P.flt.sm $M_P-$S_P.sm.cc $width 0.3 32
+
+rasmph_pwr $M_P-$S_P.flt.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltsmpwr.bmp
+
+cc_wave $M_P-$S_P.flt $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.cc $width 5.0 5.0 2 - - - -
+
+#rascc $M_P-$S_P.cc - $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.cc.bmp
+rascc $M_P-$S_P.cc $M_P-$S_P.pwr1 $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.ccandpwr.bmp
+
+
+######################################
+###rasshd:generate raster image of DEM as shaded relief DEM
+######################################
+width_map=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+col_post=$(awk '$1 == "post_lat:" {print $2}' dem_seg.par)
+row_post=$(awk '$1 == "post_lon:" {print $2}' dem_seg.par)
+######################################
+
+######################################
+###simulation of unwrapped topographic phase
+phase_sim $par_m $MS_off $M_P-$S_P.base ../$M_P.hgt $M_P-$S_P.sim_unw 0 0 - -
+
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+###Subtractiing the simulated unwrapped phase from the complex interferogram
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_P-$S_P.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+sub_phase $M_P-$S_P.int $M_P-$S_P.sim_unw $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+rasmph_pwr $M_P-$S_P.diff.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.int.pwr.bmp
+
+######################################
+# Filter Differential Interferogram
+######################################
+adf $M_P-$S_P.diff.int $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.sm.cc1 $width 0.3 128
+adf $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.sm.cc2 $width 0.3 64
+adf $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.cc $width 0.3
+rasmph_pwr $M_P-$S_P.diff.int.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.sm.pwr.bmp
+#############################################
+# Unwrap Differential Flattened Interferogram
+#############################################
+corr_flag $M_P-$S_P.diff.sm.cc $M_P-$S_P.diff.sm.flag $width 0.4
+neutron $M_P-$S_P.pwr1 $M_P-$S_P.diff.sm.flag $width - - -
+residue $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $width
+tree_cc $M_P-$S_P.diff.sm.flag $width 64
+#grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width
+grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width - - - - - -
+rasrmg  $M_P-$S_P.diff.int.sm.unw $M_P-$S_P.pwr1 $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $M_P-$S_P.diff.int.sm.unw.bmp
+
+fi

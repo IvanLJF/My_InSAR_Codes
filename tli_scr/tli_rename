@@ -1,0 +1,39 @@
+#!/bin/sh
+########################################################
+###  Rename files 
+###
+###  History
+###    20140828: Written by T.LI @ Sasmac
+########################################################
+
+if [ $# -lt 1 ]; then
+  echo ""
+  echo "Usage: tli_rename [file1] [file2] [file3] ..."
+  echo ""
+  exit
+fi
+
+for fname in "$*"
+do
+  file_i=$fname
+
+  fdir=`dirname $fname`
+  
+  if [ $fdir = '.' ]; then 
+    fdir=''; 
+  else
+    fdir=$fidr/  
+  fi
+
+  fname=`basename $fname`
+  
+  suffix=${fname##*.}
+  fname=${fname%.*}
+  if [ $suffix = 'sh' ]; then
+    # rename the file
+    file_i_new=$fdir$fname
+    echo $file_i '->' $file_i_new
+    mv $file_i $file_i_new
+  fi
+done
+

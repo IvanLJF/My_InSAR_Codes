@@ -1,0 +1,15 @@
+#! /bin/sh
+
+# This is a test script file to plot Sichuan, China.
+grdraster 30 -R97/100/25/35 -I0.5m -Gsc1.grd
+grdraster 33 -R100/110/25/35 -I0.5m -Gsc2.grd
+
+grdpaste sc1.grd sc2.grd -Gsc.grd
+
+grd2cpt sc.grd -Ctopo -S-200/6000/200 -Z > sc.cpt
+
+grdimage -JM6i -R97/110/25/35 -B2/2 -Csc.cpt sc.grd -K -P >sc.ps
+psscale -D6.5i/2i/7.5c/0.75c -Csc.cpt -I -E -B400 -P -O >>sc.ps
+
+ps2raster -A sc.ps
+geeqie sc.jpg

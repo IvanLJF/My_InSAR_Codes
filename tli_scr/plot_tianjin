@@ -1,0 +1,31 @@
+#! /bin/sh
+
+# 绘制研究区域
+
+tianjindem='/mnt/backup/DEM/TianjinDEM_Doris/final_TianjinDEM.grd'
+outputfile='Tianjin.ps'
+
+gmtset ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+       LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i GRID_PEN_PRIMARY 0.5p
+
+makecpt -Cglobe -T-8000/8000/100 -Z > colors.cpt
+psbasemap -R116.95583/117.11165/39.045850/39.179167 -JX5i/5i -Ba0.02f0.01g0.03::wEsN -P -K -V  >$outputfile
+
+#psbasemap -R0/5610/0/4800 -JX5i/5i -Bwesn -P -K -V  >$outputfile
+
+psimage ave.utm.rmli.ras -Gtblack -W5i/5i -O -K -V >>$outputfile
+
+#psbasemap -R116.9558333/117.11162270/39.0458371/39.1791667 -JX5i/5i -Ba0.03f0.01g0.03::wEsN -P -O -K -V>>$outputfile
+
+grdimage /mnt/software/myfiles/Software/experiment/GMT/ETOPO2/etopo2.grd -Ba10g5::SWen -R73/135/4/54 -P -Jm0.03i -Ccolors.cpt -K -O -X0 -Y0 >> $outputfile
+pscoast -Di -Na -R -Jm0.03i -O -K >> $outputfile
+# show Tianjin
+psxy -R -Jm0.03i -O -K  -L  -Wfaint -Gred -St0.2 << END >>$outputfile
+117.2 39.13
+END
+pstext << EOT -Jm0.03i -O -R >> $outputfile
+113 41.5 9 0 3 LM Tianjin
+EOT
+
+ps2raster -A $ouputfile
+

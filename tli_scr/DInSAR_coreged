@@ -1,0 +1,221 @@
+#!/bin/sh
+###########################################################
+# Script that:
+#     - Generate DInSAR results using GAMMA scripts.
+#	- Use the coreged files.
+# Usage:
+#       - Specify the parameters.
+# 	  - Run the script. ./DInSAR_coreged.sh
+#       ("./run_DInSAR_Allsteps")
+######################################
+### parameter files
+######################################
+master="20090709"
+slave="20090919"
+demname='YiChang.dem'
+orig_path='/mnt/backup/ExpGroup/RST2/rslc_subset'
+dem='/mnt/backup/DEM/DEM_YiChang/'$demname
+ml_range=1   # Multi look factor in range direction
+ml_azi=2  # Multi look factor in azimuth direction
+
+m_slc=$orig_path/$master.rslc
+s_slc=$orig_path/$slave.rslc
+M_P=${master}
+S_P=${slave}
+fstr=$M_P-$S_P  # file string
+par_m=$m_slc.par
+par_s=$s_slc.par
+par_dem=$dem_file.par
+MS_off=$fstr.off
+masterpwr=$mslc.pwr
+
+res_range=$(awk '$1 == "range_pixel_spacing:" {print $2}' $par_m)
+res_azi=$(awk '$1 == "azimuth_pixel_spacing:" {print $2}' $par_m)
+
+res=$res_azi
+if [ `echo "$res_azi > $res_range" | bc` -ne 0 ]
+then
+	res=$res_range
+fi
+
+
+demovs_range=$(echo 90/$res | bc)
+demovs_azi=$(echo 90/$res | bc)
+
+if true
+then
+echo '########################################'
+echo '# Creating the offset par file...'
+echo '# The files are all coregestered. '
+echo '# Thus the coreg. ploynomial of the first degree is 1, others are 0.'
+echo '########################################'
+
+
+echo -ne "$fstr\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > offsetin
+create_offset $par_m $par_s $MS_off 1 1 1 < offsetin
+rm -f create_offset
+echo '########################################'
+echo '# Creating the interferogram for input pair. '
+echo '# The multi-looked .pwr file are generated simutanously.'
+echo '########################################'
+
+interf_SLC $m_slc $s_slc $par_m $par_s $MS_off $fstr.pwr1 $fstr.pwr2 $fstr.int $ml_range $ml_azi
+#SLC_interp SLC_intf multi_look
+samples=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+lines=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+rasmph_pwr $fstr.int $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.intandpwr.bmp
+
+echo '########################################'
+echo '# Creating the flattenning phase...'
+echo '########################################'
+
+base_init $par_m $par_s $MS_off $fstr.int $fstr.base 0 1024 1024
+base_perp $fstr.base $par_m $MS_off > $fstr.base.perp
+ph_slope_base $fstr.int $par_m $MS_off $fstr.base $fstr.flt 1 0
+rasmph_pwr $fstr.flt $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.fltandpwr.bmp
+adf $fstr.flt $fstr.flt.sm1 $fstr.sm.cc1 $samples 0.3 64 # filtering
+adf $fstr.flt.sm1 $fstr.flt.sm $fstr.sm.cc $samples 0.3 32
+rasmph_pwr $fstr.flt.sm $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.fltsmpwr.bmp
+cc_wave $fstr.flt $fstr.pwr1 $fstr.pwr2 $fstr.cc $samples 5.0 5.0 2 - - - -
+rascc $fstr.cc $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr.ccandpwr.bmp
+
+echo '########################################'
+echo '# Removing the topographic phase...'
+echo '########################################'
+
+echo ''
+echo '# Geocoding...'
+
+multi_look $m_slc $par_m $masterpwr $masterpwr.par $ml_range $ml_azi 0 - 1.0 1.0
+rm -f dem_seg dem_seg.par
+gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup $demovs_range $demovs_azi sim_sar  # Use disdem_par to check dem_seg.
+# *** sim_sar 的坐标系是DEM坐标系 ***
+# *** lookup table 应该是与sim_sar大小一致的，与dem_seg大小也一致 ***
+# *** 每个点上的数对应sim_sar的像素在slc中的坐标 ***
+
+
+
+# 如果DEM的分辨率较影像分辨率太低，请谨慎使用下面的DEM与pwr陪准代码。
+if false
+then
+echo -ne "$fstr\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+create_diff_par $masterpwr.par - dem$master.diff_par 1 <create_diffpar
+rm -f create_diffpar
+offset_pwrm sim_sar $masterpwr dem$master.diff_par dem$master.offs dem$master.snr - - offsets 2 - - 4.0 1
+offset_fitm dem$master.offs dem$master.snr dem$master.diff_par coffs coffsets - - > log
+offset_pwrm sim_sar $masterpwr dem$master.diff_par dem$master.offs dem$master.snr - - offsets 4 40 40 5.0  #解算偏移量参数
+samples_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+lines_dem=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+samples_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+lines_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+gc_map_fine lookup $samples_dem dem$master.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+geocode_back $masterpwr $samples_mli lookup_fine $master.utm.rmli $samples_dem - 3 0  #Geocoded pwr
+col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+geocode lookup_fine sim_sar $samples_dem sim_sar.rdc $samples_mli $liness_mli 2 0
+geocode lookup_fine dem_seg $samples_dem $master.hgt $samples $lines 1 0
+raspwr $master.hgt $samples 1 0 1 1 1. .35 1 $master.hgt.ras
+
+
+else
+samples_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+lines_dem=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+samples_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+lines_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+geocode_back $masterpwr $samples_mli lookup $master.utm.rmli $samples_dem - 3 0  #Geocoded pwr
+raspwr $master.utm.rmli $samples_dem - - - - - - - $master.utm.rmli.ras ##运行第二遍的时候，吐核了
+col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+geocode lookup sim_sar $samples_dem sim_sar.rdc $samples_mli $liness_mli 2 0
+geocode lookup dem_seg $samples_dem $master.hgt $samples $lines 1 0
+raspwr $master.hgt $samples 1 0 1 1 1. .35 1 $master.hgt.ras
+fi
+
+echo ''
+echo 'Simulating the topographic phase...'
+
+echo -ne "$fstr\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $fstr.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+
+phase_sim $par_m $MS_off $fstr.base $master.hgt $fstr.sim_unw 0 0 - -
+rasrmg $fstr.sim_unw $fstr.pwr1 $samples - - - - - - - - - - sim_img_unflat.ras 
+
+sub_phase $fstr.int $fstr.sim_unw $fstr.diff.par $fstr.diff 1 0
+rasmph_pwr $fstr.diff $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.diff.pwr.bmp
+
+######################################
+# Filter Differential Interferogram
+######################################
+adf $fstr.diff $fstr.diff.sm1 $fstr.diff.sm.cc1 $samples 0.3 128
+adf $fstr.diff.sm1 $fstr.diff.sm2 $fstr.diff.sm.cc2 $samples 0.3 64
+adf $fstr.diff.sm2 $fstr.diff.sm $fstr.diff.sm.cc $samples 0.3
+rasmph_pwr $fstr.diff.sm $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.diff.sm.pwr.bmp
+
+
+adf $fstr.diff.sm $fstr.diff.sm.temp1 $fstr.diff.cc.temp1 $samples 0.3 32
+rascc $fstr.diff.cc.temp1 $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-32-1.ccandpwr.bmp
+
+for i in {1..3}
+do
+adf $fstr.diff.sm.temp1 $fstr.diff.sm.temp2 $fstr.diff.cc.temp2 $samples 0.3 32
+rascc $fstr.diff.cc.temp2 $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-32-$i-1.ccandpwr.bmp
+
+adf $fstr.diff.sm.temp2 $fstr.diff.sm.temp1 $fstr.diff.cc.temp1 $samples 0.3 32
+rascc $fstr.diff.cc.temp1 $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-32-$i-2.ccandpwr.bmp
+done
+
+rasmph_pwr $fstr.diff.sm.temp1 $fstr.pwr1 $samples 1 1 0 1 1 1. 0.35 1 $fstr.diff.temp.bmp
+
+
+#rascc $fstr.diff.sm.cc1 $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-128.ccandpwr.bmp
+#rascc $fstr.diff.sm.cc2 $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-64.ccandpwr.bmp
+#rascc $fstr.diff.sm.cc $fstr.pwr1 $samples 1 1 0 1 1 .1 .9 1. .35 1 $fstr-32.ccandpwr.bmp
+fi
+
+
+
+exit
+samples_dem=$(awk '$1 == "samples:" {print $2}' dem_seg.par)
+lines_dem=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+samples_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+lines_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+samples=$(awk '$1 == "interferogram_samples:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+unwrap_sample=534
+unwrap_line=1306
+
+echo 'Phase unwrapping...'
+#############################################
+# Unwrap Differential Flattened Interferogram
+#############################################
+corr_flag $fstr.diff.sm.cc $fstr.diff.sm.flag $samples 0.2
+neutron $fstr.pwr1 $fstr.diff.sm.flag $samples - - -
+residue $fstr.diff.sm $fstr.diff.sm.flag $samples
+tree_cc $fstr.diff.sm.flag $samples 64
+grasses $fstr.diff.sm $fstr.diff.sm.flag $fstr.diff.sm.unw $samples - - - - $unwrap_sample $unwrap_line
+rasrmg  $fstr.diff.sm.unw $fstr.pwr1 $samples 1 1 0 1 1 1.0 1. 0.35 .0 1 $fstr.diff.sm.unw.bmp
+#############################################
+###geocode the radar coordinates to simulated SAR intensity image
+######################################
+geocode_back $fstr.diff.sm.cc $samples lookup_fine $fstr.diff.utm.cc $samples_dem $liness_dem 1 0
+geocode_back $fstr.diff.sm $samples lookup_fine $fstr.diff.utm.sm $samples_dem $liness_dem 1 1
+geocode_back $fstr.diff.sm.unw $samples lookup_fine $fstr.diff.utm.unw $samples_dem $liness_dem 1 0
+geocode_back $fstr.pwr1 $samples lookup_fine $fstr.utm.pwr $samples_dem $liness_dem 1 0
+
+rascc $fstr.diff.utm.cc - $samples_dem 1 1 0 1 1 .1 .9 1. .35 1 $fstr.diff.utm.cc.bmp
+rascc $fstr.diff.utm.cc $fstr.utm.pwr $samples_dem 1 1 0 1 1 .1 .9 1. .35 1 $fstr.diff.utm.ccandpwr.bmp
+rasmph $fstr.diff.utm.sm $samples_dem 1 0 1 1 1. 0.35 1 $fstr.diff.utm.sm.bmp
+rasmph_pwr $fstr.diff.utm.sm $fstr.utm.pwr $samples_dem 1 1 0 1 1 1. 0.35 1 $fstr.diff.utm.smandpwr.bmp
+rasrmg $fstr.diff.sm.unw $fstr.pwr1 $samples 1 1 0 1 1 .2 1. .35 .0 1 $fstr.diff.unwandpwr.bmp $fstr.diff.sm.cc 1 .2
+rasrmg $fstr.diff.sm.unw -  $samples 1 1 0 1 1 .18 1. .35 .0 1 $fstr.diff.unw.bmp $fstr.diff.sm.cc 1 .2
+######################################
+# Create Displacement Map
+#################################
+dispmap $fstr.diff.sm.unw $master.hgt $par_m $MS_off $fstr.disp 0 0 0
+#rashgt $fstr.rdc_hgt $fstr.pwr1 $samples 1 1 0 1 1 0.028 1 0.35 1 $fstr.rdc_hgt.bmp
+#geocode_back $fstr.pwr1 $samples lookup_fine $fstr.utm.pwr1 $samples_dem $liness_dem
+geocode_back $fstr.disp $samples lookup_fine $fstr.utm.disp $samples_dem $liness_dem
+#rashgt $fstr.utm.disp $fstr.utm.pwr $samples_dem 1 1 0 1 1 0.028 1 0.35 1 $fstr.utm.disp.bmp
+#disras $fstr.utm.disp.bmp
+

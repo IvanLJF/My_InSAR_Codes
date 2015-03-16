@@ -1,0 +1,74 @@
+#! /bin/sh
+###################################################################
+###   tli_template: Create template for scripts                 ###
+###         using:                                              ###
+###         - filename
+###         
+##################################################################
+###   History
+###     20141118: Written by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** tli_template Create template for scripts. v1.0 20140915."
+echo " "
+echo "    Required data:"
+echo "       - filename."
+
+if [ $# -lt 1 ]; then
+  echo ""
+  echo "Usage: tli_template <filename> [append_mask]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "filename         : Full path of file to generate."
+  echo "append_mask      : Mask for append option. (enter '-' for default: 1)"
+  echo "                   0: Not append. Re-build a new file."
+  echo "                   1: Append."
+  echo ""
+  exit
+fi
+
+filename=$1
+append=1
+if [ $# -ge 2 ]; then
+  if [ $2 -eq 0 ]; then
+    append=$2
+  fi
+fi
+
+if [ $append -eq 1 ]; then
+  echo '#! /bin/sh'                                         >> $filename
+else
+  echo '#! /bin/sh'                                         > $filename
+fi 
+
+echo '#####################################'                >> $filename
+echo '## scrs: Functions of the scripts.###'                >> $filename
+echo '##     using:'                                        >> $filename
+echo '##       - parameters'                                >> $filename
+echo '##  '                                                 >> $filename
+echo '#####################################'                >> $filename
+echo '## History'                                           >> $filename
+echo '##   YYYYMMDD: Written by T.LI @ Sasmac'              >> $filename
+echo '#####################################'                >> $filename
+echo 'echo ""'                                              >> $filename
+echo 'echo "*** scrs Functions of the scripts. v1.0 YYYYMMDD."'    >> $filename
+echo 'echo " "'                                             >> $filename
+echo 'echo "      Required data:"'                          >> $filename
+echo 'echo "        - parameters."'                         >> $filename
+echo ''                                                     >> $filename
+echo 'if [ $# -lt 1 ]; then'                                >> $filename
+echo '  echo "Usage: scrs <parameters>"'                    >> $filename
+echo '  echo ""'                                            >> $filename
+echo '  echo "input params:"'                               >> $filename
+echo '  echo ""'                                            >> $filename
+echo '  echo "parameter        : Parameter of the scripts"' >> $filename
+echo '  echo ""'                                            >> $filename
+echo '  exit'                                               >> $filename
+echo 'fi '                                                  >> $filename
+echo ''                                                     >> $filename
+echo '# Assignment'                                         >> $filename
+echo 'var1=$1'                                              >> $filename
+echo ''                                                     >> $filename
+echo ''
+echo 'File was created successfully: '$fname

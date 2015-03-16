@@ -1,0 +1,116 @@
+#! /bin/sh
+#####################################
+## tli_par_ESA_ERS: Create .slc file for ERS data .###
+##     using:
+##       - parameters
+##  
+#####################################
+## History
+##   20141118: Written by T.LI @ Sasmac
+#####################################
+echo ""
+echo "*** tli_par_ESA_ERS: Create .slc file for ERS data . v1.0 20141118."
+echo " "
+echo "      Required data:"
+echo "        - ERS file."
+
+# Assignment
+if [ $# -eq 0 ]; then
+  leafile=LEA_01.001
+  datfile=DAT_01.001
+  workpath=`pwd`
+fi
+
+if [ $# -ge 2 ]; then
+  leafile=$1
+  datfile=$2
+  workpath=`dirname $leafile`
+fi
+
+if [ ! -f $leafile -o ! -f $datfile ]; then
+  echo "Usage: tli_par_ESA_ERS: [leafile] [datfile] [delft_mask] [DELFT_vec2]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "leafile        : LEA_01.001 file. (enter '-' for default: ./LEA_01.001)"
+  echo "datfile        : DAT_01.001 file. (enter '-' for default: ./DAT_01.001)"
+  echo "delft_mask     : Delft precise orbital data (enter '-' for default: 0)."
+  echo "                 0: /mnt/data_tli/Data/orbits/ODR/ODR.ERS-1(2)/dgm-e04"
+  echo "                 1: use-specified path."
+  echo "                 2: using coarse orbite."
+  echo "DELFT_vec2     : Delft orbital data. (using only when delft_mask=1)"
+  echo ""
+  echo "Files are not found: $leafile $datfile"
+  exit
+fi 
+
+day=`dirname $workpath`
+day=`basename $day`
+sensor=`expr substr "$day" 1 2`
+yyyy=`expr substr "$day" 4 2`
+mm=`expr substr "$day" 7 3`
+dd=`expr substr "$day" 10 2`
+
+if [ $yyyy -gt 90 ]; then
+  yyyy=19$yyyy
+else
+  yyyy=20$yyyy
+fi 
+
+case "$mm" in
+Jan)
+  mm=01;;
+Feb)
+  mm=02;;
+Mar)
+  mm=03;;
+Apr)
+  mm=04;;
+May)
+  mm=05;;
+Jun)
+  mm=06;;
+Jul)
+  mm=07;;
+Aug)
+  mm=08;;
+Sep)
+  mm=09;;
+Oct)
+  mm=10;;
+Nov)
+  mm=11;;
+Dec)
+  mm=12;;
+*)
+  echo "Warning: Month data are not right: $mm"
+  ;;
+esac
+
+fname=$yyyy$mm$dd
+
+echo -ne "\n" >temp
+par_ESA_ERS $leafile $fname.slc.par $datfile $fname.slc <temp
+rm -f temp
+
+if [ $sensor = 'E1' ]; then
+  delft=/mnt/data_tli/Data/orbits/ODR/ODR.ERS-1/dgm-e04
+else
+  delft=/mnt/data_tli/Data/orbits/ODR/ODR.ERS-2/dgm-e04
+fi 
+
+delft_mask=0
+if [ $# -ge 3 ]; then
+  if [ $3 -ne '-' ]; then
+    delft_mask=$3
+  fi 
+fi 
+if [ $delft_mask -eq 1 ]; then
+  delft=$3
+fi 
+
+if [ $delft_mask -ne '2' ]; then
+  DELFT_vec2 $fname.slc.par $delft
+fi
+echo ''
+echo 'tli_par_ESA_ERS: Task finished successfully. Please check the files in '$workpath

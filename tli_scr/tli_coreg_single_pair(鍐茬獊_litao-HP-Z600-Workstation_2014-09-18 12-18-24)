@@ -1,0 +1,118 @@
+#!/bin/sh
+#################################################################
+###   tli_coreg_single_pair: Script for image coregistration. ###
+###      using:
+###      - Master image.
+###      - Slave image.
+#################################################################
+###   History
+###     20120224: Written by T.LI @ ISEIS, CUHK.
+###     20140915: Re-organized by T.LI @ R&D Dept., Sasmac.
+#################################################################
+echo ""
+echo "*** tli_coreg_single_pair Coregistrting two images. v1.0 20140915."
+echo ""
+echo "    Required data:"
+echo "      - Master image"
+echo "      - Slave image"
+echo ""
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_coreg_single_pair <master_image> <slave_image> [clear]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "master_image     : Full path of master image."
+  echo "slave_image      : Full path of slave image."
+  echo "clear            : Clear the intermedia files or not (enter - for default: 1)."
+  echo "                   0: Not clear."
+  echo "                   1: Clear."
+  exit
+fi
+
+# Assignment
+master_image=$1
+slave_image=$2
+clear_flag=1
+if [ $# -ge 3 ]; then
+  if [ $3 != '-' ]; then
+    clear_flag=$3
+  fi
+fi
+
+if [ ! -f $master_image ]; then
+  echo "Error! Master file not exist: $master_image"
+  echo ""
+fi
+if [ ! -e $slave_image ]; then
+  echo "Error! Slave file not exist: $slave_image"
+  echo ""
+fi
+
+# Judge the input file type.
+fname=`basename $master_image`
+suffix=${fname##*.}
+fname=${fname%.*}
+if [ $suffix = 'rslc' ]; then
+  echo "The two images are believed co-registered to each other."
+  echo "Please re-check the two images."
+  echo "If you insist on coregistration, please convert the suffix to '.slc'."
+  echo ""
+  exit
+fi
+
+master_date=`basename $master_image '.slc'`
+slave_date=`basename $slave_image '.slc'`
+par_m=$master_image.par
+par_s=$slave_image.par
+M_S=$master_date-$slave_date
+MS_off=$M_S.off
+npoly=3
+width=$(awk '$1 == "range_samples:" {print $2}' $par_m)
+
+# Create offset par file.
+echo -ne "$M_S\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > offsetpar_temp
+create_offset $par_m $par_s $MS_off 1 1 1 <offsetpar_temp
+rm -f offsetpar_temp
+
+# Initial offset polynomial.
+init_offset_orbit $par_m $par_s $MS_off          # Using orbital data.
+init_offset $master_image $slave_image $par_m $par_s $MS_off 5 5 # Using cross-correlation
+init_offset $master_image $slave_image $par_m $par_s $MS_off 3 3
+
+# Offset estimation using pwr cross-correlation.
+offset_pwr $master_image $slave_image $par_m $par_s $MS_off $M_S.offs $M_S.off.snr 128 128 $M_S.offsets 1 - - 7.0 1
+
+# Offset polynomial fit.
+offset_fit $M_S.offs $M_S.off.snr $MS_off $M_S.coffs $M_S.coffsets 10.0 $npoly 0
+cp $M_S.offsets offsets_pwr_1
+cp $M_S.coffsets coffsets_pwr_1
+rm -f $M_S.offs $M_S.off.snr $M_S.coffs $M_S.coffsets $M_S.offsets 
+
+#######
+# Re-coregister using smaller window sizes.
+offset_pwr $master_image $slave_image $par_m $par_s $MS_off $M_S.offs $M_S.off.snr 128 128 $M_S.offsets 1 - - 8.0 1
+offset_fit $M_S.offs $M_S.off.snr $MS_off $M_S.coffs $M_S.coffsets 15.0 $npoly 0
+cp $M_S.offsets offsets_pwr_2
+cp $M_S.coffsets coffsets_pwr_2
+rm -f $M_S.offs $M_S.off.snr $M_S.coffs $M_S.coffsets $M_S.offsets
+
+# Re-fit the polynomial.
+offset_pwr_tracking $master_image $slave_image $par_m $par_s $MS_off $M_S.offs $M_S.off.snr 32 32 $M_S.offsets 2 9.0 40 40 - - - - 1
+offset_fit $M_S.offs $M_S.off.snr $MS_off $M_S.coffs $M_S.coffsets 20.0 $npoly 0
+SLC_interp $slave_image $par_m $par_s $MS_off $slave_date.rslc $slave_date.rslc.par
+SLC_intf $master_image $slave_date.rslc $par_m $slave_date.rslc.par $MS_off $M_S.int 1 1 - - 1 1
+rasmph *.int $width - - - - - - - int.ras 0
+rasSLC $slave_date.rslc $width - - 1 1 - - - 1 - $slave_date.rslc.ras
+
+multi_look $slave_date.rslc $slave_date.rslc.par $slave_date.pwr $slave_date.pwr.par
+cc_wave $M_S.int - - $M_S.cc $width 5 5
+rascc $M_S.cc $slave_date.pwr $width
+
+if [ $clear_flag==1 ]; then
+  rm -f $M_S.coffs $M_S.coffsets $M_S.off.snr $M_S.offs $M_S.offsets coffsets_pwr_1 coffsets_pwr_2 offsets_pwr_1 offsets_pwr_2  
+fi
+
+echo ""
+echo "Task finished successfully."
+echo ""

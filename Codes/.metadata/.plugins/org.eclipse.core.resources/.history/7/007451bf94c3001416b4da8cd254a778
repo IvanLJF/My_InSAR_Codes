@@ -1,0 +1,383 @@
+PRO CWN_SMC_INITOFFSET_EVENT,EVENT
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  widget_control,event.top,get_uvalue=pstate
+  workpath=config.workpath
+  uname=widget_info(event.id,/uname)
+  case uname of
+    'openmaster':begin
+    master=config.m_slc
+    infile=dialog_pickfile(title='Sasmac InSAR',/read,filter='*.rslc;*.slc', path=workpath,file=master)
+    IF NOT FILE_TEST(infile) THEN return
+    
+    ; Update widget info.
+    config.m_slc=infile
+    config.m_slcpar=infile+'.par'
+    config.workpath=FILE_DIRNAME(infile)+PATH_SEP()
+    
+    widget_control,(*pstate).master,set_value=infile
+    widget_control,(*pstate).master,set_uvalue=infile
+    
+    widget_control,(*pstate).mpar,set_value=infile+'.par'
+    widget_control,(*pstate).mpar,set_uvalue=infile+'.par'
+    parfile=config.m_slcpar
+    finfo=TLI_LOAD_SLC_PAR(parfile)
+    rcp=STRCOMPRESS(finfo.range_samples,/REMOVE_ALL)
+    rcp=string(long(rcp)/2)
+    rcp=STRCOMPRESS(rcp)
+    azcp=STRCOMPRESS(finfo.azimuth_lines,/REMOVE_ALL)
+    azcp=string(long(azcp)/2)
+    azcp=STRCOMPRESS(azcp)
+    widget_control,(*pstate).rcp,set_value=rcp
+    widget_control,(*pstate).rcp,set_uvalue=rcp
+    widget_control,(*pstate).azcp,set_value=azcp
+    widget_control,(*pstate).azcp,set_uvalue=azcp
+    
+  END
+  'openslave':begin
+  infile=dialog_pickfile(title='Sasmac InSAR',/read,filter='*.rslc;*.slc', path=config.workpath,file=config.s_slc)
+  IF NOT FILE_TEST(infile) THEN return
+  
+  ; Update widget info.
+  config.s_slc=infile
+  config.s_slcpar=infile+'.par'
+  workpath=config.workpath
+  slave=config.s_slc
+  sparfile=config.s_slcpar
+  widget_control,(*pstate).slave,set_value=infile
+  widget_control,(*pstate).slave,set_uvalue=infile
+  widget_control,(*pstate).spar,set_value=sparfile
+  widget_control,(*pstate).spar,set_uvalue=sparfile
+  
+  widget_control,(*pstate).master,get_value=master
+  outputfile=workpath+TLI_FNAME(master, /nosuffix)+'-'+TLI_FNAME(infile, /nosuffix)+'.off'
+  widget_control,(*pstate).output,set_value=outputfile
+  widget_control,(*pstate).output,set_uvalue=outputfile
+  outfile=config.offfile
+END
+
+'openoutput':begin
+;-Check if input master parfile
+IF NOT FILE_TEST(master) then begin
+  TLI_SMC_DUMMY, inputstr='ERROR! Please select input master file.'
+  RETURN
+ENDIF
+IF NOT FILE_TEST(slave) then begin
+  TLI_SMC_DUMMY, inputstr='ERROR! Please select input slave file.'
+  RETURN
+ENDIF
+
+workpath=config.workpath
+temp=file_basename(master)
+temp=strsplit(temp,'.',/extract)
+master=temp(0)
+temp=file_basename(slave)
+temp=strsplit(temp,'.',/extract)
+slave=temp(0)
+file=master+'-'+slave+'.off'
+outfile=dialog_pickfile(title='',/write,file=file,path=workpath,filter='*.off',/overwrite_prompt)
+config.offfile=outfile
+widget_control,(*pstate).output,set_value=outfile
+widget_control,(*pstate).output,set_uvalue=outfile
+END
+
+'ok': begin
+  widget_control,(*pstate).master,get_uvalue=master
+  widget_control,(*pstate).slave,get_uvalue=slave
+  widget_control,(*pstate).mpar,get_value=mparfile
+  widget_control,(*pstate).spar,get_uvalue=sparfile
+  widget_control,(*pstate).output,get_value=outputfile
+  widget_control,(*pstate).rlks,get_value=rlks
+  widget_control,(*pstate).azlks,get_value=azlks
+  widget_control,(*pstate).roff,get_value=roff
+  widget_control,(*pstate).azoff,get_value=azoff
+  widget_control,(*pstate).rcp,get_value=rcp
+  widget_control,(*pstate).azcp,get_value=azcp
+  widget_control,(*pstate).rwisz,get_value=rwisz
+  widget_control,(*pstate).azwisz,get_value=azwisz
+  widget_control,(*pstate).snr,get_value=snr
+  ;      widget_control,(*pstate).cpoff,get_value=cpoff
+  
+  cpoff=WIDGET_INFO((*pstate).cpoff,/droplist_select)
+  cpoff=STRCOMPRESS(1-cpoff, /REMOVE_ALL)
+  
+  IF NOT FILE_TEST(master) then begin
+    TLI_SMC_DUMMY, inputstr='ERROR! Please select input master file.'
+    RETURN
+  ENDIF
+  IF NOT FILE_TEST(slave) then begin
+    TLI_SMC_DUMMY, inputstr='ERROR! Please select input slave file.'
+    RETURN
+  ENDIF
+  IF NOT FILE_TEST(mparfile) then begin
+    TLI_SMC_DUMMY, inputstr='ERROR! Please select input master par file.'
+    RETURN
+  ENDIF
+  IF NOT FILE_TEST(sparfile) then begin
+    TLI_SMC_DUMMY, inputstr='ERROR! Please select input slave par file.'
+    RETURN
+  ENDIF
+  
+  if rlks le 0 then begin
+    result=dialog_message(['range looks should be greater than 0:',$
+      STRCOMPRESS(rlks)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if azlks le 0 then begin
+    result=dialog_message(['azimuth looks should be greater than 0:',$
+      STRCOMPRESS(azlks)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if rcp lt 0 then begin
+    result=dialog_message(['range center patch should be greater than 0:',$
+      STRCOMPRESS(rcp)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if azcp lt 0 then begin
+    result=dialog_message(['azimuth center patch should be greater than 0:',$
+      STRCOMPRESS(azcp)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  
+  if roff lt 0 then begin
+    result=dialog_message(['initial range offset should be greater than 0:',$
+      STRCOMPRESS(roff)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if azoff lt 0 then begin
+    result=dialog_message(['initial azimuth offset should be greater than 0:',$
+      STRCOMPRESS(azoff)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if rwisz le 0 then begin
+    result=dialog_message(['range window size should be greater than 0:',$
+      STRCOMPRESS(rwisz)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if azwisz le 0 then begin
+    result=dialog_message(['azimuth window size should be greater than 0:',$
+      STRCOMPRESS(azwisz)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  
+  if snr le 0 then begin
+    result=dialog_message(['SNR threshold should be greater than 0:',$
+      STRCOMPRESS(snr)],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  
+  IF outputfile eq '' then begin
+    TLI_SMC_DUMMY, inputstr='ERROR! Please specify output file.'
+    RETURN
+  ENDIF
+  
+  scr="init_offset " +master +' '+slave +' '+master+'.par '+slave+'.par '+outputfile+' '+rlks+' '+azlks+' '+rcp+' '+azcp+' '+roff+' '+azoff+' '+snr+' '+rwisz+' '+azwisz+' '+cpoff
+  TLI_SMC_SPAWN, scr,info='Determine initial offset between SLC images, Please wait...'
+;stop
+end
+
+'cl':begin
+;      result=dialog_message('Sure exit？',title='Exit',/question,/default_no,/center)
+;      if result eq 'Yes'then begin
+widget_control,event.top,/destroy
+;      endif
+end
+else: begin
+  return
+end
+endcase
+END
+
+
+PRO CWN_SMC_INITOFFSET
+
+
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  ; --------------------------------------------------------------------
+  ; Assignment
+  
+  device,get_screen_size=screen_size
+  xoffset=screen_size(0)/3
+  yoffset=screen_size(1)/3
+  xsize=560
+  ysize=560
+  
+  ; Get config info
+  m_slc=config.m_slc
+  s_slc=config.s_slc
+  mparfile=config.m_slcpar
+  sparfile=config.s_slcpar
+  rlks='1'
+  azlks='1'
+  rcp='-'
+  azcp='-'
+  rwisz='512'
+  azwisz='512'
+  roff='0'
+  azoff='0'
+  snr='7.0'
+  cpoff='1'
+  outputfile=config.offfile
+  
+  IF FILE_TEST(m_slc) THEN BEGIN
+    IF FILE_TEST(s_slc) THEN BEGIN
+      workpath=config.workpath
+      s_slc=config.s_slc
+      m_slc=config.m_slc
+      mparfile=config.m_slcpar
+      sparfile=config.s_slcpar
+      temp=TLI_FNAME(m_slc,suffix=suffix)
+      IF suffix EQ '.rslc' OR suffix EQ '.slc' THEN BEGIN
+      
+        finfo=TLI_LOAD_SLC_PAR(mparfile)
+        rcp=STRCOMPRESS(finfo.range_samples,/REMOVE_ALL)
+        rcp=string(long(rcp)/2)
+        rcp=STRCOMPRESS(rcp)
+        azcp=STRCOMPRESS(finfo.azimuth_lines,/REMOVE_ALL)
+        azcp=string(long(azcp)/2)
+        azcp=STRCOMPRESS(azcp)
+        
+      ENDIF
+      outputfile=workpath+TLI_FNAME(m_slc, /nosuffix)+'-'+TLI_FNAME(s_slc, /nosuffix)+'.off'
+      config.offfile=outputfile
+    ENDIF
+  ENDIF
+  
+  
+  ;-------------------------------------------------------------------------
+  ; Create widgets
+  tlb=widget_base(title='init_offset',tlb_frame_attr=0,/column,xsize=xsize,ysize=ysize,xoffset=xoffset,yoffset=yoffset)
+  
+  masterID=widget_base(tlb,/row,xsize=xsize,frame=1)
+  master=widget_text(masterID,value=m_slc,uvalue=m_slc,uname='master',/editable,xsize=74)
+  openmaster=widget_button(masterID,value='Input Master',uname='openmaster',xsize=90)
+  
+  slaveID=widget_base(tlb,/row,xsize=xsize,frame=1)
+  slave=widget_text(slaveID,value=s_slc,uvalue=s_slc,uname='slave',/editable,xsize=74)
+  openslave=widget_button(slaveID,value='Input Slave',uname='openslave',xsize=90)
+  
+  
+  
+  temp=widget_label(tlb,value='------------------------------------------------------------------------------------------')
+  ;-----------------------------------------------
+  ; Basic information about input parameters
+  labID=widget_base(tlb,/column,xsize=xsize)
+  
+  parID=widget_base(labID,/row, xsize=xsize-10)
+  parlabel=widget_label(parID, xsize=xsize, value='Basic information about input parameters:',/align_left,/dynamic_resize)
+  
+  mparID=widget_base(labID,/row,xsize=xsize-10,frame=1)
+  mpar=widget_text(mparID,value=mparfile,uvalue=mparfile,uname='mpar',/editable,xsize=89)
+  
+  sparID=widget_base(labID,/row, xsize=xsize-10,frame=1)
+  spar=widget_text(sparID,value=sparfile,uvalue=sparfile,uname='spar',/editable,xsize=89)
+  
+  ;-----------------------------------------------------------------------------------------
+  ;range parameters
+  infoID=widget_base(labID,/row, xsize=xsize)
+  tempID=widget_base(infoID,/row,xsize=xsize/4-20, frame=1)
+  rlksID=widget_base(tempID, /column, xsize=xsize/4-10)
+  rlkslabel=widget_label(rlksID, value='Range Looks:',/ALIGN_LEFT)
+  rlks=widget_text(rlksID,value=rlks, uvalue=rlks, uname='rlks',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  roffID=widget_base(tempID, /column, xsize=xsize/4-10)
+  rofflabel=widget_label(roffID, value='Range offset:',/ALIGN_LEFT)
+  roff=widget_text(roffID,value=roff, uvalue=roff, uname='roff',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  rwiszID=widget_base(tempID,/column, xsize=xsize/4-10)
+  rwiszlabel=widget_label(rwiszID, value='Range Window Size:',/ALIGN_LEFT)
+  rwisz=widget_text(rwiszID, value=rwisz,uvalue=rwisz, uname='rwisz',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  rcpID=widget_base(tempID,/column, xsize=xsize/4-10)
+  rcplabel=widget_label(rcpID, value='Range Patch:',/ALIGN_LEFT)
+  rcp=widget_text(rcpID, value=rcp,uvalue=rcp, uname='rcp',/editable,xsize=10)
+  
+  ;------------------------------------------------------------------------------------------
+  ;azimuth parameters
+  infoID=widget_base(labID,/row, xsize=xsize)
+  tempID=widget_base(infoID,/row,xsize=xsize/4-20, frame=1)
+  azlksID=widget_base(tempID, /column, xsize=xsize/4-10)
+  azlkslabel=widget_label(azlksID, value='Azimuth Looks:',/ALIGN_LEFT)
+  azlks=widget_text(azlksID,value=azlks, uvalue=azlks, uname='azlks',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  azoffID=widget_base(tempID, /column, xsize=xsize/4-10)
+  azofflabel=widget_label(azoffID, value='Azimuth Offset:',/ALIGN_LEFT)
+  azoff=widget_text(azoffID,value=azoff, uvalue=azoff, uname='azoff',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  azwiszID=widget_base(tempID,/column, xsize=xsize/4-10)
+  azwiszlabel=widget_label(azwiszID, value='Azimuth Window Size:',/ALIGN_LEFT)
+  azwisz=widget_text(azwiszID, value=azwisz,uvalue=azwisz, uname='azwisz',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  azcpID=widget_base(tempID,/column, xsize=xsize/4-10)
+  azcplabel=widget_label(azcpID, value='Azimuth Patch:',/ALIGN_LEFT)
+  azcp=widget_text(azcpID, value=azcp,uvalue=azcp, uname='azcp',/editable,xsize=10)
+  
+  ;-------------------------------------------------------------------------------------------
+  ;other parameters
+  infoID=widget_base(labID,/row, xsize=xsize)
+  tempID=widget_base(infoID,/row,xsize=xsize/4-20, frame=1)
+  snrID=widget_base(tempID,/column, xsize=xsize/4-10)
+  snrlabel=widget_label(snrID, value='SNR Threshold:',/ALIGN_LEFT)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/4-10, frame=1)
+  snrsID=widget_base(tempID,/column, xsize=xsize/4-10)
+  snr=widget_text(snrsID, value=snr,uvalue=snr, uname='snr',/editable,xsize=10)
+  
+  temp=widget_base(infoID,/row,xsize=xsize/2-10,/frame)
+  lab=widget_label(temp,value='Copy Offset:')
+  
+  cpoff=widget_droplist(temp, value=[ 'Yes'       ,$
+    'No'  ])
+    
+  ;-----------------------------------------------------------------------------------------------
+  ;output parameters
+  temp=widget_label(tlb,value='-----------------------------------------------------------------------------------------')
+  mlID=widget_base(tlb,/column,xsize=xsize)
+  
+  tempID=widget_base(mlID,/row, xsize=xsize)
+  templabel=widget_label(tempID, xsize=xsize-10, value=' Determine initial offset between SLC images using correlation of image intensity',/align_left,/dynamic_resize)
+  
+  outID=widget_base(tlb,row=1, frame=1)
+  output=widget_text(outID,value=outputfile,uvalue=outputfile,uname='output',/editable,xsize=74)
+  openoutput=widget_button(outID,value='Output offset',uname='openoutput',xsize=90)
+  
+  ;-Create common components
+  funID=widget_base(tlb,row=1,/align_center)
+  ok=widget_button(funID,value='Script',uname='ok',xsize=90,ysize=30)
+  cl=widget_button(funID,value='Exit',uname='cl',xsize=90,ysize=30)
+  
+  ;Recognize components
+  state={master:master,$
+    openmaster:openmaster,$
+    slave:slave,$
+    openslave:openslave,$
+    mpar:mpar,$
+    spar:spar,$
+    rlks:rlks,$
+    azlks:azlks,$
+    rcp:rcp,$
+    azcp:azcp,$
+    roff:roff,$
+    azoff:azoff,$
+    rwisz:rwisz,$
+    azwisz:azwisz,$
+    snr:snr,$
+    cpoff:cpoff,$
+    output:output,$
+    openoutput:openoutput,$
+    ok:ok,$
+    cl:cl $
+    }
+    
+  pstate=ptr_new(state,/no_copy)
+  widget_control,tlb,set_uvalue=pstate
+  widget_control,tlb,/realize
+  xmanager,'CWN_SMC_INITOFFSET',tlb,/no_block
+END

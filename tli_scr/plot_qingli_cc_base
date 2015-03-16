@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Data preparation
+pcohfile='../p_cohvsbase.txt'
+
+# 初始化
+gmtset ANNOT_FONT_SIZE_PRIMARY 9p ANNOT_FONT_PRIMARY 4 ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i \
+MAP_SCALE_HEIGHT 0.04i LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+# 创建调色板
+makecpt -Crainbow -T0/1/0.2 -I -V -Z > g.cpt
+
+for i in $( seq 1 1 1 )
+do
+
+	ptindex=$i
+	column=`echo "$ptindex+5" |bc`
+	output_file='pt'$ptindex.ps
+	awk < $pcohfile -v x=$column 'NR>1 {print $4,$5,$x}'> pcohtemp
+	psbasemap -U"Coherence vs. Bperp & BT" -R0/550/0/630 -JX3i/3i \
+		-Ba100f50:"Bperp(m)":/a100f50:"BT(d)":."Point index $ptindex"::WeSn -P -K -V  > $output_file
+	psxy pcohtemp -R -J -B -Cg.cpt -V -Sc0.03i -K -O >> $output_file
+	psscale -Cg.cpt -D3.1i/1.4i/1.9i/0.15i -E -I -O -B0.2 >> $output_file
+	ps2raster -A $output_file
+done
+rm -f g.cpt pt*.ps

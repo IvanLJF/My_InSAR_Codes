@@ -1,0 +1,13 @@
+#Fri Dec 12 16:17:45 CST 2014
+IDL_DEVICE=X
+IDL_VALUES=true
+CHROMACODING_VALUES=true
+com.rsi.idldt.core.ui.proeditor.templates=<?xml version\="1.0" encoding\="UTF-8"?><templates/>
+IDL_DATAFILE_USER_COMMENTS=1
+IDLDT_VALUES=true
+IDL_RBUF_PERSIST=1
+IDL_QUIET=0
+IDL_PATH=+/mnt/software/My_InSAR_Tools/Codes\:<IDL_DEFAULT>\:+/mnt/software/My_InSAR_Tools/Codes/Sasmac\:+/mnt/software/My_InSAR_Tools/Codes/Google_earth\:+/mnt/software/My_InSAR_Tools/Codes/Default\:+/mnt/software/My_InSAR_Tools/Codes/IO
+eclipse.preferences.version=1
+IDL_CPU_VECTOR_ENABLE=1
+IDL_PATH_CACHE_DISABLE=0

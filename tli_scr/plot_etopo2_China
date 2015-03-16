@@ -1,0 +1,12 @@
+#! /bin/sh
+
+rm -f China.jpg
+# 绘制etopo2图像。试验区为中国。
+# xyz2grd ETOPO2.raw.bin -Getopo2.grd -I2m -Rd -ZTLhxyw
+makecpt -Cglobe -T-8000/8000/100 -Z > colors.cpt
+grdimage etopo2.grd -Ba10g5 -R73/135/4/54 -P -Yc -Xc -JM15c -Ccolors.cpt -K > China.ps
+pscoast -Di -Na/0.01i -R -J -O >> China.ps
+#pscoast -Di -Na -R -J -O >> China.ps
+#psscale -Ba1000f100::/:"m": -Ccolors.cpt -D7.5c/-2c/15c/.35ch -O >> China.ps
+ps2raster -A China.ps
+geeqie China.jpg

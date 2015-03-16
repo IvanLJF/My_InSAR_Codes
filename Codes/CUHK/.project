@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>CUHK</name>
+	<comment></comment>
+	<projects>
+		<project>Brother</project>
+		<project>ENVI_IDL</project>
+		<project>EXPERIMENT</project>
+		<project>GAMMA</project>
+		<project>GoogleEarth</project>
+		<project>HierarchicalPointAnalysis</project>
+		<project>InSAR</project>
+		<project>OPP</project>
+		<project>RSTool</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.rsi.idldt.core.IDLBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.rsi.idldt.core.IDLNature</nature>
+	</natures>
+</projectDescription>

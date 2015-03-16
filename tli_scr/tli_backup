@@ -1,0 +1,60 @@
+#!/bin/sh
+#################################################################
+###  tli_backup.sh: Scirpt used to backup the given files.    ###
+###    Using:
+###    - Input files
+###
+#################################################################
+###  History
+###    20140828: Written by T.LI @ Sasmac.
+#################################################################      
+echo ""
+echo "*** tli_backup.sh Backup the given files."
+echo "*** T.LI, InSAR Group, R&D Dept., Sasmac, v1.0 20140828 ***"
+echo ""
+echo "    Required data:"
+echo "       - Input files"
+echo ""
+ 
+if [ $# -lt 1 ]; then
+  echo ""
+  echo "Usage: tli_backup.sh [file1] [file2] [file3] ..."
+  echo ""
+  echo "  file1: The input file to backup."
+  echo ""
+  exit
+fi
+
+for argument
+do
+  file_i=$argument
+
+  fdir=`dirname $file_i`
+  
+  if [ $fdir = '.' ]; then 
+    fdir=''; 
+  else
+    fdir=$fidr/  
+  fi
+
+  fname=`basename $file_i`
+
+  suffix=${fname##*.}
+
+  fname=${fname%.*}
+  if [ $suffix = $fname ]; then 
+    suffix=''; 
+  else
+    suffix='.'$suffix
+  fi
+  file_i_new=$fdir$fname'_backup'$suffix
+  
+  echo $file_i '->' $file_i_new
+  
+  cp $file_i $file_i_new
+  
+done
+
+echo ""
+echo "Task finished successfully!"
+echo ""

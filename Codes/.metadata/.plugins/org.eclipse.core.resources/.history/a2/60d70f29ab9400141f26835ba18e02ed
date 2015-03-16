@@ -1,0 +1,303 @@
+;
+; Define parames that will be passed to main pro
+; by using common variables.
+;
+; Parameters:
+;
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac, 20141224
+;
+; History:
+;
+PRO TLI_SMC_DEFINITIONS,update_pref=update_pref
+
+  COMMON TLI_SMC_GUI, types, file, wid, config
+  
+  prefversion = 1.0 ; Version defined at 24/12/2014, T.LI @ Sasmac.
+  
+  types=strarr(901)
+  
+  ; 1-20 data formats
+  types[0]   = "Unkown type"
+  types[1]   = "bytes"
+  types[2]   = "integer"
+  types[3]   = "long integer"
+  types[4]   = "floating point"
+  types[5]   = "double"
+  types[6]   = "single complex"
+  types[7]   = "float complex"
+  types[8]   = "double complex"
+  types[9]   = "unsigned integer"
+  types[10]  = "unsigned long"
+  types[11]  = "integer64"
+  types[12]  = "unsigned integer64"
+  
+  ; 20-99 generic formats
+  types[20]  = "generic amplitude"
+  types[21]  = "generic amplitude (mean scaled)"
+  types[22]  = "generic phase"
+  types[23]  = "generic complex amplitude"
+  types[24]  = "generic complex amplitude (mean scaled)"
+  types[25]  = "generic complex phase"
+  types[26]  = "generic coherence"         ;; values in range [0:1]
+  types[27]  = "generic complex coherence" ;; values in range [0:1]
+  types[28]  = "generic amplitude (histogram scaled)"
+  
+  ; 100-199 single channel SAR
+  types[100] = "SAR amplitude image"
+  types[101] = "SAR complex image"
+  types[102] = "SAR phase image"
+  types[103] = "SAR intensity image"
+  types[110] = "SAR image after edge detection"
+  types[120] = "Co-occurance texture features"
+  types[121] = "Variation coefficient"
+  types[122] = "Band ratio"
+  types[123] = "Band difference"
+  types[124] = "Propability of change"
+  types[125] = "Band entropy"
+  
+  
+  ; 200-299 interferometric SAR
+  types[200] = "master image path"
+  types[201] = 'slave image path'
+  types[202] = 'master image date'
+  types[203] = 'slave image date'
+  
+  ; Coreg.
+  types[210] = 'SLC offset par'
+  types[211] = 'SLC initial offset'
+  types[212] = 'SLC offsets in binary'
+  types[213] = 'SLC snr for offsets'
+  types[214] = 'SLC offsets and snr in text'
+  types[215] = 'SLC fitted offsets'
+  types[216] = 'rslc of slave image'
+  types[217] = 'multi-looked master pwr'
+  types[218] = 'multi-looked slave pwr'
+  
+  ; Interf.
+  types[220] = 'interferometric image pair'
+  types[221] = 'interferometric base name'
+  types[222] = 'complex interferogram'
+  types[223] = 'interferometric phase'
+  types[224] = "Baseline"         ;; 1d or 2d e.g. perpendicular baseline (in meters)
+  types[225] = 'interferometric coherence'
+  
+  ; Flat.
+  types[220] = "Flat-earth phase"       ;; 1d or 2d
+  types[221] = 'flattened complex interferogram'
+  types[222] = 'flattened coherence'
+  
+  ; Unw.
+  types[230] = 'filtered flattened complex interferogram'
+  types[231] = 'filtered coherence'
+  types[234] = 'branch cut - cc flag'
+  types[235] = 'branch cut - neutron'
+  types[236] = 'branch cut - residue'
+  types[237] = 'branch cut - tree'
+  types[238] = 'branch cut - unw'
+  
+  types[240] = 'mcf - cc mask'
+  types[241] = 'mcf - cc mask thin'
+  types[242] = 'mcf - initial unw'
+  types[243] = 'mcf - initial unw interp'
+  types[244] = 'mcf - unw'
+  
+  types[250] = 'snaphu - complex phase'
+  types[251] = 'snaphu - cc'
+  types[252] = 'snaphu - unw swap'
+  types[253] = 'snaphu - unw'
+  
+  ; Geocode
+  types[260] = 'SRTM'
+  types[261] = 'GCP'
+  types[262] = 'dem_seg'
+  types[263] = 'dem_seg.par'
+  types[264] = 'lookup'
+  types[265] = 'sim_sar'
+  types[266] = 'sim_sar.rdc'
+  types[267] = 'DEM offset par'
+  types[268] = 'DEM initial offset'
+  types[269] = 'DEM offsets in binary'
+  types[270] = 'DEM snr for offsets'
+  types[271] = 'DEM offsets and snr in text'
+  types[272] = 'lookup fine'
+  
+  types[280] = 'geocoded master pwr'
+  types[281] = 'geocoded slave pwr'
+  types[282] = 'sim_sar fine in RDC'
+  types[283] = 'dem_seg in RDC'
+  
+  ; Quality assessment
+  types[300] = 'Fig. of int DSM'
+  types[301] = 'Fig. of ref. DSM'
+  types[302] = 'Fig. of DSM error'
+  types[303] = 'Fig. of error histogram'
+  types[304] = 'Report log of DSM error'
+  
+  
+  ; 400-799 Multitemporal & others
+  types[400] = "PSI data"
+  types[500] = 'SBAS data'
+  types[600] = 'StaMPS data'
+  
+  types[700] = 'TomoSAR data'
+  
+  
+  ;----------------------------------------------------
+  channel_names = strarr(1)
+  channel_selec = [0,1,2]
+  color_flag    = 1
+  palettes      = bytarr(256,256,3)
+  pnames        = strarr(256)
+  ;----------------------------------------------------
+  
+  file={$
+    name : " " ,$
+    window_name : " ",$
+    info : " " ,$
+    type : 0l  ,$
+    var  : 0l  ,$
+    dim  : 0l  ,$
+    xdim : 0l  ,$
+    ydim : 0l  ,$
+    zdim : 0l  ,$
+    vdim : 0l  ,$
+    mult : 1 $
+    }
+    
+    
+  wid={$
+    base  : 0l ,$         ;Main window widget ID
+    draw  : 0l , $    ;Draw window widget ID
+    cancel : 0l , $   ;cancel a routine
+    block : 0b, $   ;block widget or not
+    plugins : ptr_new(), $  ;plugin names
+    txt  : 0l , $           ;txt window widget ID
+    label: 0l, $            ; Label window widget ID
+    button_undo: 0l , $     ;Undo button widget ID
+    button_redo: 0l , $     ;Redo button widget ID
+    button_show_preview: 1L, $ ; Preview Show
+    prog1 : 0l , $          ;progress window widget ID
+    prog2 : 0l , $          ;progress window widget ID
+    prog3 : 0l , $          ;progress window text widget ID
+    base_xsize : 1132 ,$ ;Size main window in x
+    base_ysize : 700 ,$ ;Size main window in y
+    draw_ysize : 1000 ,$    ;Size scroll window in y
+    draw_scale : 0.0 $      ;Preview image scaling factor
+    }
+    
+  config = {$
+    workpath : "", $
+    slcpath  : "", $
+    rslcpath : "", $
+    inputfile: "", $
+    m_slc    : "", $
+    m_slcpar : "", $
+    m_rslc   : "", $
+    m_rslcpar: "", $
+    m_date   : "", $
+    s_slc    : "", $
+    s_slcpar : "", $
+    s_rslc   : "", $
+    s_rslcpar: "", $
+    s_date   : "", $
+    int_date : "", $  ; e.g., 20140101-20141113
+    temppath : "", $
+    tempbase : "", $
+    palettes : "", $
+    pnames   : "", $ ; Parameter file to read.
+    docpath  : "", $  ; Document
+    progress : ptr_new(), $ ; create a new pointer, will be used to store the progress bar status
+    pref     : "", $
+    undofile : "", $
+    redofile : "", $
+    blocksize: 128l, $
+    sar_scale: 2.5, $
+    log_scale: 0, $
+    pha_gamma: 1.5, $
+    test     : 0.0, $
+    os       : strlowcase(!version.os_family), $
+    ;   file_filters: ['*.slc;*.rslc','*.slc.par','*.rslc.par','*.pwr'...], $
+    version  : prefversion, $
+    show_preview : 1, $ ; should a preview be shown ?
+    batch    : 0, $ ; starting to implement the batch mode
+    debug    : 0, $
+    dem_seg  : "" $
+    }
+    
+  tiling = {$
+    nr_blocks  : 0l, $
+    blocksizes : ptr_new(), $
+    overlap    : 0l $
+    }
+    
+  if config.os eq 'linux' then begin
+    homedir  = getenv("HOME")
+    tempbase = getenv("TMP")
+    if tempbase eq '' then tempbase = homedir
+    config.tempbase = tempbase+'/'
+    config.temppath  = tempbase+'/'
+    config.workpath  = homedir+'/'
+    config.pref     = homedir+'/.sasmac/preferences'
+    config.palettes = homedir+'/.sasmac/palettes.dat'
+    config.pnames   = homedir+'/.sasmac/palettes.txt'
+  endif
+  
+  if config.os eq 'windows' then begin
+    homedir = getenv("USERPROFILE")
+    tempbase = getenv("TMP")
+    if tempbase eq '' then tempbase = homedir
+    config.tempbase = tempbase+'\'
+    config.temppath  = tempbase+'\'
+    config.workpath  = homedir+'\'
+    config.pref     = homedir+'\sasmac\preferences'
+    config.palettes = homedir+'\sasmac\palettes.dat'
+    config.pnames   = homedir+'\sasmac\palettes.txt'
+  endif
+  
+  if keyword_set(update_pref) then save,filename=config.pref,config,wid
+  
+  if FILE_TEST(config.pref) then begin
+    wid_struct=wid
+    config_struct=config
+    restore,config.pref
+    struct_assign,wid,wid_struct,/NOZERO ; for backwards compatibility (mn, 09/06)
+    wid=wid_struct    ; else the new fields in the structure would be deleted by restore!
+    struct_assign,config,config_struct,/NOZERO ; for backwards compatibility (mn, 2/7)
+    config=config_struct
+    wid_struct = -1 & config_struct = -1
+  endif else config.version = 0.0
+  config.docpath = file_dirname((routine_info('TLI_SMC_DEFINITIONS',/source)).path,/mark)+'doc'+path_sep()
+  
+  if keyword_set(update_pref) then config.version = prefversion
+  
+  config.temppath  = config.tempbase+'TMPSMC_'+strcompress(floor(1e9*randomu(s,1)),/remove)+path_sep()
+  file_mkdir,config.temppath,/noexpand_path
+  
+  if FILE_TEST(config.pnames) then begin
+    str = ""
+    pnames=""
+    openr,ddd,config.pnames,/get_lun
+    while ~ eof(ddd) do begin
+      readf,ddd,str
+      pnames = [pnames,str]
+    endwhile
+    pnames = pnames[1:*]
+    free_lun,ddd
+  endif
+  
+  wid.base  = 0l
+  wid.draw  = 0l
+  wid.txt  = 0l
+  wid.label = 0l
+  wid.prog1 = 0l
+  wid.prog2 = 0l
+  wid.prog3 = 0l
+  
+  parstruct = CREATE_STRUCT('parstruct', '')
+    
+  evolution = ['']
+  
+END

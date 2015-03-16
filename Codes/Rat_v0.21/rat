@@ -1,0 +1,6 @@
+cd /mnt/software/myfiles/My_InSAR_Tools/Codes/Rat_v0.21/
+idl << final
+.compile rat
+rat,startfile="$1",/block
+final
+echo $1

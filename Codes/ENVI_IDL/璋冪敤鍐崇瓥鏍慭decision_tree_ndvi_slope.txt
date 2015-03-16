@@ -1,0 +1,59 @@
+ENVI Decision Tree Text File (version=1.0)
+
+begin node
+  name = "NDVI"
+  type = Decision
+  location = 1,1
+  expression = "{ndvi} gt 0.30"
+end node
+
+begin node
+  name = "Elevation"
+  type = Decision
+  location = 2,2
+  parent name = "NDVI"
+  parent decision = Yes
+  expression = "{slope} lt 0.60"
+end node
+
+begin node
+  name = "Class 2"
+  type = Result
+  location = 3,4
+  parent name = "Elevation"
+  parent decision = Yes
+  class value = 2
+  class rgb = 0,255,0
+end node
+
+begin node
+  name = "Class 1"
+  type = Result
+  location = 3,3
+  parent name = "Elevation"
+  parent decision = No
+  class value = 1
+  class rgb = 255,0,0
+end node
+
+begin node
+  name = "Class 0"
+  type = Result
+  location = 2,1
+  parent name = "NDVI"
+  parent decision = No
+  class value = 0
+  class rgb = 0,0,0
+end node
+
+begin variable
+  variable name = "ndvi"
+  file name = "C:\RSI\IDL63\products\envi43\data\bhtmref.img"
+  file pos = 4,3
+end variable
+
+begin variable
+  variable name = "slope"
+  file name = "C:\RSI\IDL63\products\envi43\data\bhdemsub.img"
+  file pos = 1
+end variable

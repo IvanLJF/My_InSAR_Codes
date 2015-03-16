@@ -1,0 +1,27 @@
+#! /bin/sh
+# This script is used to crop the closeups using the given images.
+# Written by:
+#   T.LI @ SWJTU
+#
+if [ ! -e Fig.3.jpg ]; then
+  convert Fig.3.tif Fig.3.jpg
+fi
+
+if [ ! -e lel10.jpg ]; then
+  convert lel10_vdh_merge_noleveling.tif lel10.jpg
+fi
+
+# Crop the first image
+convert Fig.3.jpg -crop 180x160+790+500 1-s7.jpg
+convert Fig.3.jpg -crop 360x320+1900+0 1-s6.jpg
+convert Fig.3.jpg -crop 280x250+1460+960 1-3.jpg
+convert Fig.3.jpg -crop 240x213+2140+1167 1-s8.jpg
+convert Fig.3.jpg -crop 160x290+930+1460 1-5.jpg
+convert Fig.3.jpg -crop 180x160+862+2187 1-s9.jpg
+# Crop the second image
+convert lel10.jpg -crop 180x160+790+500 10-s7.jpg
+convert lel10.jpg -crop 360x320+1900+0 10-s6.jpg
+convert lel10.jpg -crop 280x250+1460+960 10-3.jpg
+convert lel10.jpg -crop 240x213+2140+1167 10-s8.jpg
+convert lel10.jpg -crop 160x290+930+1460 10-5.jpg
+convert lel10.jpg -crop 180x160+862+2187 10-s9.jpg

@@ -1,0 +1,9 @@
+; Chapter05MoveWindow.pro
+PRO Chapter05MoveWindow
+FOR i = 1,400 DO BEGIN
+    WINDOW, TITLE = 'My Window', XPOS=i, YPOS=100, XSIZE=300, YSIZE=300
+    PLOT, SIN(FINDGEN(100)/10)
+    WAIT, 0.01
+    WDELETE
+ENDFOR
+END

@@ -1,0 +1,46 @@
+#! /bin/sh
+gmtset ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+       LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i GRID_PEN_PRIMARY 0.5p
+
+outputfile=integral_paths.ps
+psbasemap -R116.95583/117.11165/39.045850/39.179167 -JX5i/5i -Ba0.02f0.01g0.03::WeSn -P -K -V  >$outputfile
+
+psimage ../geocode/noborder/ave.utm.rmli.ras -Gtblack -W5i/5i -O -K -V >>$outputfile
+
+psxy path0 -J -K -R -W0.03i/0/255/255 -O -V >> $outputfile
+psxy path0_mod -Gred -J -K -R -Sc0.05i -O -V -W0.001i >> $outputfile
+
+psxy path1 -J -K -R -W0.03i/255/255/0 -O -V >> $outputfile
+psxy path1_mod -Gred -J -K -R -Sc0.05i -O -V -W0.001i>> $outputfile
+
+psxy path2 -J -K -R -W0.03i/255/0/255 -O -V >> $outputfile
+psxy path2_mod -Gred -J -K -R -Sc0.05i -O -V -W0.001i>> $outputfile
+
+psxy path3 -J -K -R -W0.03i/0/255/0 -O -V >> $outputfile
+psxy path3_mod -Gred -J -K -R -Sc0.05i -O -V -W0.001i>> $outputfile
+# Add the reference point.
+psxy -Gred -J -K -R -St0.1i -O -V -W0.01i << END >> $outputfile
+       117.0026474        39.0733986
+END
+pstext << EOT -J -K -R -O -V -Gblack -Wwhite >> $outputfile
+ 117.003        39.068 10 0 3 CB  Ref. Point
+EOT
+
+pstext << EOT -J -K -R -O -V -Gblack -Wwhite >> $outputfile
+116.99 39.10 10 0 3 CT A
+117.01 39.13 10 0 3 RB B
+117.04 39.132 10 0 3 CB C
+117.055 39.115 10 0 3 CT D
+EOT
+
+if false
+then
+#plot a rectangle
+psxy << EOT -J -K -L -R -W0.01i/255/0/255 -O -V >> $outputfile
+117.0 39.14
+117.01 39.14
+117.01 39.15 
+117.00 39.15
+EOT
+fi
+ps2raster -A $outputfile

@@ -1,0 +1,125 @@
+;
+; Generate kml file indicating the range of SLC image.
+; 
+; Parameters:
+; 
+; Keywords:
+;
+; Written by:
+;   T.LI @ Sasmac, 20140904.
+;
+@kml
+FUNCTION TLI_SLC_RANGE_CONNECTION, slc_range,order=order
+  ; slc_range is a 2*4 array. [lat, lon]
+  order_orig=LINDGEN(4)
+  
+  ; SORT the longitudes
+  temp=SORT(slc_range[1,*])
+  slc_range_new=slc_range[*, temp]
+  order_new=order_orig[temp]
+  
+  ; SORT the latitudes and find the UL corner
+  IF slc_range_new[0, 0] GE slc_range_new[0, 1] THEN BEGIN ; The first nod is UL corner.
+
+    IF slc_range_new[0, 2] GE slc_range_new[0, 3] THEN BEGIN
+
+    ENDIF ELSE BEGIN
+
+      order_new[2:3]=[order_new[3], order_new[2]]
+    ENDELSE
+    
+  ENDIF ELSE BEGIN
+
+    order_new[0:1]=[order_new[1], order_new[0]]
+    
+    IF slc_range_new[0,2] LE slc_range_new[0,3] THEN BEGIN
+
+    ENDIF ELSE BEGIN
+
+      order_new[2:3]=[order_new[3], order_new[2]]
+    ENDELSE
+    
+  ENDELSE
+  order=order_new
+  
+  slc_range_new=slc_range[*, order]
+  RETURN, slc_range_new
+END
+
+PRO TLI_SLC_RANGE, parfile, outputfile=outputfile
+  
+  COMPILE_OPT idl2
+  
+  IF NOT FILE_TEST(parfile) THEN BEGIN
+    void=Dialog_Message( 'Error! Par file not found!',/CENTER,/ERROR)
+    RETURN
+  ENDIF
+  
+  IF NOT KEYWORD_SET(outputfile) THEN BEGIN
+    outputfile=parfile+'.kml'
+  ENDIF
+  
+  parfile='/mnt/data_tli/ForExperiment/Lemon_gg/TSX_PS_SH_OP/piece/20090920.rslc.par'
+  
+  outputfile=parfile+'.kml'
+  workpath=FILE_DIRNAME(parfile)+PATH_SEP()
+  
+  ; Call SLC_corners to calculate SLC corners.
+  scr='SLC_corners '+parfile+' >tli_slc_range_temp'
+  
+  CD, current=temp
+  CD, workpath
+  SPAWN, scr
+  CD, temp
+  
+  ; Read results from SLC_corners
+  slc_range=TLI_READTXT(workpath+'tli_slc_range_temp',/txt)
+  slc_range=slc_range[*, 2:5]
+  
+  slc_range=TLI_STRSPLIT(slc_range)
+  
+  slc_range=DOUBLE(slc_range[[2, 5], *])
+  
+  ; Determine the connections.
+  slc_range=TLI_SLC_RANGE_CONNECTION(slc_range)  
+  
+  ; Make kml file
+  ; First write 4 corner points.
+  I_err=Open_KML(outputfile,I_Unit)
+  Transparency='ff'
+  Style_iconscale=0.8
+  Style_iconhref='http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png'
+  style_names=['UL', 'DL', 'DR', 'UR']
+  
+  Style_iconcolor=Transparency+STRING(0,255,0,format='(3z2.2)')
+  FOR i=0, 3 DO BEGIN
+    Style_name=style_names[i]
+    Style_KML,  I_Unit, Style_Name,  $
+      Style_iconcolor=Style_iconcolor, Style_iconscale=Style_iconscale,$
+      Style_iconhref=Style_iconref,Style_labelcolor=Style_labelcolor
+  ENDFOR
+  
+  Begin_Folder_KML, I_Unit
+  
+  For i=0, 3 DO BEGIN
+    Point_KML, I_Unit, [slc_range[*, i], 0], Style_name=style_names[i],$
+      descri='[lon., lat.] = ['+STRCOMPRESS(slc_range[1, i],/REMOVE_ALL)+', '+STRCOMPRESS(slc_range[0,i],/REMOVE_ALL)+']'+ STRING(13b)+STRING(13b)
+  ENDFOR
+  
+  End_Folder_KML, I_Unit
+  
+  ; Second write the ractangle.
+  
+  polygon=[slc_range, FLTARR(1,4)]
+  polygon=[[polygon], [polygon[*, 0]]]
+  Polygon_kml, I_Unit , polygon, name='Range of SLC: '+parfile, color=Transparency+STRING(0,255,255, format='(3z2.2)')
+  
+  ; Close the KML file.  
+  Close_KML,  I_Unit
+  ;----------------------------
+  
+  FILE_DELETE, workpath+'tli_slc_range_temp'
+  
+  void=DIALOG_MESSAGE( 'Outputfile:'+STRING(10b)+outputfile+STRING(10b)+STRING(10b)+$
+                  'Main Pro Finished at:'+ STRCOMPRESS(STRJOIN(TLI_TIME())), /INFORMATION,/CENTER)
+END

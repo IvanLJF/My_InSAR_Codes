@@ -1,0 +1,6 @@
+% hist_da
+% Written by:
+%  T.LI @ ISEIS, 20130703
+workpath='D:\myfiles\Software\experiment\TSX_PS_Tianjin\HPA\';
+dafile=workpath+'DA';
+fid=

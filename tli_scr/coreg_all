@@ -1,0 +1,24 @@
+#! /bin/sh
+echo '*****************************************'
+echo '****** Before using the script,    ******'
+echo '*please modify some params in run_coreg *'
+echo '*****************************************'
+master='20120301'
+for var in ../slc_GAMMA/*.slc
+do
+	slave=${var:(-12):8} # Change this according to your own case.
+	if [ $slave -ne $master ]
+	then
+		mkdir $slave
+		cp coreg_single_pair.sh $slave/
+		cd $slave
+		./coreg_single_pair.sh $master $slave
+		cd ../
+	fi
+done
+mkdir $master
+cp ../slc_GAMMA/$master.slc $master/$master.rslc
+cp ../slc_GAMMA/$master.slc.par $master/$master.rslc.par
+width=$(awk '$1 == "range_samples:" {print $2}' $master/$master.rslc.par)
+rasSLC $master/$master.rslc $width - - 1 1 - - - 1 - $master/$master.ras
+find . -name "20*.ras" -exec cp {} . \;

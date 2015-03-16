@@ -1,0 +1,6 @@
+; ATTENTION: All the data used here are from GAMMA.
+PRO TESTHPA
+
+Print,'aaaaaa'
+
+END

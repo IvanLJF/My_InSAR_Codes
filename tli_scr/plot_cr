@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# 初始化
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+output_file="pt.ps"
+# 创建调色板
+awk '{print $1, 9683-$2}' ../pt.txt >> temp
+
+psbasemap -R0/1658/0/9683 -JX1i/5.84i -BWeSn -P -K -V  > $output_file
+psimage -K -W1i/5.84i ../ave.ras -O >> $output_file
+# plot a line
+psxy -A -JX1i/5.84i -K -O -R0/1658/0/9683 -W0.5p/red << END >> $output_file
+0 3224
+1658 3224
+END
+# Add annotation
+pstext << EOT -JX1i/5.84i -O -K -R0/1658/0/9683 >> $output_file
+         481        9087 5 0 3 LM       1
+         595        8659 5 0 3 LM       2
+         359        8804 5 0 3 LM       3
+         195        8312 5 0 3 LM       4
+         702        8118 5 0 3 LM       5
+         676        7311 5 0 3 LM       6
+        1001        6971 5 0 3 LM       7
+         523        6620 5 0 3 LM       8
+         626        6051 5 0 3 LM       9
+        1281        5623 5 0 3 LM      10
+         639        5413 5 0 3 LM      11
+        1086        4746 5 0 3 LM      12
+         706        4439 5 0 3 LM      13
+         973        4005 5 0 3 LM      14
+         788        3640 5 0 3 LM      15
+         861        2085 5 0 3 LM      16
+        1204        1394 5 0 3 LM      17
+         617        1188 5 0 3 LM      18
+        1039         818 5 0 3 LM      19
+        1024         408 5 0 3 LM      20
+         775         326 5 0 3 LM      21
+        1383         699 5 0 3 LM      22
+         477         633 5 0 3 LM      23
+         801         812 5 0 3 LM      24
+        1007        1042 5 0 3 LM      25
+         828        1375 5 0 3 LM      26
+         878        1606 5 0 3 LM      27
+        1250        1897 5 0 3 LM      28
+         753        2324 5 0 3 LM      29
+        1192        2505 5 0 3 LM      30
+         953        2602 5 0 3 LM      31
+         447        2695 5 0 3 LM      32
+         781        2823 5 0 3 LM      33
+        1305        2984 5 0 3 LM      34
+         639        3097 5 0 3 LM      35
+EOT
+
+
+
+
+psxy temp -Ggreen -R -J -B -V -St0.05i -O -Wfaint >> $output_file
+
+ps2raster -A -E720 $output_file

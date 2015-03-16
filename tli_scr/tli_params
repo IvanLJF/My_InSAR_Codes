@@ -1,0 +1,38 @@
+#! /bin/sh
+##################################################################
+###   tli_params: Extract params from the given GAMMA par file ###
+###         using:                                             ###
+###         - par file
+###         
+##################################################################
+###   History
+###     20140917: Written by T.LI @ Sasmac
+##################################################################
+echo ""
+echo "*** tli_params: Extract params from the given GAMMA par file. v1.0 20140917."
+echo ""
+echo "    Required Data:"
+echo "      - Gamma par file."
+echo "    Usage:"
+echo "      - read val < temp.txt"
+echo ""
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_params <parfile> <parameter>"
+  echo ""
+  echo "Input params:"
+  echo ""
+  echo "  parfile    : GAMMA par file."
+  echo "  parameter  : Param to extract."
+  echo ""
+  exit
+fi
+
+# Assignment
+parfile=$1
+param=$2
+awk '$1 == param {print $2}' param="$param:" $parfile >temp.txt
+more temp.txt
+#val=`awk '$1 == param {print $2}' param="$param:" $parfile`
+#echo "tli_params, val is:"$val
+#export val

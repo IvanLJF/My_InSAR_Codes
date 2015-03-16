@@ -1,0 +1,10 @@
+#! /bin/sh
+
+# Set params
+output_file=int_path.ps
+awk '{print $1, 6150-$2}' int_path > int_path_gmt
+# Basemap
+psbasemap -U"Integrated path" -R0/5000/0/6150 -JX5i/6.15i -Ba1000f200::WeSn -P -K -V  > $output_file
+psimage ../ave.ras -W5i/6.15i -O -V -K >> $output_file
+psxy int_path_gmt -J -K -R -W0.01i/0/255/0 -O -V >> $output_file
+psxy int_path_gmt -Gred -J -R -St0.03i -W0.001i -O -V >> $output_file

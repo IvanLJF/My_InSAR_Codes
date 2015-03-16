@@ -1,0 +1,86 @@
+#! /bin/sh
+
+###########################################################
+# Purpose:
+# 	Select PS using DA & amplitude threshold & cc
+# Calling Sequence:
+# 	./selectpt_da_amp_cc.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	plist
+# Commendations:
+# 	None
+# Modification History:
+# 	18/03/2013: Written by T.L @ InSAR Team in SWJTU & CUHK.
+#	LI Tao: RS2005 @ SDUST
+#	Email : rslitao@gmail.com
+
+######################################
+### Set some parameters
+######################################
+rm -f *.cc *.int *.off
+path="/mnt/software/myfiles/Software/experiment/GAMMA/IPTA_demo/IPTA_demo_Luxemburg_basic/slc"     #SLC所在路径
+master="19991104"
+masterpwr=$path/$master/$master.rslc.pwr
+mslc_par=$path/$master/$master.rslc.pwr.par
+itab_type=0     #0: single master;  1: all pairs
+####################################################################
+# 1. 准备SLC数据
+####################################################################
+	rm -f SLC_org im_list SLC_tab
+	find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+#	find $path -name "*.rmli" -exec echo {} >>im_list \;
+	find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+	find $path -name "*.pwr" -exec echo {} >>im_list \;
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $masterpwr.par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $masterpwr.par)
+	width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format" == "SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+	ave_image im_list $width ave.pwr  #ave.pwr
+	raspwr ave.pwr $width 1 0 1 1 1 0.35 1 ave.bmp 0 0
+
+	
+####################################################################
+# 2. 计算时空基线，并生成itab文件
+#####################################################################
+	base_calc SLC_tab $mslc_par base_plot.agr base.list itab $itab_type
+	# xmgrace base_plot.agr #画基线图
+
+######################################################################
+# 3. 生成点位列表文件
+######################################################################
+
+	#使用相关系数阈值选点
+	nlines=$(awk 'END{print NR}' itab)
+	for i in $( seq 1 1 $nlines )
+	do
+	master_ind=$(sed -n "$i,1p" itab | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" SLC_tab | awk '{print $1}')
+	master_date=${master_SLC:(-13):8}
+	slave_ind=$(sed -n "$i,1p" itab | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" SLC_tab | awk '{print $1}')
+	slave_date=${slave_SLC:(-13):8}
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_offset
+	create_offset $master_SLC.par $slave_SLC.par $master_date-$slave_date.off 1 1 1 <create_offset
+	rm -f create_offset
+	SLC_intf $master_SLC $slave_SLC $master_SLC.par $slave_SLC.par $master_date-$slave_date.off $master_date-$slave_date.int 1 1 - - 
+	cc_wave $master_date-$slave_date.int $path/$master_date/$master_date.rslc.pwr $path/$slave_date/$slave_date.rslc.pwr $master_date-$slave_date.cc $width 5 5 1 #相关系数窗口5*5
+	done
+	ls *.cc >cc_list
+	ave_image cc_list $width cc_ave
+
+	#使用振幅离差选点
+	pwr_stat SLC_tab $mslc_par msr pt 2 1 - - - - 1 1 #振幅离差(1/2=0.5)+振幅阈值(1*mean(amplitude))
+	rascc cc_ave ave.pwr $width - - - - - - - - - - cc.bmp
+# 4. 整理结果
+#	rm -f *.cc *.int *.off

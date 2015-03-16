@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# 初始化
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+output_file="pt.ps"
+# 创建调色板
+
+psbasemap -R0/3000/0/3000 -JX4i/4i -Ba500f200::WeSn -P -K -V  > $output_file
+psxy pt.txt -Gred -R -J -B -V -Sc0.03i -O >> $output_file
+ps2raster -A $output_file

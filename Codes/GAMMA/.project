@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>GAMMA</name>
+	<comment></comment>
+	<projects>
+		<project>Brother</project>
+		<project>CUHK</project>
+		<project>Display</project>
+		<project>ENVI_IDL</project>
+		<project>EXPERIMENT</project>
+		<project>Experimental_results</project>
+		<project>GMT</project>
+		<project>GoogleEarth</project>
+		<project>HierarchicalPointAnalysis</project>
+		<project>HK_airport</project>
+		<project>HPA</project>
+		<project>InSAR</project>
+		<project>IO</project>
+		<project>Offset_Tracking</project>
+		<project>Phase_Grd_Sub_Rate</project>
+		<project>PSSelection</project>
+		<project>Qingli</project>
+		<project>Rat_v0.21</project>
+		<project>RSTool</project>
+		<project>SARGUI</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.rsi.idldt.core.IDLBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.rsi.idldt.core.IDLNature</nature>
+	</natures>
+</projectDescription>

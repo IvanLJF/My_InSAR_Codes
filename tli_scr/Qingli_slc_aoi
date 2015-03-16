@@ -1,0 +1,56 @@
+#! /bin/sh
+
+# Script that:
+#	Copy subset data from original SLCs.
+# Usage:
+#	./slc_aoi
+# Written by:
+#	T.LI @ InSAR Group 
+#	SWJTU & CUHK, 10/10/12
+
+origpath="/mnt/backup/Backup_Data/TSX_TJ_Coregto20091113"
+workpath=`pwd`
+path=$workpath/piece
+roff="1455"      #roff: offset of first range sample
+nr="2135"       #nr: number of range samples
+loff="4980"    #loff: offset number of lines to start
+nl="2300"       #nl: number of lines to copy (enter 0: to end of file)
+master="20091113" #master image
+itab_type=0     #0: single master;  1: free combination
+
+
+rm -fr SLC_org SLC_tab im_list piece
+mkdir $path
+find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+SLC_copy_all SLC_org $path $roff $nr $loff $nl
+find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+find $path -name "*.pwr" -exec echo {} >>im_list \;
+ave_image im_list $nr ave.pwr
+raspwr ave.pwr $nr - - - - - - - ave.ras  #ave.ras
+base_calc SLC_tab piece/$master.rslc.par base_plot.agr base.list itab $itab_type
+
+nlines=$(awk 'END{print NR}' itab)
+for i in $( seq 1 1 $nlines )
+do
+	master_ind=$(sed -n "$i,1p" itab | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" SLC_tab | awk '{print $1}')
+	master_date=${master_SLC:(-13):8}
+	slave_ind=$(sed -n "$i,1p" itab | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" SLC_tab | awk '{print $1}')
+	slave_date=${slave_SLC:(-13):8}
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_offset
+	create_offset $master_SLC.par $slave_SLC.par $master_date-$slave_date.off 1 1 1 <create_offset
+	rm -f create_offset
+	SLC_intf $master_SLC $slave_SLC $master_SLC.par $slave_SLC.par $master_date-$slave_date.off $master_date-$slave_date.int 1 1 - - 
+	cc_wave $master_date-$slave_date.int piece/$master_date.rslc.pwr piece/$slave_date.rslc.pwr $master_date-$slave_date.cc $nr 5 5 0 >temp
+	rascc $master_date-$slave_date.cc piece/$master_date.rslc.pwr $nr - - - - - - - - - - $master_date-$slave_date.cc.ras
+done
+
+rm -f *.int *.off
+mkdir cc_ras
+mv *.cc cc_ras/
+mv *.cc.ras cc_ras/
+	#create_offset
+	#SLC_intf
+	#cc_wave

@@ -1,0 +1,8 @@
+#!/bin/sh
+for p in *
+do
+	cd $p
+	rm -f *.ras
+	rasmph *.int 21408 - - - - - - - int.ras 0
+	cd ../
+done

@@ -1,0 +1,14 @@
+#! /bin/sh
+
+if false
+then
+cd /usr/local/exelis/idl/bin
+./lmhostid
+fi
+
+if true
+then
+# start the license manager tools.
+cd /usr/local/exelis/idl/bin
+./lmgrd
+fi

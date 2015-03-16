@@ -1,0 +1,55 @@
+#!/bin/sh
+
+##################################################
+# Script that:
+# 	- Calculate perpendicular baseline for each point
+#
+# Usage:
+#	
+# Written by T.LI, 08/01/2012
+
+# input params
+basepath=`pwd`
+slctabfile=../../SLC_tab
+itabfile=../../itab
+ptfile=../../pt
+logfile=base.log
+
+if [ ! -e $basepath ]
+then
+	echo "No such a dir. We construct it for you."
+	mkdir -p $basepath
+fi
+cd $basepath
+
+rm -f *-*.txt
+
+echo "---------------------------------------------------------------------"
+echo      "***   Calculating baselines for each interferogram   ***"
+echo "---------------------------------------------------------------------"
+echo "\n\n"
+nlines=$(awk 'END{print NR}' $itabfile)
+for i in $( seq 1 1 $nlines )
+do
+	master_ind=$(sed -n "$i,1p" $itabfile | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" $slctabfile | awk '{print $1}')
+	echo $master_SLC
+	
+	master_date=`basename $master_SLC ".rslc"`
+	slave_ind=$(sed -n "$i,1p" $itabfile | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" $slctabfile | awk '{print $1}')
+	slave_date=`basename $slave_SLC ".rslc"`
+
+	echo -ne "$master_date-$slave_date\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > temp
+
+	create_offset $master_SLC.par $slave_SLC.par off_par 1 1 1 < temp
+	base_orbit $master_SLC.par $slave_SLC.par baseline
+	base_perp baseline $master_SLC.par off_par > $master_date-$slave_date.txt
+	rm -f temp baseline
+done
+echo "\n\n"
+echo "---------------------------------------------------------------------"
+echo      "***   Done calculating baselines for each interferogram   ***"
+echo "---------------------------------------------------------------------"
+
+

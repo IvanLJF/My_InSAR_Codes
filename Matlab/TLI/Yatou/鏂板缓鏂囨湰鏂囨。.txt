@@ -1,0 +1,2 @@
+l3m_chlor_a=hdfread(Path_data_s, 'l3m_data', 'Index',{[1.0 1.0 ],[1.0 1.0],[2160.0 4320.0]});%read hdf
+l3m_chlor_a_sea=l3m_chlor_a(667:707,3612:3652);%cut china sea 

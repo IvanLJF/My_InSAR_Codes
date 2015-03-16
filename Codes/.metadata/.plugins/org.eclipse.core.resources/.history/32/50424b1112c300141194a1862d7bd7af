@@ -1,0 +1,304 @@
+PRO CWN_SMC_GEOCODEBACK_EVENT,EVENT
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  widget_control,event.top,get_uvalue=pstate
+  workpath=config.workpath
+  uname=widget_info(event.id,/uname)
+  case uname of
+    'openinput':begin
+    infile=dialog_pickfile(title='Sasmac InSAR',/read,filter='*.pwr', path=workpath)
+    IF NOT FILE_TEST(infile) THEN return
+    
+    widget_control,(*pstate).input,set_value=infile
+    widget_control,(*pstate).input,set_uvalue=infile
+    
+    IF FILE_TEST(infile+'.par') THEN BEGIN
+      parinfo=TLI_LOAD_PAR(infile+'.par',/keeptxt)
+      width=parinfo.range_samples
+      WIDGET_CONTROL, (*pstate).widthin, set_value=width
+    ENDIF
+    
+  END
+  'opengcmap':begin
+  infile=dialog_pickfile(title='Sasmac InSAR',/read,filter='*lookup;*lookup_fine', path=workpath,file='lookup_fine')
+  IF NOT FILE_TEST(infile) THEN return
+  
+  widget_control,(*pstate).gcmap,set_value=infile
+  widget_control,(*pstate).gcmap,set_uvalue=infile
+  
+  widget_control,(*pstate).input,get_value=input
+  widget_control,(*pstate).gcmap,get_value=gcmap
+  if gcmap eq '' then begin
+    result=dialog_message(['Please select the gcmap file.'],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if input eq '' then begin
+    result=dialog_message(['Please select the data file.'],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  
+  outputfile=input+'.utm'
+  widget_control,(*pstate).output,set_value=outputfile
+  widget_control,(*pstate).output,set_uvalue=outputfile
+  
+  ; Get samples and lines from the given par file.
+  IF FILE_TEST(workpath+'dem_seg.par') THEN BEGIN
+    parinfo=TLI_LOAD_PAR(workpath+'dem_seg.par',/keeptxt)
+    widthout=parinfo.range_samples
+    nlinesout=parinfo.
+  ENDIF
+  
+END
+
+'openoutput':begin
+;-Check if input master parfile
+widget_control,(*pstate).gcmap,get_value=gcmap
+widget_control,(*pstate).input,get_value=input
+if gcmap eq '' then begin
+  result=dialog_message(['Please select the gcmap file.'],title='Sasmac InSAR',/information,/center)
+  return
+endif
+if input eq '' then begin
+  result=dialog_message(['Please select the data file.'],title='Sasmac InSAR',/information,/center)
+  return
+endif
+
+file=input+'.utm'
+outputfile=dialog_pickfile(title='',/write,file=file,path=workpath,filter='*.utm',/overwrite_prompt)
+widget_control,(*pstate).output,set_value=outputfile
+widget_control,(*pstate).output,set_uvalue=outputfile
+END
+
+
+'ok': begin
+  widget_control,(*pstate).gcmap,get_value=gcmap
+  widget_control,(*pstate).input,get_value=input
+  widget_control,(*pstate).output,get_value=output
+  
+  widget_control,(*pstate).widthin,get_value=widthin
+  widget_control,(*pstate).widthout,get_value=widthout
+  widget_control,(*pstate).nlinesout,get_value=nlinesout
+  
+  interp=WIDGET_INFO((*pstate).interp,/droplist_select)
+  interp=STRCOMPRESS(interp,/REMOVE_ALL)
+  
+  forflg=WIDGET_INFO((*pstate).forflg,/droplist_select)
+  forflg=STRCOMPRESS(forflg,/REMOVE_ALL)
+  
+  lrin=WIDGET_INFO((*pstate).lrin,/droplist_select)
+  lrin_d=long(lrin)
+  if lrin_d eq 0 then begin
+    lrin=STRCOMPRESS(string(lrin_d+1),/REMOVE_ALL)
+  endif
+  if lrin_d ne 0 then begin
+    lrin=STRCOMPRESS(string(lrin_d-2),/REMOVE_ALL)
+  endif
+  
+  lrout=WIDGET_INFO((*pstate).lrout,/droplist_select)
+  lrout_d=long(lrout)
+  if lrout_d eq 0 then begin
+    lrout=STRCOMPRESS(string(lrout_d+1),/REMOVE_ALL)
+  endif
+  if lrout_d ne 0 then begin
+    lrout=STRCOMPRESS(string(lrout_d-2),/REMOVE_ALL)
+  endif
+  
+  if gcmap eq '' then begin
+    result=dialog_message(['Please select the gcmap file.'],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if input eq '' then begin
+    result=dialog_message(['Please select the data file.'],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  if output eq '' then begin
+    result=dialog_message(['Please select the output file.'],title='Sasmac InSAR',/information,/center)
+    return
+  endif
+  
+  if widthin ne '-' then begin
+    if widthin le 0 then begin
+      result=dialog_message(['width of input data should be greater than 0:',$
+        STRCOMPRESS(widthin)],title='Sasmac InSAR',/information,/center)
+      return
+    endif
+  endif
+  
+  if widthout ne '-' then begin
+    if widthout le 0 then begin
+      result=dialog_message(['width of output data file should be greater than 4:',$
+        STRCOMPRESS(widthout)],title='Sasmac InSAR',/information,/center)
+      return
+    endif
+  endif
+  if nlinesout ne '-' then begin
+    if nlinesout le 0 then begin
+      result=dialog_message(['number of lines for the output data file should be greater than 0:',$
+        STRCOMPRESS(nlinesout)],title='Sasmac InSAR',/information,/center)
+      return
+    endif
+  endif
+  
+  scr="geocode_back " +input +' '+widthin +' '+gcmap+' '+output+' '+widthout+' '+nlinesout+' '+interp+' '+forflg+' '+lrin+' '+lrout
+  TLI_SMC_SPAWN, scr,info='Geocoding of image data using lookup table values, Please wait...'
+  
+;  stop
+end
+
+'cl':begin
+;result=dialog_message('Sure exit?',title='Exit',/question,/default_no,/center)
+;if result eq 'Yes'then begin
+widget_control,event.top,/destroy
+;endif
+end
+else: begin
+  return
+end
+endcase
+END
+
+
+PRO CWN_SMC_GEOCODEBACK
+  COMMON TLI_SMC_GUI, types, file, wid, config, finfo
+  
+  ; --------------------------------------------------------------------
+  ; Assignment
+  
+  device,get_screen_size=screen_size
+  xoffset=screen_size(0)/3
+  yoffset=screen_size(1)/3
+  xsize=565
+  ysize=510
+  
+  ; Get config info
+  
+  input=''
+  gcmap=''
+  widthin=''
+  widthout=''
+  nlinesout=''
+  
+  output=''
+  
+  
+  ;-------------------------------------------------------------------------
+  ; Create widgets
+  tlb=widget_base(title='geocode_back',tlb_frame_attr=0,/column,xsize=xsize,ysize=ysize,xoffset=xoffset,yoffset=yoffset)
+  
+  
+  
+  inputID=widget_base(tlb,/row,xsize=xsize,frame=1)
+  input=widget_text(inputID,value=input,uvalue=input,uname='input',/editable,xsize=72)
+  openinput=widget_button(inputID,value='Input data',uname='openinput',xsize=105)
+  
+  gcmapID=widget_base(tlb,/row,xsize=xsize,frame=1)
+  gcmap=widget_text(gcmapID,value=master,uvalue=master,uname='gcmap',/editable,xsize=72)
+  opengcmap=widget_button(gcmapID,value='Input gc_map',uname='opengcmap',xsize=105)
+  
+  temp=widget_label(tlb,value='------------------------------------------------------------------------------------------')
+  ;-----------------------------------------------
+  ; Basic information about input parameters
+  labID=widget_base(tlb,/column,xsize=xsize)
+  
+  parID=widget_base(labID,/row, xsize=xsize)
+  parlabel=widget_label(parID, xsize=xsize-10, value='Basic information about input parameters:',/align_left,/dynamic_resize)
+  
+  ;-----------------------------------------------------------------------------------------
+  ; window size parameters
+  infoID=widget_base(labID,/row, xsize=xsize)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/3-15, frame=1)
+  widthinID=widget_base(tempID,/column, xsize=xsize/3-5)
+  widthinlabel=widget_label(widthinID, value='Input Width:',/ALIGN_LEFT)
+  widthin=widget_text(widthinID, value=widthin,uvalue=widthin, uname='widthin',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/3-10, frame=1)
+  widthoutID=widget_base(tempID,/column, xsize=xsize/3-5)
+  widthoutlabel=widget_label(widthoutID, value=' Output Width:',/ALIGN_LEFT)
+  widthout=widget_text(widthoutID, value=widthout,uvalue=widthout, uname='widthout',/editable,xsize=10)
+  
+  tempID=widget_base(infoID,/row,xsize=xsize/3-10, frame=1)
+  nlinesoutID=widget_base(tempID,/column, xsize=xsize/3-5)
+  nlinesoutlabel=widget_label(nlinesoutID, value='Output Lines:',/ALIGN_LEFT)
+  nlinesout=widget_text(nlinesoutID, value=nlinesout,uvalue=nlinesout, uname='nlinesout',/editable,xsize=10)
+  
+  infoID=widget_base(labID,/row, xsize=xsize)
+  tempID=widget_base(infoID,/row,xsize=xsize/2-15, frame=1)
+  lrinID=widget_base(tempID,/column, xsize=xsize/2-5)
+  lrinlabel=widget_label(lrinID, value='Input SUN raster/BMP format left flipped:',/ALIGN_LEFT)
+  
+  lrin=widget_droplist(lrinID, value=['1: not flipped,(default)',$
+    '-1: flipped'])
+    
+  tempID=widget_base(infoID,/row,xsize=xsize/2-10, frame=1)
+  lroutID=widget_base(tempID,/column, xsize=xsize/2-5)
+  lroutlabel=widget_label(lroutID, value='Output SUN raster/BMP format write flipped:',/ALIGN_LEFT)
+  
+  lrout=widget_droplist(lroutID, value=['1: not flipped,(default)',$
+    '-1: flipped'])
+  ;-----------------------------------------------------------------------------------------
+  ;estimates parameters
+  infoID=widget_base(labID,/row, xsize=xsize)
+  tempID=widget_base(infoID,/row,xsize=xsize/2-15, frame=1)
+  interpID=widget_base(tempID,/column, xsize=xsize/2-5)
+  interplabel=widget_label(interpID, value='Interpolation Mode:',/ALIGN_LEFT)
+  
+  interp=widget_droplist(interpID, value=['0: nearest-neighbor (default)',$
+    '1: bicubic spline',$
+    '2: bicubic-log spline'])
+    
+  tempID=widget_base(infoID,/row,xsize=xsize/2-10, frame=1)
+  forflgID=widget_base(tempID,/column, xsize=xsize/2-5)
+  forflglabel=widget_label(forflgID, value='Input/output data format:',/ALIGN_LEFT)
+  
+  forflg=widget_droplist(forflgID, value=[' 0: FLOAT (default)',$
+    '1: FCOMPLEX',$
+    '2: SUN raster/BMP format',$
+    '3: UNSIGNED CHAR',$
+    '4: SHORT'])
+    
+  ;-----------------------------------------------------------------------------------------------
+  ;output parameters
+  temp=widget_label(tlb,value='-----------------------------------------------------------------------------------------')
+  mlID=widget_base(tlb,/column,xsize=xsize)
+  
+  tempID=widget_base(mlID,/row, xsize=xsize)
+  templabel=widget_label(tempID, xsize=xsize-10, value='Backward geocoding transformation using a lookup table:',/align_left,/dynamic_resize)
+  
+  infoID=widget_base(mlID,/row, xsize=xsize)
+  
+  
+  outputID=widget_base(tlb,row=1, frame=1)
+  output=widget_text(outputID,value=output,uvalue=output,uname='output',/editable,xsize=72)
+  openoutput=widget_button(outputID,value='Output datafile',uname='openoutput',xsize=105)
+  
+  ;-Create common components
+  funID=widget_base(tlb,row=1,/align_center)
+  ok=widget_button(funID,value='Script',uname='ok',xsize=90,ysize=30)
+  cl=widget_button(funID,value='Exit',uname='cl',xsize=90,ysize=30)
+  
+  ;Recognize components
+  state={gcmap:gcmap,$
+    opengcmap:opengcmap,$
+    input:input,$
+    openinput:openinput,$
+    
+    widthin:widthin,$
+    interp:interp,$
+    lrin:lrin,$
+    forflg:forflg,$
+    widthout:widthout,$
+    nlinesout:nlinesout,$
+    lrout:lrout,$
+    output:output,$
+    openoutput:openoutput,$
+    
+    ok:ok,$
+    cl:cl $
+    }
+    
+  pstate=ptr_new(state,/no_copy)
+  widget_control,tlb,set_uvalue=pstate
+  widget_control,tlb,/realize
+  xmanager,'CWN_SMC_GEOCODEBACK',tlb,/no_block
+END

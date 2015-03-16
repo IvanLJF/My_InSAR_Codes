@@ -1,0 +1,133 @@
+#! /bin/sh
+#####################################
+## tli_geocode_dem: geocode the input file by using dem ###
+##     using:
+##       - dem file
+##       - File to geocode.
+##  
+#####################################
+## History
+##   20141127: Written by T.LI @ Sasmac
+#####################################
+echo ""
+echo "*** tli_geocode_dem geocode the input file by using dem. v1.0 20141127."
+echo " "
+echo "      Required data:"
+echo "        - dem file."
+echo "        - file to geocode"
+
+if [ $# -lt 2 ]; then
+  echo "Usage: tli_geocode_dem <pwrfile> <dem> [inputfile] [method]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "pwrfile          : pwr file "
+  echo "dem              : dem file"
+  echo "inputfile        : file to geocode"
+  echo "method           : method to use. (enter '-' for default: 1)"
+  echo "                   0: Simple geocode without using fine-coreg (fast but not accurate)"
+  echo "                   1: Geocode using fine-coreg (Slowly but accurate)"
+  echo "                   2: Using existed lookup table"
+  echo ""
+  exit
+fi 
+
+# Assignment
+pwrfile=$1
+dem=$2
+if [ ! -f $pwrfile ]; then
+  echo 'File not found:'$pwrfile
+  exit
+fi 
+
+if [ ! -f $dem ]; then
+  echo 'File not found:'$dem
+  exit
+fi 
+
+proc_input=0  # Do not process the input file.
+if [ $# -ge 3 ]; then
+  if [ -f $3 ]; then
+    inputfile=$3
+    proc_input=1
+  fi 
+fi 
+
+method=1
+if [ $# -ge 4 ]; then
+  if [ $4 != '-' ]; then
+    method=$4  
+  fi 
+fi 
+width=`tli_params $pwrfile.par 'range_samples'`
+lines=`tli_params $pwrfile.par 'azimuth_lines'`
+master_date=`basename $pwrfile '.pwr'`
+###########################################
+## Create lookup table
+case "$method" in 
+  0) 
+    # Simple geocode
+    rm -f dem_seg dem_seg.par sim_sar lookup lookup_fine
+    gc_map $pwrfile.par - $dem.par $dem dem_seg.par dem_seg lookup 5 5 sim_sar
+    ;;
+    
+  1)
+    # Full geocode
+    
+    rm -f dem_seg dem_seg.par sim_sar lookup lookup_fine sim_sar.rdc
+    # gc_map $pwrfile.par - $dem.par $dem dem_seg.par dem_seg lookup 5 5 sim_sar
+    gc_map $pwrfile.par - $dem.par $dem dem_seg.par dem_seg lookup 3 3 sim_sar
+    
+    width_mli=`tli_params $master_date.pwr.par 'range_samples'`
+    line_mli=`tli_params $master_date.pwr.par 'azimuth_lines'`
+    width_dem=`tli_params dem_seg.par 'width'`
+    geocode lookup sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 1 0 # Initial sim_sar.rdc file.
+    raspwr sim_sar.rdc $width_mli  
+    tli_stop_point
+    rm -f $master_date.diff_par
+    echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+    create_diff_par $pwrfile.par - $master_date.diff_par 1 <create_diffpar
+    rm -f create_diffpar
+    offset_pwrm sim_sar.rdc $pwrfile $master_date.diff_par $master_date.offs $master_date.snr 128 128 offsets1 2 
+    offset_fitm $master_date.offs $master_date.snr $master_date.diff_par coffs coffsets - -
+    offset_pwrm sim_sar.rdc $pwrfile $master_date.diff_par $master_date.offs $master_date.snr 128 128 offsets2 2 
+    offset_fitm $master_date.offs $master_date.snr $master_date.diff_par coffs coffsets - - >> coreg_quality_DEM
+    
+    
+    gc_map_fine lookup $width_dem $master_date.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+    cp lookup_fine lookup
+    ;;
+    
+  2)
+    # Using existed files
+    if [ -f $master_date.dem.hgt ]; then
+      echo "Files already existed."
+     # exit
+    fi 
+    if [ ! -f lookup ]; then
+      echo 'tli_geocode_dem: ERROR! File is not found: lookup'
+      exit
+    fi 
+    ;;
+  *)
+    echo 'method not supported!'
+    exit
+    ;;
+esac
+  
+#####################################
+## Generate geocoded results
+
+width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+interp_mode=2 # 0: nearest neighbor, 1: bicubic, 2: bicublic-log
+geocode_back $pwrfile $width lookup $pwrfile.utm $width_dem - 1 0  #Geocoded hgt
+raspwr $pwrfile.utm $width_dem
+
+if [ $proc_input -eq 1 ]; then
+  geocode_back $inputfile $width lookup $inputfile.utm $width_dem - 1 0 
+fi
+
+geocode lookup sim_sar $width_dem sim_sar_fine.rdc $width $lines 2 0
+geocode lookup dem_seg $width_dem $master_date.dem.hgt $width $lines 2 0 #这儿可能有问题
+raspwr sim_sar_fine.rdc $width
+rashgt $master_date.dem.hgt $pwrfile $width - - - - - 160 - - - $master_date.dem.hgt.ras

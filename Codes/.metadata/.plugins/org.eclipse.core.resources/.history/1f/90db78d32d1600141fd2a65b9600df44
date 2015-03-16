@@ -1,0 +1,78 @@
+;
+; Convert the input file to the specified data format.
+; 
+; Parameters:
+;   inputfile          : Input file
+;
+; Keywords:
+;   outputfile         : Output file
+;   samples            : Samples of the input file.
+;   lines              : Lines of the input file.
+;   input_format       : Format of the input data. 
+;                        Supported formats are: int, long, float, double, scomplex, fcomplex
+;   output_format      : Format of the output data.
+;                        Supported formats are: int, long, float, double, scomplex, fcomplex
+; Written by:
+;   T.LI @ SASMAC, 20140728
+;
+PRO TLI_CONVERT_FORMAT, inputfile, outputfile=outputfile, samples=samples, lines=lines, input_format=input_format, output_format=output_format
+  
+  IF NOT KEYWORD_SET(outputfile) THEN outputfile=inputfile+'_convert'
+  
+  IF NOT KEYWORD_SET(samples) AND NOT KEYWORD_SET(lines) THEN Message, 'Error! Please specify either samples or lines.'
+  
+  IF NOT KEYWORD_SET(input_format) THEN Message, 'Error! Please specify data format for the input file.'
+  
+  IF NOT KEYWORD_SET(output_format) THEN output_format=input_format
+  
+  block_lines=100D  ; No of lines to load data.
+  
+  block_no=CEIL(samples/block_lines)
+  
+  input_format=STRLOWCASE(input_format)
+  
+  OPENR, lun, inputfile,/GET_LUN
+  
+  FOR i=0, block_no-1 DO BEGIN
+    
+    start_line=block_lines*i
+    
+    end_line=(block_lines*(i+1)-1)<(lines-1)
+    
+    block_lines_i=end_line-start_line+1
+    
+    Case input_format OF
+      'int': BEGIN
+        block_data=INTARR(samples, block_lines_i)
+      END
+      
+      'long': BEGIN
+        block_data=LONARR(samples, block_lines_i)
+      END
+      
+      'float': BEGIN
+        block_data=FLTARR(samples, block_lines_i)
+      END
+      
+      'double': BEGIN
+        block_data=DBLARR(samples, block_lines_i)
+      END
+      
+      'scomplex': BEGIN
+        block_data=INTARR(samples*2, block_lines_i)
+      END
+      
+      'fcomplex': BEGIN
+      
+      END
+    
+    
+    ENDCASE
+    
+  
+  ENDFOR
+  
+  
+  
+    
+END

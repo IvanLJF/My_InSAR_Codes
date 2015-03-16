@@ -1,0 +1,108 @@
+#! /bin/sh
+###################################################################
+###   tli_interf_SLC: Script for interferogram generation       ###
+###         using:                                              ###
+###         - Two Original SLCs (Master and Slave)
+###         
+##################################################################
+###   History
+###     20140915: Written by T.LI @ Sasmac.
+##################################################################
+echo " "
+echo "*** tli_interf_SLC Generate interferogram using input SLC images. v1.0 20140915."
+echo " "
+echo "    Required data:"
+echo "       - Master image."
+echo "       - Slave image."
+
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Usage: tli_interf_SLC <master_image> <slave_image> [clear]"
+  echo ""
+  echo "input params:"
+  echo ""
+  echo "master_image     : Full path of master image."
+  echo "slave_image      : Full path of slave image."
+  echo "clear            : Clear all the intermedia files."
+  echo ""
+  exit
+fi
+
+# Assignment
+master_image=$1
+slave_image=$2
+
+if [ ! -f $master_image ]; then
+  echo "Error! Master file not exist: $master_image"
+  echo ""
+  exit
+fi
+if [ ! -e $slave_image ]; then
+  echo "Error! Slave file not exist: $slave_image"
+  echo ""
+  exit
+fi
+
+# Judge the input file type.
+fname=`basename $master_image`
+suffix=${fname##*.}
+fname=${fname%.*}
+
+if [ $suffix = 'rslc' ]; then
+  coreg_flag=0
+elif [ $suffix = 'slc' ]; then
+  coreg_flag=1
+else
+  echo "Suffix not supported: $suffix"
+  exit
+fi
+
+master_date=`basename $master_image .$suffix`
+slave_date=`basename $slave_image .$suffix`
+M_S=$master_date-$slave_date
+width=`awk '$1=="range_samples:" {print $2}' $master_image.par`
+lines=`awk '$1=="azimuth_lines:" {print $2}' $master_image.par`
+master_par=$master_image.par
+slave_par=$slave_image.par
+MS_off=$M_S.off
+
+# Coregistration and create interferogram.
+if [ $coreg_flag==0 ]; then
+  # Create off par.
+  echo -ne "$M_S\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > temp
+  create_offset $master_par $slave_par $MS_off 1 1 1 <temp
+  rm -f temp
+  # Interf_SLC
+  interf_SLC $master_image $slave_image $master_par $slave_par $MS_off $master_date.pwr $slave_date.pwr $M_S.int 1 1
+  cc_wave $M_S.int - - $M_S.cc $width 5 5
+  rascc $M_S.cc $slave_date.pwr $width
+else
+  tli_coreg_single_pair $master_image $slave_image
+fi
+
+
+
+# Flattenning.
+base_init $master_par $slave_par $MS_off $M_S.int $M_S.base 0 1024 1024
+base_perp $M_S.base $master_par $MS_off > $M_S.base.perp.txt
+phase_sim $master_par $MS_off $M_S.base - $M_S.sim_unw.unflt 0 0 - -
+rasrmg $M_S.sim_unw.unflt $master_date.pwr $width - - - - - - - - - - $M_S.sim_unw.unflt.ras
+echo -ne "$M_S\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_S.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+sub_phase $M_S.int $M_S.sim_unw.unflt $M_S.diff.par $M_S.int.flt 1 0
+
+# Phase unwrapping
+if false; then  # Using the method provided by GAMMA
+  UNWRAP $M_S.int.flt $M_S.cc $slave_date.pwr $M_S.unw $M_S.unw.flag $width $lines
+else # Using my own method. Filtering is applied for many times in this method.
+  if [ $suffix = 'rslc' ]; then
+    tli_unwrap $master_image $slave_image $M_S.int.flt
+  elif [ $suffix = 'slc' ]; then
+    cp $master_image $master_date.rslc
+    cp $master_image.par $master_date.rslc.par
+    tli_unwrap $master_date.rslc $slave_date.rslc $M_S.int.flt 
+  fi
+fi
+
+echo "Task finished successfully."

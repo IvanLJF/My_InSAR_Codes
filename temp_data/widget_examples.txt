@@ -1,0 +1,513 @@
+1 IDL界面创建方法
+  IDL的界面分下面几种：
+  1) IDL命令行界面
+
+  2) 智能化工具iTools界面
+   
+  3) 常规组件界面
+   
+1.1 界面创建
+    一般情况下，我们用IDL创建界面指的是常规组件界面，这是最常用的。IDL下的界面创建是比较特殊的，由于IDE7系列的更新，使得7.*版本下没有了鼠标拖拽创建GUI的工具，只能依靠代码创建。
+  1.1.1 单元组件界面
+  1.1.1.1 Base组件（容器界面）
+     IDL下的界面有很多的base，可以理解为容器，而且很多的时候一些组件的排列如果用了base会很方便。多层的结构一般如下图
+         
+   1) 格式：
+      Result = WIDGET_BASE( [Parent] [, /Keywords) 
+   2) 常用关键字
+    （1） Floating
+浮动的窗口，类似导航图，仅浮动在窗口上方；
+    （2） Model
+是否为模式框，在该窗口关闭前无法进行其他操作；
+    （3） mBar
+是否创建菜单栏，返回菜单栏的ID；
+    （4） TLB_FRAME_ATTR
+创建的窗口类型，见表格，类型的值可累加，如3则表示1+2。
+
+值
+	窗口类型
+
+1
+	窗口无法进行大小、最大化等操作
+
+2
+	不显示系统菜单
+
+4
+	禁止显示标题栏
+
+8
+	窗口无右上的关闭按钮
+
+16
+	窗口无法移动
+
+
+
+  16 窗口无法移动
+    （5）TLB_KILL_REQUEST_EVENTS
+是否返回关闭事件，可用TAG_NAMES(event, /STRUCTURE_NAME) 是否为 'WIDGET_KILL_REQUEST'来判断。
+   3) 参考例子源码
+    
+PRO Test_widget_base
+;
+tlb = WIDGET_BASE(xsize =200,ysize =200,title ='widget_base')
+WIDGET_CONTROL,tlb,/realize
+;
+fbase = WIDGET_BASE(GROUP_LEADER =tlb, $
+xsize =200,ysize =200,$
+xOffset =200, $
+yOffset =200, $
+/floating,title ='floating')
+WIDGET_CONTROL,fbase,/realize
+
+mbase = WIDGET_BASE(GROUP_LEADER =tlb, $
+xsize =200,ysize =200, $
+xOffset =400, $
+yOffset =200, $
+/modal,title ='modal')
+WIDGET_CONTROL,mbase,/realize
+
+ttlb = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=1', $
+xOffset =000, $
+yOffset =400, $
+TLB_FRAME_ATTR = 1)
+WIDGET_CONTROL,ttlb,/realize
+
+ttlb2 = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=2', $
+xOffset =200, $
+yOffset =400, $
+TLB_FRAME_ATTR = 2)
+WIDGET_CONTROL,ttlb2,/realize
+;
+ttlb3 = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=9,1+8', $
+xOffset =400, $
+yOffset =400, $
+TLB_FRAME_ATTR = 9)
+WIDGET_CONTROL,ttlb3,/realize
+;
+ttlb4 = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=4', $
+xOffset =600, $
+yOffset =400, $
+TLB_FRAME_ATTR = 4)
+WIDGET_CONTROL,ttlb4,/realize
+;
+ttlb8 = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=8', $
+xOffset =800, $
+yOffset =400, $
+TLB_FRAME_ATTR = 8)
+WIDGET_CONTROL,ttlb8,/realize
+;
+ttlb16 = WIDGET_BASE(xsize =200,ysize =200, $
+title ='TLB_FRAME_ATTR=8', $
+xOffset =1000, $
+yOffset =400, $
+TLB_FRAME_ATTR = 16)
+WIDGET_CONTROL,ttlb16,/realize
+;
+END
+
+      
+      1.1.1.2 按钮组件(widget_button)
+Widget_button创建具体包括：触发按钮、位图按钮（主要用于创建工具栏或者图形按钮）、单选按钮、复选按钮、标准菜单系统、按钮菜单系统和快捷菜单系统。
+  1) 格式：
+     Result = WIDGET_Button( [Parent] [, /Keywords) 
+  2)常用关键字
+   （1）TOOLTIP
+    显示的文字。 
+   （2）Value
+       a)字符串，显示button上的文字；
+  b)n x m 字节型数组，显示成黑白图片；
+  c)n x m x 3字节型数组，显示成24位真彩色图片； 
+  d)Bitmap控制是否显示图标型button，如果设置了Bitmap，则value可以直接设置为bmp文件名。 
+   （3）Menu
+                创建菜单选项；
+   （9）SEPARATOR
+  创建分割线；
+
+   （10）复选或单选
+  Base的EXCLUSIVE和NONEXCLUSIVE关键字。
+
+3) 参考例子源码
+   
+PRO Test_widget_button
+;
+tlb = WIDGET_BASE($
+xoffset = 200, $
+yoffset = 200, $
+/column, $
+mbar =mbar,$
+title ='test_button')
+WIDGET_CONTROL,tlb,/realize
+;
+menu = WIDGET_BUTTON(mbar, value ='文件(&F)')
+fmenu = WIDGET_BUTTON(menu, value ='打开')
+;menu关键字
+mMenu = WIDGET_BUTTON(menu, value ='进入',/menu)
+tMenu = WIDGET_BUTTON(mMenu, value ='二级',/menu)
+;separator关键字
+eMenu = WIDGET_BUTTON(menu, value ='退出',/SEPARATOR)
+
+ubase = WIDGET_BASE(tlb,/row)
+dbase = WIDGET_BASE(tlb,/row)
+;
+b = WIDGET_BUTTON(ubase,value = '按钮',tooltip = '创建的button')
+b = WIDGET_BUTTON(ubase,value = '按钮',tooltip = '创建的button')
+h = WIDGET_BUTTON(ubase,value = BINDGEN(2,40))
+;
+bit =WIDGET_BUTTON(ubase,value ='C:\Program Files\ITT\IDL708\resource\bitmaps\colorbar.bmp',/bitmap)
+;单选button'
+exbase = WIDGET_BASE(dbase,/EXCLUSIVE,/column)
+eb1 = widget_button(exbase,value ='对')
+eb2 = widget_button(exbase,value ='错')
+;复合选择button
+nexbase = WIDGET_BASE(dbase,/NONEXCLUSIVE,/column)
+eb1 = widget_button(nexbase,value ='envi')
+eb2 = widget_button(nexbase,value ='idl')
+; 
+END
+
+           
+1.1.1.3 标签组件(widget_Label)
+    widget_label用来创建标签组件。
+   1)格式：
+  Result = WIDGET_LABEL( [Parent] [, /Keywords) 
+   2)常用关键字
+    （1）value
+  其值为显示的字符串；
+  换行的话字符串中间用String(13b)连接下即可。
+1.1.1.4 显示组件(widget_draw)
+  widget_draw用来创建draw组件，draw组件是IDL下的矩形的标准图像区域，该组件通过关键字控制创建直接图形法窗口还是对象图形法窗口。
+   1)格式：
+  Result = WIDGET_DRAW( [Parent] [, /Keywords) 
+   2) 常用关键字
+    （1）COLOR_MODEL
+  对象图形法下的色彩模式控制，如设置为1则使用索引颜色，否则使用RGB颜色；
+    （2）GRAPHICS_LEVEL
+  直接图形法和对象图形法的选择，如设置为2则为对象图形法，系统默认或设置为1则为直接图形法窗口。
+   （3）EXPOSE_EVENTS
+  是否有“暴露”事件，也就是如果当前窗口被其他窗口遮挡后再显示的时候是否需要产生事件，与RETAIN结合加快显示速度。
+   （4）Retain
+  0：不进行后备存储器操作（处理器（processor）暂时不需要的程序和数据）备份；
+  1：操作系统进行后备存储器操作；
+  2：IDL进行后备存储器操作；
+   （5）WHEEL_EVENTS
+  产生鼠标事件关键字，如进行滚轮放大缩小操作，需要添加该关键字。
+  类似的还有KEYBOARD_EVENTS等，在事件中以event.type来区别。
+   3)参考例子源码
+    
+PRO Test_widget_draw_Event,ev
+print,tag_names(ev)
+END
+PRO Test_widget_draw
+
+tlb = WIDGET_BASE(title='直接图形法')
+;direct draw
+wDraw = WIDGET_DRAW(tlb, $
+xSize =200,ySize =200)
+WIDGET_CONTROL,tlb,/realize
+Widget_Control, wDraw,get_value = ddraw
+help, ddraw
+;显示一个图像
+wset,ddraw
+tvscl,dist(200)
+;
+tlb1 = WIDGET_BASE(title='对象图形法', $
+xOffset = 200)
+;object draw
+wDraw1 = WIDGET_DRAW(tlb1, $
+xSize =200,ySize =200, $
+graphics_level = 2,$
+/wheel_events, $
+retain = 2, $
+/Expose_events )
+WIDGET_CONTROL,tlb1,/realize
+geo = Widget_Info(wDraw1,/geom)
+;
+Widget_Control, wDraw1,get_value = odraw
+help,odraw
+;
+xManager, 'Test_widget_draw',tlb1,/no_Block
+;
+END
+
+
+1.1.1.5 属性列表组件(WIDGET_PROPERTYSHEET)
+     widget_propertysheet用来创建属性信息组件，该组件通过关键字来进行信息的修改，用在对象法中。
+   1)格式：
+  Result = WIDGET_PROPERTYSHEET ( [Parent] [, /Keywords) 
+   2)常用关键字
+   （1）Value
+  Value是单个对象或对象集，属性的创建或修改在对象的方法中实现。
+   3)源码
+    
+PRO Test_widgetpropertysheet
+
+; Create and initialize the component.
+oComp = OBJ_NEW('IDLgrPolygon', $
+/REGISTER_PROPERTIES)
+
+; Create a base and property sheet.
+base = WIDGET_BASE(/TLB_SIZE_EVENT, $
+TITLE = 'Single Property Sheet Example', $
+KILL_NOTIFY = 'CleanupEvent')
+prop = WIDGET_PROPERTYSHEET(base, $
+VALUE = oComp, $
+; EVENT_PRO = 'PropertyEvent', $
+;UNAME = 'PropSheet', $ 
+YSIZE=20)
+
+; Activate the widgets.
+WIDGET_CONTROL, base, SET_UVALUE = oComp, /REALIZE
+
+Xmanager, 'test_WidgetPropertysheet', base, /NO_BLOCK
+END
+
+           
+1.1.1.6 列表组件(WIDGET_LIST)
+  widget_list用来创建属列表选择组件，该组件通过关键字来进行列表的选取。
+         
+1.1.1.7 下拉列表组件(WIDGET_DROPLIST)
+  跟widget_list组件类似，widget_droplist用来创建属下拉列表，该组件则是通过关键字来进行列表的选取。         
+         
+1.1.1.8 滑动条组件(widget_slider)
+  widget_slider用来创建滑动条组件，交互的获取或者设置指定范围内的一个整数值，该组件则是通过关键字来进行列表的选取。
+         
+1.1.1.9 表格组件 (widget_table)
+  widget_table用来创建表格组件，交互的获取或者设置指定范围内的一个整数值，该组件则是通过关键字来进行列表的选取。
+         
+1.1.1.10Tab组件(widget_tab)
+  Widget_Tab用来创建页面组件。
+         
+1.1.1.11树组件(widget_tree)
+  WIDGET_TREE组件是创建的树形列表的组件，如下图。 
+           
+   1)格式：
+     Result = WIDGET_TREE ( [Parent] [, /Keywords) 
+   2)常用关键字
+   （1）Value
+  是tree的节点显示的名称。
+   （2）Folder
+  当前节点是文件夹节点，可以包括叶子节点
+   （3）EXPANDED
+  如果节点是文件夹，此关键字可以进行文件的展开、折叠控制。
+
+参考例子 C:\ProgramFiles\ITT\IDL71\examples\doc\widgets\ tree_widget_example.pro
+1.1.1.12 文字组件(Widget_Text)
+  WIDGET_TEXT组件是创建文字输入编辑组件，如下图。 
+  注意的是这里的Ysize及Xsize的单位都是字符宽度，而不是像素。
+         
+   1.1.2 复合界面
+复合界面是IDL下的一些具备某些功能的界面程序，均以CW_开头，这类组件具备一定独立的功能，详细可参考Help的列表。
+先看CW_FIELD，从该组件的运行效果来看，它就是Widget_Base、widget_label和Widget_text组件的结合，但从关键字上看，它可以实现其他组件无法实现的效果。
+1)格式：
+   Result = CW_FIELD ( [Parent] [, /Keywords) 
+2)常用关键字
+  （1）Title
+      是组件文字框前面显示的字符。
+  （2）NOEDIT
+             当前字符不可编辑。
+  （3）数据类型
+             这类关键字包括Floating、Long、Integer、String等，设置了对应的关键字后则输入时只能对应类型字符，其他类型字符无法输入。这在一定程度上减轻了编程人员的工作量。
+           
+   
+cw_field 源码
+    
+PRO Test_CW_FIELD_event, event
+END
+
+PRO Test_CW_FIELD
+compile_opt idl2
+
+base = WIDGET_BASE($
+title ='CW_Field', $
+/COLUMN)
+
+field = CW_FIELD(base, $
+TITLE = '输入：', $
+/FRAME, $
+/integer)
+
+WIDGET_CONTROL, base, /REALIZE
+
+; Hand off to the XMANAGER:
+XMANAGER, 'Test_widget_text', base, /NO_BLOCK
+
+END
+
+其他复合界面的介绍与使用可参考IDL帮助，见下图：
+              
+1.1.3对话框界面
+   对话框组件是Modal对话框的组件，对话框是一种用户界面，它的主要功能是输出信息和接收用户的输入。如常用的文件选择对话框Dialog_PickFile和信息提示Dialog_Message。
+   对话框组件Dialog_PickFile
+1)格式：
+    Result = Dialog_PickFile ( [Parent] [, /Keywords) 
+2)常用关键字
+   （1）Title
+  对话框的标题字符。
+   （2）Filter 
+  文件类型过滤，如filters = ['*.jpg', '*.tif', '*.png']则指定文件输入为上面三种类型。
+
+          
+         
+         
+         
+
+1.1.4功能界面
+   功能界面是IDL自带部分特殊函数，这些函数能够实现一些特殊的功能并能够被调用，大部分有源码可以参考。见下表
+    
+名称
+	概述
+EFONT
+	矢量字体编辑器和显示的工具
+IDLEXBR_ASSISTANT
+	打开输出助手
+SLIDE_IMAGE
+	创建一个滚动的图形窗口用来大图像
+XBM_EDIT
+	创建，编辑IDL编译器工具按钮的位图图标
+XDISPLAYFILE
+	显示ASCII码文本文件的组件
+XDXF
+	查看和操控DXF对象
+XFONT
+	选择和浏览X Windows字体的模式窗口
+XINTERANIMATE
+	动态显示序列图像
+XLOADCT
+	选择和设置颜色表的工具
+XMTOOL
+	查看XMANAGER管理的组件的工具
+XOBJVIEW
+	查看图形对象的工具
+XOBJVIEW_ROTATE
+	旋转XOBJVIEW里面的对象；
+XOBJVIEW_WRITE_IMAGE
+	将XOBJVIEW中的对象输出成图片
+XPALETTE
+	创建和修改颜色表的工具
+XPCOLOR
+	颜色查看器
+XPLOT3D
+	创建和手动编辑三维曲线
+XROI
+	直接图形法下的感兴趣编辑工具
+XSURFACE
+	图形方式查看Surface
+XVAREDIT
+	IDL下的变量修改工具
+XVOLUME
+	查看和操作体
+XVOLUME_ROTATE
+	对XVOLUME显示的体对象进行旋转
+XVOLUME_WRITE_IMAGE
+	将XVOLUME中的对象输出成图片
+
+1.2界面的控制
+   界面组件创建后，需要对组件进行属性的设置或获得组件的状态，IDL提供了Widget_Contrl和Widget_Info两个函数对组件信息进行控制。
+   1.2.1Widget_Control
+Widget_Control的目的有下面四种：
+?  组件显示；
+? 组件属性信息的设置和读取；
+?  组件销毁；
+调用格式如下：Widget_Control，id，[关键字]
+组件常用关键字简要列表如下
+关键字 用处
+关键字
+	用处
+
+set_uvalue
+	设置组件的uvalue
+get_uvalue
+	获得组件的uValue
+hourglass
+	控制等待鼠标沙漏指针
+scr_xsize
+	组件的屏幕宽度
+scr_ysize
+	组件的屏幕高度
+pro test_widget_control
+;
+tlb = WIDGET_BASE(xsize =200,ysize =200,title ='widget_base')
+WIDGET_CONTROL,tlb,/realize
+
+;显示沙漏
+Widget_Control, tlb,/hourglass
+wait,1
+
+widget_Control,tlb,xsize = 400
+wait,1
+
+widget_control,tlb, ysize = 400
+wait,1
+;解除沙漏
+Widget_Control, tlb,hourglass =0
+;销毁组件
+Widget_Control, tlb, /Destroy 
+end
+
+1.2.2Widget_Info
+   用Widget_Info是获得已经存在组件的信息。
+   调用格式如下：result= Widget_Info(id，[关键字])
+   常用关键字简要列表如下
+关键字
+	用处
+
+geometry
+	设置组件的位置偏移和大小信息
+parent
+	获得组件的父组件
+child
+	获得组件的孩子组件
+uname
+	获得组件的uname
+VALID_ID
+	组件是否有效
+FIND_BY_UNAME
+	通过UNAME查找组件
+
+PRO test_widget_info
+;
+tlb = WIDGET_BASE(xoffset =200, $
+yoffset = 200, $
+uName = 'tlb', $
+title ='widget_base')
+WIDGET_CONTROL,tlb,/realize
+
+wbase = WIDGET_BASE(tlb, $
+xsize =200,$
+ysize =200, $
+uname ='wbase')
+wbutton = WIDGET_BUTTON(wBase,value ='按钮',$
+uname = 'button')
+;
+geom = WIDGET_INFO(wbase,/geometry)
+HELP,geom
+;
+uname = WIDGET_INFO(wbase,/uname)
+PRINT,uname
+;
+parent = WIDGET_INFO(wbase,/parent)
+PRINT,parent
+parentUname = WIDGET_INFO(parent,/uName)
+PRINT,parentUname 
+;
+child = WIDGET_INFO(wbase,/child)
+PRINT,child
+childuname = WIDGET_INFO(child,/uname)
+PRINT,childuname
+
+END
+
+1.3界面设计代码
+    常规界面的编写可参考IDL的自带例子：
+C:\Program Files\ITT\IDL71\examples\demo\demosrc\d_widgets.pro
+;
+总结：界面设计需要多看帮助，多实践，参考常规Windows软件的界面排列及操作习惯，有些时候就是一个排列或大小的基本问题。
+当然了，IDL的界面还无法实现像.Net里面的那些特别炫的效果，其实如能踏下心来琢磨，类似界面组件是完全可以自己实现的（前提是：要有一定的IDL功底哦）
+附两个IDL编写软件的界面效果图。

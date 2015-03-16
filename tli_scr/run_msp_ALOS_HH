@@ -1,0 +1,102 @@
+#!/bin/sh
+###########################################################
+# Script that:
+#       - Runs GAMMA MSP
+#       - Rui Zhang Chengdu 
+# Usage:
+#       -Make the folders (see the screenshot)
+#       -cp $MSP_HOME/sensors/palsar_ant_20061024.dat
+#       -run the script (./run_msp_ALOS_HH) 
+#Note:
+# This simplified scirpt,in fact,runs after a script that processes PALSAR tar files
+# (unzip the .gz files and rename them accroding 
+# to the info in the summary text automatically)
+# So no need to make these folders in my case.
+#################################################################
+### parameter files
+######################################
+MASTER="20080923"
+##############################
+pro_par_m=p$MASTER.slc.par   #processing parameter file
+par_m=$MASTER.slc.par
+m_raw=$MASTER.raw
+m_fix=$MASTER.fix            #correct lines missing
+m_azsp=$MASTER.azsp          #estimate the Doppler centroid in the azimuth spectrum 
+m_dop=$MASTER.dop            # determine the Dppler centroid across the swath
+m_rspec=$MASTER.rspec       # range spectrum(used to estimate the SNR in the final image)
+m_rc=$MASTER.rc            # range compression
+m_autof=$MASTER.autof     # autofocus
+m_slc=$MASTER.slc     # after azimuth compression
+m_mli_par=$MASTER.mli.par
+m_mli=$MASTER.mli
+ant_file=$PALSAR_antpat_MSP.dat
+######################################
+### input data file
+######################################
+
+PALSAR_proc *.ldr palsar.par $pro_par_m *.raw $m_raw
+#cp $MSP_HOME/sensors/palsar_ant_20061024.dat
+
+######################################
+### Correction for the antenna pattern
+######################################
+PALSAR_antpat palsar.par $pro_par_m palsar_ant_20061024.dat PALSAR_antpat_MSP.dat
+
+######################################
+### Determine the Doppler ambiguity(optional)
+######################################
+#usage: dop_ambig <SAR_par> <PROC_par> <signal_data> [algorithm] [loff] [output_plot]
+
+#input parameters: 
+#  SAR_par      (input) MSP SAR sensor parameter file
+#  PROC_par     (input) MSP processing parameter file
+#  signal_data  (input) uncompressed raw SAR signal data (I/Q complex)
+#  algorithm    algorithm selection:
+#                 1: Multi-Look Cross Correlation (MLCC)
+#                 2: Multi-Look Beat Frequency (MLBF) (default)
+#  loff         number of lines offset (enter - for default: parameter file value)
+#  output_plot  (output) plot file: correlation phase for MLCC, azimuth spectrum for MLBF
+dop_method="2"
+#dop_ambig palsar.par $pro_par_m $m_raw $dop_method - dop_ambig_method2.dat
+
+######################################
+### Determine fractional Doppler centroid
+######################################
+#azsp_IQ palsar.par $pro_par_m $m_raw $m_azsp
+######################################
+### Estimate the Doppler centroid across the swath(optional)
+######################################
+#doppler palsar.par $pro_par_m $m_raw $m_dop
+######################################
+### Estimate the range power spectrum(optional)
+######################################
+#rspec_IQ palsar.par $pro_par_m $m_raw $m_rspec
+######################################
+### range compression
+######################################
+pre_rc palsar.par $pro_par_m $m_raw $m_rc - - - - - - - - 1 -
+######################################
+### Autofocus (multiple application possible to improve estimate)
+######################################
+ 
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0 
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0 
+autof palsar.par $pro_par_m $m_rc $m_autof 5.0
+
+######################################
+### Azimuth compression (of range compressed date *.rc) and Absolute Radiometric Calibration
+######################################
+az_proc palsar.par $pro_par_m $m_rc $m_slc 16384 0 -49.8 0 2.12 
+par_MSP palsar.par $pro_par_m $par_m
+
+######################################
+### Generation of multi-look (1 range x 5 azimuth looks) intensity image
+######################################
+multi_SLC $pro_par_m $m_mli_par $m_slc $m_mli 1 1 
+width_m=$(awk '$1 == "range_pixels:" {print $2}' $m_mli_par)
+width=$(awk '$1 == "range_samples:" {print $2}' $par_m)
+
+rasSLC $m_slc $width 1 0 1 1 1. .35 1 0 0 $m_slc.bmp
+raspwr $m_mli $width_m 1 0 1 1 1. 0.35 1 $m_mli.bmp
+############################################################################
+

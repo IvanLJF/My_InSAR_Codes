@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Download all the gmt examples in the server
+if false
+then
+
+mkdir examples
+for i in {01..30}
+do
+	httplink='http://gmt.soest.hawaii.edu/gmt/examples/ex'$i'/example_'$i'.zip'
+	wget $httplink
+done
+fi
+for i in {01..30}
+do
+	httplink='http://gmt.soest.hawaii.edu/gmt/examples/ex'$i'/job'$i'.sh.txt'
+	wget $httplink
+done
+

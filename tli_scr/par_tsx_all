@@ -1,0 +1,23 @@
+#! /bin/sh
+
+# Script that:
+# 	run PAR_TX_SLC for each image in the path specified.
+# Usage:
+# 	./par_tsx_all.sh
+# Written by:
+# 	T.LI @ISEIS 30/03/2013
+
+workpath=`pwd`
+find $workpath -name "*.cos" > cos_tab
+nlines=$(awk 'END{print NR}' cos_tab)
+for i in $( seq 1 1 $nlines )
+do
+	file_name=$(sed -n "$i,1p" cos_tab | awk '{print $1}')
+	file_path=`dirname $file_name`
+	file_ppath=`dirname $file_path`
+	file_date=${file_ppath:(-15):8}
+	#xml_name=$file_path/*.xml
+	mkdir $file_date
+	par_TX_SLC $file_ppath/*.xml $file_name $file_date/$file_date.slc.par $file_date/$file_date.slc
+done
+

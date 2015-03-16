@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# Script that:
+# Do geocoding for all the PSc.
+
+dem="/mnt/data_tli/Data/DEM/HKDEM/HKDem_HighRes/HKDEM.dem"                     #原始DEM所在路径
+slcpath=../piece
+iptapath=../
+master=20091103
+
+pmask=-
+masterpwr=$slcpath/$master.rslc.pwr
+mslc_par=$slcpath/$master.rslc.par
+phgt=pdem
+plist=../HPA/plistupdate_gamma
+width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+type=0
+format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+if [ "$format"=="SCOMPLEX" ]
+then
+	type=1
+fi
+ras_pt $plist - ../ave.ras pt_ave.ras 1 1 0 255 0 10
+
+
+
+if false
+then
+  gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 50 50 sim_sar  # Use disdem_par to check dem_seg.
+  # *** sim_sar 的坐标系是DEM坐标系 ***
+   # *** lookup table 应该是与sim_sar大小一致的，与dem_seg大小也一致 ***
+  # *** 每个点上的数对应sim_sar的像素在slc中的坐标 ***
+
+  echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+  create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+  rm -f create_diffpar
+  offset_pwrm sim_sar ../ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+  offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+  offset_pwrm sim_sar ../ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 40 40 -  #解算偏移量参数
+
+  width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+  width_mli=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+  line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+
+  gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+
+  geocode_back ../ave.pwr $width_mli lookup_fine ave.utm.rmli $width_dem - 3 0  #Geocoded pwr
+  raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+
+  nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+  col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+  row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+  geocode lookup_fine sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+  geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+  raspwr $master.hgt $width_mli 1 0 1 1 1. .35 1 $master.hgt.ras
+else
+  cp ../$master.hgt ../ave.utm.rmli.ras ../dem_seg.par ../$master.diff_par .
+fi
+
+
+# pdem
+npt $plist >numberp
+np=$(awk '$1 == "total_number_of_points:" {print $2}' numberp)
+#rm -f numberp
+rm -f $phgt
+d2pt $master.hgt $width $plist 1 1 $phgt $np 2
+
+rm -f pt_map pmap pmapll_orig `basename $plist`.ll
+pt2geo $plist $pmask $mslc_par - $phgt dem_seg.par $master.diff_par 1 1 pt_map pmap `basename $plist`.ll #推测此处应该没有错误，因为点位分布与Google earth相似。
+
+# Attention: Here the dem.par is actually the original dem or dem segment?
+# Display the geocoded points.
+ras_pt pt_map - ave.utm.rmli.ras pt.utm.ras 1 1 0 255 0 10
+#disras_dem_par pt.utm.ras dem_seg.par

@@ -1,0 +1,66 @@
+#! /bin/sh
+
+tptsfile=`pwd`/tptsfile.ps
+
+
+gmtset ANNOT_FONT_SIZE 9p ANNOT_OFFSET_PRIMARY 0.07i FRAME_WIDTH 0.04i MAP_SCALE_HEIGHT 0.04i \
+LABEL_FONT_SIZE 10p LABEL_OFFSET 0.05i TICK_LENGTH 0.05i
+output_file="pt.ps"
+# 创建调色板
+
+psbasemap -R0/3000/0/3000 -JX4i/4i -Ba500f200::WeSn -P -K -V  > $output_file
+psxy pt.txt -Gred -R -J -B -V -Sc0.03i -O >> $output_file
+ps2raster -A $output_file
+
+
+
+psbasemap -Ba300f100g300::WeSn -JX15/11.67 -K -P -R0/1620/0/1260 -UBL/0/-1.5c/"Misclosure Analysis" >$tptsfile
+
+psimage -K -W15c/11.67c pdiff0_01.ras -O >> $tptsfile
+# A rectangle
+cat > rec.d << END
+445 815
+475 815
+475 835
+445 835
+END
+awk '{print $1,1260-$2}' rec.d > rec_new.d
+psxy rec_new.d -JX -K -L -O -R -W1.55p/0/255/255 >>$tptsfile
+# lines
+psxy -JX -K -O -R -W1.75p/green << END >> $tptsfile
+440 440
+1001 1260
+END
+psxy -JX -K -O -R -W1.75p/green << END >> $tptsfile
+470 420
+1620 847.5
+END
+
+# Subset
+convert pdiff0_01.ras -crop 30x20+445+825 subsetras.ps
+psbasemap -Ba10f5::ws -JX5.73c/3.82c -K -O -R445/474/416/435 -X9.27c -Y7.85c >>$tptsfile
+psimage -F1.75p/0/255/255 -K -W5.73c/3.82c subsetras.ps -O >> $tptsfile
+
+# 3 points
+cat > tpts.d << END
+456 838
+461 832
+464 836
+END
+awk '{print $1, 1260-$2}' tpts.d > tpts_new.d
+psxy tpts_new.d -Gred -JX -K -O -R -St0.4c -Wfaint >> $tptsfile
+psxy tpts_new.d -JX -K -L -O -R -W0.05c/red >> $tptsfile
+# Add point index
+pstext << EOT -JX -O -R >> $tptsfile
+#404  3330.4 9	0.0	4	LM	USC1
+453 422 12 0 3 LM A
+462 428 12 0 3 LM B
+465 424 12 0 3 LM C
+EOT
+
+#453 422 9 0.0 4 A A
+#463 428 9 0.0 4 B A
+#456 426 9 0.0 4 C A
+ps2raster -A $tptsfile
+# Clean up
+rm -f rec.d rec_new.d tpts.d tpts_new.d

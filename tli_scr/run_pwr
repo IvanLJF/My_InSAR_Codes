@@ -1,0 +1,23 @@
+#! /bin/sh
+##########################################
+# 为每一幅影像生成.pwr和.pwr.par
+#########################################
+for rslc in ls *.rslc
+do
+  if [ -e $rslc ]
+  then
+    fname=`expr substr $rslc 1 8`
+    multi_look $rslc $rslc.par $fname.pwr $fname.pwr.par 1 1
+  fi
+done
+for pwr in ls *.pwr
+do
+    if [ -e $pwr ]
+    then echo "$PWD/$pwr">>im_list
+    fi
+done
+width=$(awk '$1 == "range_samples:" {print $2}' $pwr.par)
+ave_image im_list $width ave.pwr
+raspwr ave.pwr $width - - - - - - - ave.bmp
+
+

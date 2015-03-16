@@ -1,0 +1,197 @@
+#!/bin/sh
+###########################################################
+# Script that:
+#       - Do DInSAR for each pair of SLCs. 
+#	  - GAMMA scripts are used all over this scr.
+# Written by,
+# 	-T.LI @ ISEIS, 29/04/2013
+######################################
+#!/bin/sh
+###########################################################
+# Purpose:
+# 	Create diff-interferograms for each pair of SLC.
+# Calling Sequence:
+# 	./diff_all.sh
+# Inputs:
+# 	None
+# Optinal Input Parameters:
+# 	None
+# Outputs:
+# 	Diff images
+# Commendations:
+# 	None
+# Modification History:
+# 	29/04/2013: Written by T.L @ InSAR Team in SWJTU & CUHK.
+
+dem="/mnt/data_tli/Data/DEM/HKDEM/HKDem/HKDEM.dem"                     #原始DEM所在路径
+path="/mnt/data_tli/ForExperiment/TSX_HKAirport/rslc"     #裁剪之后的SLC所在路径
+master="20090120"
+slave='20090131'
+masterpwr=$path/$master.rslc.pwr
+mslc_par=$path/$master.rslc.par
+
+
+MASTER=$master
+SLAVE=$slave
+M_P=${MASTER}
+S_P=${SLAVE}
+m_slc=../$M_P.rslc
+s_slc=../$S_P.rslc
+par_m=$m_slc.par
+par_s=$s_slc.par
+MS_off=$M_P-$S_P.off
+
+
+
+width=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+	type=0
+	format=$(awk '$1 == "image_format:" {print $2}' $mslc_par)
+	if [ "$format"=="SCOMPLEX" ]
+	then
+		type=1
+	fi
+
+multi_look $path/$master.rslc $path/$master.rslc.par $masterpwr $masterpwr.par 1 1
+
+if false 
+then
+# Create dem_seg
+	rm -f dem_seg des_seg.par $master.offs $master.diff_par sim_sar lookup lookup_fine
+
+	gc_map $masterpwr.par - $dem.par $dem dem_seg.par dem_seg lookup 1 1 sim_sar  # Use disdem_par to check dem_seg.
+
+	echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > create_diffpar
+	create_diff_par $masterpwr.par - $master.diff_par 1 <create_diffpar
+	rm -f create_diffpar
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 2
+	offset_fitm $master.offs $master.snr $master.diff_par coffs coffsets - -
+	offset_pwrm sim_sar ave.pwr $master.diff_par $master.offs $master.snr - - offsets 4 40 40 -  #解算偏移量参数
+
+	width_dem=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+	width_mli=$(awk '$1 == "range_samples:" {print $2}' $mslc_par)
+	line_mli=$(awk '$1 == "azimuth_lines:" {print $2}' $mslc_par)
+
+	gc_map_fine lookup $width_dem $master.diff_par lookup_fine 1 #Fine look up table  使用偏移量参数改进lookup table
+
+	geocode_back $masterpwr $width_mli lookup_fine $master.utm.rmli $width_dem - 3 0  #Geocoded pwr
+	raspwr ave.utm.rmli $width_dem - - - - - - - ave.utm.rmli.ras ##运行第二遍的时候，吐核了
+
+	nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+	col_post=$(awk '$1 == "post_north:" {print $2}' dem_seg.par)
+	row_post=$(awk '$1 == "post_east:" {print $2}' dem_seg.par)
+	geocode lookup_fine sim_sar $width_dem sim_sar.rdc $width_mli $line_mli 2 0
+	geocode lookup_fine dem_seg $width_dem $master.hgt $width - 1 0
+	raspwr $master.hgt $width_mli 1 0 1 1 1. .35 1 $master.ght.ras
+
+
+
+
+
+
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > temp
+######################################
+create_offset $par_m $par_s $MS_off 1 1 1 <temp
+rm -f temp
+
+interf_SLC $m_slc $s_slc $par_m $par_s $MS_off $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.int 1 1
+######################################
+
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+#rasmph $M_P-$S_P.int $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.int.bmp
+rasmph_pwr $M_P-$S_P.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.intandpwr.bmp
+
+base_init $par_m $par_s $MS_off $M_P-$S_P.int $M_P-$S_P.base 0 1024 1024
+base_perp $M_P-$S_P.base $par_m $MS_off > $M_P-$S_P.base.perp.txt
+
+phase_sim $par_m $MS_off $M_P-$S_P.base $M_P.hgt $M_P-$S_P.sim_unw.unflt 0 0 - -
+phase_sim $par_m $MS_off $M_P-$S_P.base $M_P.hgt $M_P-$S_P.sim_unw.flt 1 0 - -
+
+rasrmg $M_P-$S_P.sim_unw.unflt $M_P-$S_P.pwr1 $width - - - - - - - - - - $M_P-$S_P.sim_unw.unflt.bmp
+rasrmg $M_P-$S_P.sim_unw.flt $M_P-$S_P.pwr1 $width - - - - - - - - - - $M_P-$S_P.sim_unw.flt.bmp
+
+######################################
+###Subtracting the simulated unwrapped phase from the complex interferogram
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_P-$S_P.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+sub_phase $M_P-$S_P.int $M_P-$S_P.sim_unw.unflt $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+rasmph_pwr $M_P-$S_P.diff.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.int.pwr.bmp
+
+
+fi
+
+if false
+then
+######################################
+######################################
+### Curved Earth phase trend removal("flattening")
+###ph_slop_base Subtract/add interferogram flat-Earth phase trend as estimated from initial baseline
+######################################
+ph_slope_base $M_P-$S_P.int $par_m $MS_off $M_P-$S_P.base $M_P-$S_P.flt 1 0
+
+
+#rasmph $M_P-$S_P.flt $width 1 0 1 1 1. 0.35 1 $M_P-$S_P.flt.bmp
+rasmph_pwr $M_P-$S_P.flt $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltandpwr.bmp
+######################################
+###filter flattened interferogram
+######################################
+adf $M_P-$S_P.flt $M_P-$S_P.flt.sm1 $M_P-$S_P.sm.cc1 $width 0.3 64
+adf $M_P-$S_P.flt.sm1 $M_P-$S_P.flt.sm $M_P-$S_P.sm.cc $width 0.3 32
+
+rasmph_pwr $M_P-$S_P.flt.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.fltsmpwr.bmp
+
+cc_wave $M_P-$S_P.flt $M_P-$S_P.pwr1 $M_P-$S_P.pwr2 $M_P-$S_P.cc $width 5.0 5.0 2 - - - -
+
+#rascc $M_P-$S_P.cc - $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.cc.bmp
+rascc $M_P-$S_P.cc $M_P-$S_P.pwr1 $width 1 1 0 1 1 .1 .9 1. .35 1 $M_P-$S_P.ccandpwr.bmp
+
+
+######################################
+###rasshd:generate raster image of DEM as shaded relief DEM
+######################################
+width_map=$(awk '$1 == "width:" {print $2}' dem_seg.par)
+nlines_map=$(awk '$1 == "nlines:" {print $2}' dem_seg.par)
+col_post=$(awk '$1 == "post_lat:" {print $2}' dem_seg.par)
+row_post=$(awk '$1 == "post_lon:" {print $2}' dem_seg.par)
+######################################
+
+######################################
+###simulation of unwrapped topographic phase
+phase_sim $par_m $MS_off $M_P-$S_P.base ../$M_P.hgt $M_P-$S_P.sim_unw 0 0 - -
+
+width=$(awk '$1 == "interferogram_width:" {print $2}' $MS_off)
+line=$(awk '$1 == "interferogram_azimuth_lines:" {print $2}' $MS_off)
+######################################
+###Subtractiing the simulated unwrapped phase from the complex interferogram
+######################################
+echo -ne "$M_P-$S_P\n 0 0\n 64 64\n 256 256\n 7.0\n" > create_diff_parin
+create_diff_par $MS_off - $M_P-$S_P.diff.par 0 < create_diff_parin
+rm -f create_diff_parin
+sub_phase $M_P-$S_P.int $M_P-$S_P.sim_unw $M_P-$S_P.diff.par $M_P-$S_P.diff.int 1 0
+rasmph_pwr $M_P-$S_P.diff.int $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.int.pwr.bmp
+fi
+
+
+######################################
+# Filter Differential Interferogram
+######################################
+adf $M_P-$S_P.diff.int $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.sm.cc1 $width 0.5 128
+adf $M_P-$S_P.diff.int.sm1 $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.sm.cc2 $width 0.5 64
+adf $M_P-$S_P.diff.int.sm2 $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.cc $width 0.5
+rasmph_pwr $M_P-$S_P.diff.int.sm $M_P-$S_P.pwr1 $width 1 1 0 1 1 1. 0.35 1 $M_P-$S_P.diff.sm.pwr.bmp
+#############################################
+# Unwrap Differential Flattened Interferogram
+#############################################
+corr_flag $M_P-$S_P.diff.sm.cc $M_P-$S_P.diff.sm.flag $width 0.5
+neutron $M_P-$S_P.pwr1 $M_P-$S_P.diff.sm.flag $width - - -
+residue $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $width
+tree_cc $M_P-$S_P.diff.sm.flag $width 64
+#grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width
+grasses $M_P-$S_P.diff.int.sm $M_P-$S_P.diff.sm.flag $M_P-$S_P.diff.int.sm.unw $width - - - - - -
+rasrmg  $M_P-$S_P.diff.int.sm.unw $M_P-$S_P.pwr1 $width 1 1 0 1 1 1.0 1. 0.35 .0 1 $M_P-$S_P.diff.int.sm.unw.bmp
+

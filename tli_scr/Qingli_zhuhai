@@ -1,0 +1,75 @@
+#! /bin/sh
+
+# Script that:
+#	Copy subset data from original SLCs. Write for Qingli.
+# Usage:
+#	./Qingli_zhuhai
+# Written by:
+#	T.LI @ InSAR Group 
+#	SWJTU & CUHK, 20130530
+
+workpath=`pwd`
+path=$workpath/zhuhai_rslc
+rlks=1  # range looks
+azlks=1 # azimuth looks
+
+if false 
+then
+roff="1455"      #roff: offset of first range sample
+nr="2135"       #nr: number of range samples
+loff="4980"    #loff: offset number of lines to start
+nl="2300"       #nl: number of lines to copy (enter 0: to end of file)
+master="20091113" #master image
+itab_type=0     #0: single master;  1: free combination
+
+
+rm -fr SLC_org SLC_tab im_list piece
+mkdir piece
+find $origpath -name "*.rslc" -follow -exec echo {} {}.par >>SLC_org \;
+SLC_copy_all SLC_org $path $roff $nr $loff $nl
+find $path -name "*.rslc" -exec multi_look {} {}.par {}.pwr {}.pwr.par 1 1 \; #注意多视参数
+find $path -name "*.rslc" -exec echo {} {}.par >>SLC_tab \;
+find $path -name "*.pwr" -exec echo {} >>im_list \;
+ave_image im_list $nr ave.pwr
+raspwr ave.pwr $nr - - - - - - - ave.ras  #ave.ras
+base_calc SLC_tab piece/$master.rslc.par base_plot.agr base.list itab $itab_type
+fi
+
+nlines=$(awk 'END{print NR}' itab)
+for i in $( seq 1 1 $nlines )
+do
+	master_ind=$(sed -n "$i,1p" itab | awk '{print $1}')
+	master_SLC=$(sed -n "$master_ind,1p" sarlist | awk '{print $1}')
+	master_date=${master_SLC:(-13):8}
+	slave_ind=$(sed -n "$i,1p" itab | awk '{print $2}')
+	slave_SLC=$(sed -n "$slave_ind,1p" sarlist | awk '{print $1}')
+	slave_date=${slave_SLC:(-13):8}
+	intname=$master_date-$slave_date
+	mkdir $intname
+	cd $intname
+	echo -ne "$master_date-$slave_date\n 0 0\n 32 32\n 64 64\n 7.0\n 0\n\n" > offset_init
+	create_offset $master_SLC.par $slave_SLC.par $intname.off 1 1 1 <offset_init
+	rm -f offset_init
+	SLC_intf $master_SLC $slave_SLC $master_SLC.par $slave_SLC.par $intname.off $intname.int 1 1 - - 
+
+#	multi_look $master_SLC $master_SLC.par $master_date.rslc.pwr $master_date.rslc.pwr.par $rlks $azlks - - - -
+#	multi_look $slave_SLC $slave_SLC.par $slave_date.rslc.pwr $slave_date.rslc.pwr.par $rlks $azlks - - - -
+	width=$(awk '$1 == "range_samples:" {print $2}' $master_SLC.par)
+	echo "Creating $master_date-$slave_date.cc file..."
+#	cc_wave $intname.int $master_date.rslc.pwr $slave_date.rslc.pwr $intname.cc $width 5 5 0 >temp
+#	rascc $intname.cc $master_date.rslc.pwr $width - - - 5 5 - - - - - $intname.cc.bmp
+	cc_wave $intname.int - - $intname.cc $width 5.0 5.0 - 0 - 0 -
+	rascc $intname.cc - 9966 1 1 0 1 1 .1 .9 1. .35 1 $intname.cc.ras
+	base_init $master_SLC.par $slave_SLC.par $intname.off $intname.int $intname.base 0 1024 1024
+	base_perp $intname.base $master_SLC.par $intname.off > $intname.base.perp.txt
+	rm -f *.pwr* 
+	cd ../
+done
+
+rm -f *.int *.off
+mkdir cc_ras
+mv *.cc cc_ras/
+mv *.cc.ras cc_ras/
+	#create_offset
+	#SLC_intf
+	#cc_wave
